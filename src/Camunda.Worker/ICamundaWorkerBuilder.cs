@@ -6,11 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker
 {
-    public static class CamundaWorkerServiceCollectionExtensions
+    public interface ICamundaWorkerBuilder
     {
-        public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services)
-        {
-            return new CamundaWorkerBuilder(services);
-        }
+        IServiceCollection Services { get; }
+
+        ICamundaWorkerBuilder Add(HandlerDescriptor descriptor);
     }
 }
