@@ -8,11 +8,13 @@ namespace Camunda.Worker
 {
     public sealed class HandlerDescriptor
     {
-        public HandlerDescriptor(string topicName)
+        public HandlerDescriptor(string topicName, Func<IServiceProvider, IExternalTaskHandler> factory)
         {
             TopicName = topicName ?? throw new ArgumentNullException(nameof(topicName));
+            Factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         public string TopicName { get; }
+        public Func<IServiceProvider, IExternalTaskHandler> Factory { get; }
     }
 }

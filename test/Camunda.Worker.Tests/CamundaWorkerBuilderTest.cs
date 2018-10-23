@@ -14,10 +14,11 @@ namespace Camunda.Worker
         public void TestAdd()
         {
             var services = new Mock<IServiceCollection>().Object;
+            var handlerMock = new Mock<IExternalTaskHandler>();
 
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.Add(new HandlerDescriptor("testTopic"));
+            builder.Add(new HandlerDescriptor("testTopic", provider => handlerMock.Object));
         }
     }
 }
