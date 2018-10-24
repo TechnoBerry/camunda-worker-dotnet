@@ -17,6 +17,7 @@ namespace Camunda.Worker
 
         public ICamundaWorkerBuilder Add(HandlerDescriptor descriptor)
         {
+            Services.AddSingleton(descriptor);
             return this;
         }
     }
