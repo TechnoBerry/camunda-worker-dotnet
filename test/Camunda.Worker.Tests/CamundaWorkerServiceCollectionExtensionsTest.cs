@@ -19,6 +19,9 @@ namespace Camunda.Worker
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IHandlerFactoryProvider));
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+                                           d.ServiceType == typeof(IExternalTaskExecutor));
         }
     }
 }

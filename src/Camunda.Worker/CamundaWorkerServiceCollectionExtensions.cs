@@ -11,6 +11,7 @@ namespace Camunda.Worker
         public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services)
         {
             services.AddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
+            services.AddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
 
             return new CamundaWorkerBuilder(services);
         }

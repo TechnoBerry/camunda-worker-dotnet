@@ -1,0 +1,55 @@
+// Copyright (c) Alexey Malinin. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using Xunit;
+
+namespace Camunda.Worker
+{
+    public class DefaultExternalTaskExecutorTest
+    {
+        [Fact]
+        public async Task TestExecute()
+        {
+            var scopeFactoryMock = new Mock<IServiceScopeFactory>();
+            var scopeMock = new Mock<IServiceScope>();
+            var providerMock = new Mock<IServiceProvider>();
+
+            scopeFactoryMock.Setup(factory => factory.CreateScope()).Returns(scopeMock.Object);
+            scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(providerMock.Object);
+
+            var handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
+            var handlerMock = new Mock<IExternalTaskHandler>();
+            handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory("testTopic"))
+                .Returns((string topic) => provider => handlerMock.Object);
+
+            handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((ExternalTask externalTask, CancellationToken token) => new Dictionary<string, Variable>
+                {
+                    ["DONE"] = new Variable
+                    {
+                        Value = true,
+                        Type = VariableType.Boolean
+                    }
+                });
+
+            var executor = new DefaultExternalTaskExecutor(scopeFactoryMock.Object, handlerFactoryProviderMock.Object);
+
+            var result = await executor.Execute(new ExternalTask
+            {
+                Id = "1",
+                TopicName = "testTopic",
+                WorkerId = "testWorker",
+                Variables = new Dictionary<string, Variable>()
+            });
+
+            Assert.Equal(true, result["DONE"]?.Value);
+        }
+    }
+}
