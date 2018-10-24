@@ -13,9 +13,12 @@ namespace Camunda.Worker
         [Fact]
         public void TestAddCamundaWorker()
         {
-            var services = new Mock<IServiceCollection>().Object;
+            var services = new ServiceCollection();
 
             services.AddCamundaWorker();
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
+                                           d.ServiceType == typeof(IHandlerFactoryProvider));
         }
     }
 }

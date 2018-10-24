@@ -16,23 +16,18 @@ namespace Camunda.Worker.Extensions
         [Fact]
         public void TestAddHandlerWithAttributes()
         {
-            var descriptors = new List<ServiceDescriptor>();
-
-            var servicesMock = new Mock<IServiceCollection>();
+            var services = new ServiceCollection();
             var builderMock = new Mock<ICamundaWorkerBuilder>();
-
-            servicesMock.Setup(services => services.Add(It.IsAny<ServiceDescriptor>()))
-                .Callback((ServiceDescriptor descriptor) => descriptors.Add(descriptor));
 
             builderMock.Setup(builder => builder.Add(It.IsAny<HandlerDescriptor>())).Returns(builderMock.Object);
 
-            builderMock.SetupGet(builder => builder.Services).Returns(servicesMock.Object);
+            builderMock.SetupGet(builder => builder.Services).Returns(services);
 
             builderMock.Object.AddHandler<HandlerWithTopics>();
 
             builderMock.Verify(builder => builder.Add(It.IsAny<HandlerDescriptor>()), Times.Exactly(2));
-            Assert.Contains(descriptors, d => d.Lifetime == ServiceLifetime.Scoped &&
-                                              d.ServiceType == typeof(HandlerWithTopics));
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Scoped &&
+                                           d.ServiceType == typeof(HandlerWithTopics));
         }
 
         [HandlerTopic("testTopic_1")]

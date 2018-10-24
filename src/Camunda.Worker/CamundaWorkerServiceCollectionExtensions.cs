@@ -10,6 +10,8 @@ namespace Camunda.Worker
     {
         public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services)
         {
+            services.AddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
+
             return new CamundaWorkerBuilder(services);
         }
     }
