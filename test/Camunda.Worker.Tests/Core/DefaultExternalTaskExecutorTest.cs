@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Core
 {
     public class DefaultExternalTaskExecutorTest
     {

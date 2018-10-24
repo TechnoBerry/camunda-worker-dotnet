@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Core
 {
     public class DefaultExternalTaskExecutor : IExternalTaskExecutor
     {

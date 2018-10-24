@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Core
 {
     public interface IExternalTaskExecutor
     {

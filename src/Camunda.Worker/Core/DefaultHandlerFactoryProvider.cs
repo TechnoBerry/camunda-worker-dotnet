@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Core
 {
     public class DefaultHandlerFactoryProvider : IHandlerFactoryProvider
     {

@@ -5,7 +5,7 @@
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Core
 {
     public class DefaultHandlerFactoryProviderTest
     {
