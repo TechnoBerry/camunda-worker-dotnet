@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  camunda-db:
+    image: postgres:10
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_DB: process-engine
+      POSTGRES_USER: camunda
+      POSTGRES_PASSWORD: camunda
+
+  camunda:
+    image: camunda/camunda-bpm-platform:latest
+    depends_on:
+      - camunda-db
+    ports:
+      - '8080:8080'
+    environment:
+      DB_DRIVER: 'org.postgresql.Driver'
+      DB_URL: 'jdbc:postgresql://camunda-db:5432/process-engine'
+      DB_USERNAME: camunda
+      DB_PASSWORD: camunda
+      WAIT_FOR: 'camunda-db:5432'
