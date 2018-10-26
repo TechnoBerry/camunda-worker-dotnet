@@ -4,6 +4,7 @@
 
 using Camunda.Worker.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Camunda.Worker
 {
@@ -11,8 +12,8 @@ namespace Camunda.Worker
     {
         public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services)
         {
-            services.AddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
-            services.AddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
+            services.TryAddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
+            services.TryAddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
 
             return new CamundaWorkerBuilder(services);
         }
