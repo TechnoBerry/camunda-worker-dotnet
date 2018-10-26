@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Camunda.Worker.Api
 {
     public interface ICamundaApiClient
     {
-        Task<ExternalTask> FetchAndLock(FetchAndLockRequest request, CancellationToken cancellationToken);
+        Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request, CancellationToken cancellationToken);
 
         Task Complete(string taskId, CompleteRequest request, CancellationToken cancellationToken);
 
