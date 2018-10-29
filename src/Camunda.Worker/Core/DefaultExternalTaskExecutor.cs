@@ -35,8 +35,7 @@ namespace Camunda.Worker.Core
 
             var topicName = externalTask.TopicName;
 
-            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(topicName) ??
-                                 throw new ArgumentException("Unknown topic name", nameof(externalTask));
+            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(topicName);
 
             using (var scope = _scopeFactory.CreateScope())
             {

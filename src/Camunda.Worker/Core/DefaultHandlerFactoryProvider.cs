@@ -20,12 +20,12 @@ namespace Camunda.Worker.Core
 
         public Func<IServiceProvider, IExternalTaskHandler> GetHandlerFactory(string topicName)
         {
-            if (topicName == null)
+            if (_descriptors.TryGetValue(topicName, out var descriptor))
             {
-                throw new ArgumentNullException(nameof(topicName));
+                return descriptor.Factory;
             }
 
-            return _descriptors.TryGetValue(topicName, out var descriptor) ? descriptor.Factory : null;
+            throw new ArgumentException("Unknown topic name", nameof(topicName));
         }
     }
 }
