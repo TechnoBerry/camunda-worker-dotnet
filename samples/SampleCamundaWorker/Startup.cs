@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Camunda.Worker;
 using Camunda.Worker.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -24,7 +25,11 @@ namespace SampleCamundaWorker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCamundaWorker()
+            services.AddCamundaWorker(options =>
+                {
+                    options.WorkerId = "sampleWorker";
+                    options.BaseUri = new Uri("http://localhost:8080/engine-rest");
+                })
                 .AddHandler<SayHelloHandler>();
         }
 

@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Camunda.Worker.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,7 +17,11 @@ namespace Camunda.Worker
         {
             var services = new ServiceCollection();
 
-            services.AddCamundaWorker();
+            services.AddCamundaWorker(options =>
+            {
+                options.WorkerId = "testWorker";
+                options.BaseUri = new Uri("http://test/engine-rest");
+            });
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IHandlerFactoryProvider));
