@@ -3,7 +3,6 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,11 +21,10 @@ namespace Camunda.Worker.Core
             _handlerFactoryProvider = handlerFactoryProvider;
         }
 
-        public Task<IDictionary<string, Variable>> Execute(ExternalTask externalTask) =>
+        public Task<ExecutionResult> Execute(ExternalTask externalTask) =>
             Execute(externalTask, CancellationToken.None);
 
-        public async Task<IDictionary<string, Variable>> Execute(ExternalTask externalTask,
-            CancellationToken cancellationToken)
+        public async Task<ExecutionResult> Execute(ExternalTask externalTask, CancellationToken cancellationToken)
         {
             if (externalTask == null)
             {
@@ -40,7 +38,7 @@ namespace Camunda.Worker.Core
             using (var scope = _scopeFactory.CreateScope())
             {
                 var handler = handlerFactory(scope.ServiceProvider);
-                var result = await handler.Process(externalTask, cancellationToken);
+                var result = await handler.ProcessSafe(externalTask, cancellationToken);
                 return result;
             }
         }
