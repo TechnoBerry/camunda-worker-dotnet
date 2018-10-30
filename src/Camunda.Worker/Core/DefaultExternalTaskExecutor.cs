@@ -6,6 +6,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Camunda.Worker.Core
 {
@@ -13,12 +14,15 @@ namespace Camunda.Worker.Core
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHandlerFactoryProvider _handlerFactoryProvider;
+        private readonly ILogger<DefaultExternalTaskExecutor> _logger;
 
         public DefaultExternalTaskExecutor(IServiceScopeFactory scopeFactory,
-            IHandlerFactoryProvider handlerFactoryProvider)
+            IHandlerFactoryProvider handlerFactoryProvider,
+            ILogger<DefaultExternalTaskExecutor> logger)
         {
             _scopeFactory = scopeFactory;
             _handlerFactoryProvider = handlerFactoryProvider;
+            _logger = logger;
         }
 
         public Task<ExecutionResult> Execute(ExternalTask externalTask) =>
@@ -38,7 +42,10 @@ namespace Camunda.Worker.Core
             using (var scope = _scopeFactory.CreateScope())
             {
                 var handler = handlerFactory(scope.ServiceProvider);
+
+                _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
                 var result = await handler.ProcessSafe(externalTask, cancellationToken);
+
                 return result;
             }
         }

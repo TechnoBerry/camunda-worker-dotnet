@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 
@@ -39,7 +40,11 @@ namespace Camunda.Worker.Core
                     }
                 });
 
-            var executor = new DefaultExternalTaskExecutor(scopeFactoryMock.Object, handlerFactoryProviderMock.Object);
+            var executor = new DefaultExternalTaskExecutor(
+                scopeFactoryMock.Object,
+                handlerFactoryProviderMock.Object,
+                new NullLogger<DefaultExternalTaskExecutor>()
+            );
 
             var result = await executor.Execute(new ExternalTask
             {
