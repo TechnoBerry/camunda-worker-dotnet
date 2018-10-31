@@ -1,0 +1,10 @@
+language: csharp
+
+mono: none
+dotnet: 2.1.403
+
+script:
+  - dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj
+
+notifications:
+  email: false
