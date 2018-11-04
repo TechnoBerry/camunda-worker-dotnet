@@ -45,6 +45,7 @@ namespace Camunda.Worker.Core
 
                 _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
                 var result = await handler.ProcessSafe(externalTask, cancellationToken);
+                _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
 
                 return result;
             }
