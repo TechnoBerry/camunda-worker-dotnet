@@ -15,6 +15,11 @@ namespace Camunda.Worker.Extensions
         public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder)
             where T : class, IExternalTaskHandler
         {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
             var services = builder.Services;
             services.AddScoped<T>();
 
