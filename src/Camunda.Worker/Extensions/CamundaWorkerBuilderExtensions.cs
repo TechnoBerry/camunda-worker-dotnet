@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,11 +18,16 @@ namespace Camunda.Worker.Extensions
             var services = builder.Services;
             services.AddScoped<T>();
 
-            var topicAttributes = typeof(T).GetCustomAttributes<HandlerTopicAttribute>();
+            var handlerDescriptors = MakeDescriptors<T>();
 
-            return topicAttributes.Aggregate(builder, (acc, topicAttribute) => acc.Add(
-                new HandlerDescriptor(topicAttribute.TopicName, HandlerFactory<T>)
-            ));
+            return handlerDescriptors.Aggregate(builder, (acc, descriptor) => acc.Add(descriptor));
+        }
+
+        private static IEnumerable<HandlerDescriptor> MakeDescriptors<T>()
+            where T : class, IExternalTaskHandler
+        {
+            return typeof(T).GetCustomAttributes<HandlerTopicAttribute>()
+                .Select(attribute => new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>));
         }
 
         private static IExternalTaskHandler HandlerFactory<T>(IServiceProvider provider)
