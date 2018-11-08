@@ -3,9 +3,13 @@
 
 
 using System;
+using Camunda.Worker.Api;
 using Camunda.Worker.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Refit;
 
 namespace Camunda.Worker
 {
@@ -17,10 +21,24 @@ namespace Camunda.Worker
             var options = new CamundaWorkerOptions();
             configureDelegate(options);
 
+            services.AddRefitClient<ICamundaApiClient>(new RefitSettings
+                {
+                    JsonSerializerSettings = MakeJsonSerializerSettings()
+                })
+                .ConfigureHttpClient(client => { client.BaseAddress = options.BaseUri; });
+
             services.TryAddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
             services.TryAddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
 
             return new CamundaWorkerBuilder(services);
+        }
+
+        private static JsonSerializerSettings MakeJsonSerializerSettings()
+        {
+            return new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
         }
     }
 }

@@ -3,6 +3,7 @@
 
 
 using System;
+using Camunda.Worker.Api;
 using Camunda.Worker.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -28,6 +29,9 @@ namespace Camunda.Worker
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(IExternalTaskExecutor));
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+                                           d.ServiceType == typeof(ICamundaApiClient));
         }
     }
 }
