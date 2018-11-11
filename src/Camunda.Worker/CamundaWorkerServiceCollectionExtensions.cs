@@ -7,6 +7,7 @@ using Camunda.Worker.Api;
 using Camunda.Worker.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Refit;
@@ -18,14 +19,17 @@ namespace Camunda.Worker
         public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services,
             Action<CamundaWorkerOptions> configureDelegate)
         {
-            var options = new CamundaWorkerOptions();
-            configureDelegate(options);
-
+            services.AddOptions<CamundaWorkerOptions>()
+                .Configure(configureDelegate);
             services.AddRefitClient<ICamundaApiClient>(new RefitSettings
                 {
                     JsonSerializerSettings = MakeJsonSerializerSettings()
                 })
-                .ConfigureHttpClient(client => { client.BaseAddress = options.BaseUri; });
+                .ConfigureHttpClient((provider, client) =>
+                {
+                    var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;
+                    client.BaseAddress = options.BaseUri;
+                });
 
             services.TryAddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
             services.TryAddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
