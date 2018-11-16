@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Refit;
 
@@ -31,6 +32,7 @@ namespace Camunda.Worker
                     client.BaseAddress = options.BaseUri;
                 });
 
+            services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
             services.TryAddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
 
@@ -39,10 +41,14 @@ namespace Camunda.Worker
 
         private static JsonSerializerSettings MakeJsonSerializerSettings()
         {
-            return new JsonSerializerSettings
+            var settings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
+
+            settings.Converters.Add(new StringEnumConverter());
+
+            return settings;
         }
     }
 }

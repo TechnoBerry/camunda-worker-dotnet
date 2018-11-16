@@ -10,6 +10,7 @@ namespace Camunda.Worker.Api
     {
         public string WorkerId { get; set; }
         public int MaxTasks { get; set; }
+        public int AsyncResponseTimeout { get; set; }
         public IEnumerable<Topic> Topics { get; set; }
 
         public class Topic
