@@ -5,22 +5,15 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Refit;
 
 namespace Camunda.Worker.Api
 {
     public interface ICamundaApiClient
     {
-        [Post("/external-task/fetchAndLock")]
-        Task<IList<ExternalTask>> FetchAndLock([Body] FetchAndLockRequest request, CancellationToken cancellationToken);
+        Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request, CancellationToken cancellationToken);
 
-        [Post("/external-task/{taskId}/complete")]
-        Task Complete(string taskId, [Body] CompleteRequest request, CancellationToken cancellationToken);
+        Task Complete(string taskId, CompleteRequest request, CancellationToken cancellationToken);
 
-        [Post("/external-task/{taskId}/failure")]
-        Task ReportFailure(string taskId, [Body] ReportFailureRequest request, CancellationToken cancellationToken);
-
-        [Post("/external-task/{taskId}/extendLock")]
-        Task ExtendLock(string taskId, [Body] ExtendLockRequest request, CancellationToken cancellationToken);
+        Task ReportFailure(string taskId, ReportFailureRequest request, CancellationToken cancellationToken);
     }
 }
