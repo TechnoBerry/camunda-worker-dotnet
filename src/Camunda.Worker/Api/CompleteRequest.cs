@@ -10,5 +10,6 @@ namespace Camunda.Worker.Api
     {
         public string WorkerId { get; set; }
         public IDictionary<string, Variable> Variables { get; set; }
+        public IDictionary<string, Variable> LocalVariables { get; set; }
     }
 }
