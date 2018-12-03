@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -22,6 +23,15 @@ namespace Camunda.Worker
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ImplementationInstance != null);
+        }
+
+        [Fact]
+        public void TestAddNull()
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            Assert.Throws<ArgumentNullException>(() => builder.Add(null));
         }
     }
 }
