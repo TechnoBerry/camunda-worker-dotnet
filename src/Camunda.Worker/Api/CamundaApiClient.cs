@@ -80,7 +80,14 @@ namespace Camunda.Worker.Api
         {
             return new JsonSerializerSettings
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy
+                    {
+                        ProcessDictionaryKeys = false,
+                        OverrideSpecifiedNames = true
+                    }
+                },
                 Converters = new List<JsonConverter>
                 {
                     new StringEnumConverter()
