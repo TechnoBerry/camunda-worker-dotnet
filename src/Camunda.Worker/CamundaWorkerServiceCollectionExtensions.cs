@@ -26,6 +26,12 @@ namespace Camunda.Worker
                 });
 
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
+
+            return services.AddCamundaWorkerCore();
+        }
+
+        public static ICamundaWorkerBuilder AddCamundaWorkerCore(this IServiceCollection services)
+        {
             services.TryAddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
             services.TryAddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
 
