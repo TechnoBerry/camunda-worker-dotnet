@@ -65,6 +65,7 @@ namespace Camunda.Worker
             {
                 WorkerId = _options.WorkerId,
                 MaxTasks = 1,
+                UsePriority = true,
                 AsyncResponseTimeout = 10_000,
                 Topics = _topics
             }, cancellationToken);
