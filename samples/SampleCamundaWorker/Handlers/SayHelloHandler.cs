@@ -10,6 +10,7 @@ using Camunda.Worker;
 namespace SampleCamundaWorker.Handlers
 {
     [HandlerTopic("sayHello")]
+    [HandlerVariables("USERNAME")]
     public class SayHelloHandler : IExternalTaskHandler
     {
         public async Task<IDictionary<string, Variable>> Process(ExternalTask externalTask,
