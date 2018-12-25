@@ -22,11 +22,7 @@ namespace SampleCamundaWorker.Handlers
 
             return new Dictionary<string, Variable>
             {
-                ["MESSAGE"] = new Variable
-                {
-                    Value = $"Hello, {username}!",
-                    Type = VariableType.String
-                }
+                ["MESSAGE"] = new Variable($"Hello, {username}!")
             };
         }
     }
