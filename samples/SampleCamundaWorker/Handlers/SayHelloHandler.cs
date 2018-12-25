@@ -16,14 +16,16 @@ namespace SampleCamundaWorker.Handlers
         public async Task<IDictionary<string, Variable>> Process(ExternalTask externalTask,
             CancellationToken cancellationToken)
         {
+            var username = externalTask.Variables["USERNAME"].Value;
+
             await Task.Delay(1000, cancellationToken);
 
             return new Dictionary<string, Variable>
             {
-                ["HELLO"] = new Variable
+                ["MESSAGE"] = new Variable
                 {
-                    Value = true,
-                    Type = VariableType.Boolean
+                    Value = $"Hello, {username}!",
+                    Type = VariableType.String
                 }
             };
         }
