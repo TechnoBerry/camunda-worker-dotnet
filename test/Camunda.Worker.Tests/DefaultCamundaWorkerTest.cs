@@ -61,7 +61,7 @@ namespace Camunda.Worker
 
             _executorMock
                 .Setup(executor => executor.Execute(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ExecutionResult(new Dictionary<string, Variable>()));
+                .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>()));
 
             var worker = CreateWorker();
 
@@ -93,7 +93,7 @@ namespace Camunda.Worker
 
             _executorMock
                 .Setup(executor => executor.Execute(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new ExecutionResult(new ArgumentNullException()));
+                .ReturnsAsync(new FailureResult(new ArgumentNullException()));
 
             var worker = CreateWorker();
 

@@ -50,8 +50,8 @@ namespace Camunda.Worker.Core
                 Variables = new Dictionary<string, Variable>()
             });
 
-            Assert.True(result.Success);
-            Assert.True(result.Variables.TryGetValue("DONE", out var resultVariable));
+            var executionResult = Assert.IsAssignableFrom<CompleteResult>(result);
+            Assert.True(executionResult.Variables.TryGetValue("DONE", out var resultVariable));
             Assert.True(Assert.IsType<bool>(resultVariable.Value));
         }
     }

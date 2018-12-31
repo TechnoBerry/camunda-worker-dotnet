@@ -73,25 +73,27 @@ namespace Camunda.Worker
             return externalTasks.FirstOrDefault();
         }
 
-        private async Task SendExecutionResult(string taskId, ExecutionResult result,
+        private async Task SendExecutionResult(string taskId, IExecutionResult result,
             CancellationToken cancellationToken)
         {
-            if (result.Success)
+            switch (result)
             {
-                await _camundaApiClient.Complete(taskId, new CompleteRequest
-                {
-                    WorkerId = _options.WorkerId,
-                    Variables = result.Variables
-                }, cancellationToken);
-            }
-            else
-            {
-                await _camundaApiClient.ReportFailure(taskId, new ReportFailureRequest
-                {
-                    WorkerId = _options.WorkerId,
-                    ErrorMessage = result.Exception.Message,
-                    ErrorDetails = result.Exception.StackTrace
-                }, cancellationToken);
+                case CompleteResult completeResult:
+                    await _camundaApiClient.Complete(taskId, new CompleteRequest
+                    {
+                        WorkerId = _options.WorkerId,
+                        Variables = completeResult.Variables
+                    }, cancellationToken);
+                    break;
+
+                case FailureResult failureResult:
+                    await _camundaApiClient.ReportFailure(taskId, new ReportFailureRequest
+                    {
+                        WorkerId = _options.WorkerId,
+                        ErrorMessage = failureResult.ErrorMessage,
+                        ErrorDetails = failureResult.ErrorDetails
+                    }, cancellationToken);
+                    break;
             }
         }
     }

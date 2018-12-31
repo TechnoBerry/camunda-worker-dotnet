@@ -25,10 +25,10 @@ namespace Camunda.Worker.Core
             _logger = logger;
         }
 
-        public Task<ExecutionResult> Execute(ExternalTask externalTask) =>
+        public Task<IExecutionResult> Execute(ExternalTask externalTask) =>
             Execute(externalTask, CancellationToken.None);
 
-        public async Task<ExecutionResult> Execute(ExternalTask externalTask, CancellationToken cancellationToken)
+        public async Task<IExecutionResult> Execute(ExternalTask externalTask, CancellationToken cancellationToken)
         {
             if (externalTask == null)
             {

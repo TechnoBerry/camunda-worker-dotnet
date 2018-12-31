@@ -9,7 +9,7 @@ namespace Camunda.Worker.Core
 {
     public interface IExternalTaskExecutor
     {
-        Task<ExecutionResult> Execute(ExternalTask externalTask);
-        Task<ExecutionResult> Execute(ExternalTask externalTask, CancellationToken cancellationToken);
+        Task<IExecutionResult> Execute(ExternalTask externalTask);
+        Task<IExecutionResult> Execute(ExternalTask externalTask, CancellationToken cancellationToken);
     }
 }

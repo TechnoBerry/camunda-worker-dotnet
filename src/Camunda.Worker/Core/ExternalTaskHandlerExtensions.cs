@@ -11,17 +11,17 @@ namespace Camunda.Worker.Core
 {
     internal static class ExternalTaskHandlerExtensions
     {
-        internal static async Task<ExecutionResult> ProcessSafe(this IExternalTaskHandler handler,
+        internal static async Task<IExecutionResult> ProcessSafe(this IExternalTaskHandler handler,
             ExternalTask externalTask, CancellationToken cancellationToken)
         {
             try
             {
                 var result = await handler.Process(externalTask, cancellationToken);
-                return new ExecutionResult(result ?? new Dictionary<string, Variable>());
+                return new CompleteResult(result ?? new Dictionary<string, Variable>());
             }
             catch (Exception e)
             {
-                return new ExecutionResult(e);
+                return new FailureResult(e);
             }
         }
     }
