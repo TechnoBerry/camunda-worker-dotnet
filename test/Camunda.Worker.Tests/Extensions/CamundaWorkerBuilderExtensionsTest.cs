@@ -34,10 +34,10 @@ namespace Camunda.Worker.Extensions
         [HandlerTopic("testTopic_2")]
         private class HandlerWithTopics : IExternalTaskHandler
         {
-            public Task<IDictionary<string, Variable>> Process(ExternalTask externalTask,
+            public Task<IExecutionResult> Process(ExternalTask externalTask,
                 CancellationToken cancellationToken)
             {
-                return Task.FromResult(externalTask.Variables);
+                return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
             }
         }
     }

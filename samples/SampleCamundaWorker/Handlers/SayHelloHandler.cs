@@ -13,17 +13,16 @@ namespace SampleCamundaWorker.Handlers
     [HandlerVariables("USERNAME")]
     public class SayHelloHandler : IExternalTaskHandler
     {
-        public async Task<IDictionary<string, Variable>> Process(ExternalTask externalTask,
-            CancellationToken cancellationToken)
+        public async Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken)
         {
             var username = externalTask.Variables["USERNAME"].Value;
 
             await Task.Delay(1000, cancellationToken);
 
-            return new Dictionary<string, Variable>
+            return new CompleteResult(new Dictionary<string, Variable>
             {
                 ["MESSAGE"] = new Variable($"Hello, {username}!")
-            };
+            });
         }
     }
 }

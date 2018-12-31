@@ -12,7 +12,7 @@ namespace Camunda.Worker
 
         public CompleteResult(IDictionary<string, Variable> variables)
         {
-            Variables = variables;
+            Variables = variables ?? new Dictionary<string, Variable>();
         }
     }
 }

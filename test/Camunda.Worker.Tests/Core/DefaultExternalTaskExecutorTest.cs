@@ -31,10 +31,10 @@ namespace Camunda.Worker.Core
                 .Returns((string topic) => provider => handlerMock.Object);
 
             handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((ExternalTask externalTask, CancellationToken token) => new Dictionary<string, Variable>
+                .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>
                 {
                     ["DONE"] = new Variable(true)
-                });
+                }));
 
             var executor = new DefaultExternalTaskExecutor(
                 scopeFactoryMock.Object,

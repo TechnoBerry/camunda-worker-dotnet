@@ -17,7 +17,7 @@ namespace Camunda.Worker.Core
             try
             {
                 var result = await handler.Process(externalTask, cancellationToken);
-                return new CompleteResult(result ?? new Dictionary<string, Variable>());
+                return result;
             }
             catch (Exception e)
             {

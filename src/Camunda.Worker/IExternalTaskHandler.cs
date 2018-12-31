@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,6 +9,6 @@ namespace Camunda.Worker
 {
     public interface IExternalTaskHandler
     {
-        Task<IDictionary<string, Variable>> Process(ExternalTask externalTask, CancellationToken cancellationToken);
+        Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken);
     }
 }
