@@ -3,6 +3,7 @@
 
 
 using System;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;

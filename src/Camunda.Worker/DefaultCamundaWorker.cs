@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Api;
 using Camunda.Worker.Core;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

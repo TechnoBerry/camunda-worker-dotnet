@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public class CompleteResult : IExecutionResult
     {

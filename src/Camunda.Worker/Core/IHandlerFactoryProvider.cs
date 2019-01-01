@@ -3,6 +3,7 @@
 
 
 using System;
+using Camunda.Worker.Execution;
 
 namespace Camunda.Worker.Core
 {

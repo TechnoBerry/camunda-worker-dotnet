@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Camunda.Worker.Execution;
 
 namespace Camunda.Worker.Core
 {

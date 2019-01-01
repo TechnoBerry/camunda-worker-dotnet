@@ -4,6 +4,7 @@
 
 using System;
 using System.Linq;
+using Camunda.Worker.Execution;
 using Moq;
 using Xunit;
 

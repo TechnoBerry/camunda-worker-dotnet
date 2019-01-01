@@ -5,9 +5,9 @@
 using System;
 using Camunda.Worker.Api;
 using Camunda.Worker.Core;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Moq;
 using Xunit;
 
 namespace Camunda.Worker

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public class FailureResult : IExecutionResult
     {

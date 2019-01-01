@@ -5,6 +5,7 @@
 using System;
 using Camunda.Worker.Api;
 using Camunda.Worker.Core;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;

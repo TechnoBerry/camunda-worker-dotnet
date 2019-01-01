@@ -2,9 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
