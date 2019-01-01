@@ -47,7 +47,7 @@ namespace Camunda.Worker
         }
 
         [Fact]
-        public async Task TestRunWithSuccessfulExecution()
+        public async Task TestRunWithTask()
         {
             var cts = new CancellationTokenSource();
 
@@ -59,9 +59,16 @@ namespace Camunda.Worker
                 }
             });
 
+            var mockResult = new Mock<IExecutionResult>();
+
+            mockResult
+                .Setup(result => result.ExecuteResult(It.IsAny<ExternalTaskContext>(), It.IsAny<CancellationToken>()))
+                .Callback(cts.Cancel)
+                .Returns(Task.CompletedTask);
+
             _handlerMock
                 .Setup(executor => executor.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>()));
+                .ReturnsAsync(mockResult.Object);
 
             var worker = CreateWorker();
 
@@ -69,42 +76,6 @@ namespace Camunda.Worker
 
             _apiClientMock.Verify(
                 client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()),
-                Times.Once()
-            );
-            _apiClientMock.Verify(
-                client => client.Complete("1", It.IsAny<CompleteRequest>(), It.IsAny<CancellationToken>()),
-                Times.Once()
-            );
-            _apiClientMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task TestRunWithFailedExecution()
-        {
-            var cts = new CancellationTokenSource();
-
-            ConfigureApiService(cts, new List<ExternalTask>
-            {
-                new ExternalTask
-                {
-                    Id = "1"
-                }
-            });
-
-            _handlerMock
-                .Setup(executor => executor.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new FailureResult(new ArgumentNullException()));
-
-            var worker = CreateWorker();
-
-            await worker.Run(cts.Token);
-
-            _apiClientMock.Verify(
-                client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()),
-                Times.Once()
-            );
-            _apiClientMock.Verify(
-                client => client.ReportFailure("1", It.IsAny<ReportFailureRequest>(), It.IsAny<CancellationToken>()),
                 Times.Once()
             );
             _apiClientMock.VerifyNoOtherCalls();

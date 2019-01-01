@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Api;
-using Camunda.Worker.Core;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -53,9 +52,11 @@ namespace Camunda.Worker
 
                 if (externalTask == null) continue;
 
+                var context = new ExternalTaskContext(externalTask, _camundaApiClient);
+
                 var result = await _handler.Process(externalTask, cancellationToken);
 
-                await SendExecutionResult(externalTask.Id, result, cancellationToken);
+                await result.ExecuteResult(context, cancellationToken);
             }
         }
 
@@ -72,30 +73,6 @@ namespace Camunda.Worker
             }, cancellationToken);
 
             return externalTasks.FirstOrDefault();
-        }
-
-        private async Task SendExecutionResult(string taskId, IExecutionResult result,
-            CancellationToken cancellationToken)
-        {
-            switch (result)
-            {
-                case CompleteResult completeResult:
-                    await _camundaApiClient.Complete(taskId, new CompleteRequest
-                    {
-                        WorkerId = _options.WorkerId,
-                        Variables = completeResult.Variables
-                    }, cancellationToken);
-                    break;
-
-                case FailureResult failureResult:
-                    await _camundaApiClient.ReportFailure(taskId, new ReportFailureRequest
-                    {
-                        WorkerId = _options.WorkerId,
-                        ErrorMessage = failureResult.ErrorMessage,
-                        ErrorDetails = failureResult.ErrorDetails
-                    }, cancellationToken);
-                    break;
-            }
         }
     }
 }
