@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Alexey Malinin</Authors>
   </PropertyGroup>
 
   <ItemGroup>
