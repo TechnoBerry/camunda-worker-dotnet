@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class HandlerTopicAttribute : Attribute
