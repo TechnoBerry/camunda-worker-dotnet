@@ -33,7 +33,7 @@ namespace Camunda.Worker
         public static ICamundaWorkerBuilder AddCamundaWorkerCore(this IServiceCollection services)
         {
             services.TryAddSingleton<IHandlerFactoryProvider, DefaultHandlerFactoryProvider>();
-            services.TryAddTransient<IExternalTaskExecutor, DefaultExternalTaskExecutor>();
+            services.TryAddTransient<IExternalTaskHandler, CompositeExternalTaskHandler>();
 
             return new CamundaWorkerBuilder(services);
         }

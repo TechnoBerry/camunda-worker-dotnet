@@ -16,19 +16,19 @@ namespace Camunda.Worker
     public class DefaultCamundaWorker : ICamundaWorker
     {
         private readonly ICamundaApiClient _camundaApiClient;
-        private readonly IExternalTaskExecutor _executor;
+        private readonly IExternalTaskHandler _handler;
         private readonly CamundaWorkerOptions _options;
         private readonly IReadOnlyList<FetchAndLockRequest.Topic> _topics;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(ICamundaApiClient camundaApiClient,
-            IExternalTaskExecutor executor,
+            IExternalTaskHandler handler,
             IOptions<CamundaWorkerOptions> options,
             IEnumerable<HandlerDescriptor> handlerDescriptors,
             ILogger<DefaultCamundaWorker> logger)
         {
             _camundaApiClient = camundaApiClient;
-            _executor = executor;
+            _handler = handler;
             _options = options.Value;
             _topics = ExtractTopics(handlerDescriptors).ToList();
             _logger = logger;
@@ -52,7 +52,7 @@ namespace Camunda.Worker
 
                 if (externalTask == null) continue;
 
-                var result = await _executor.Execute(externalTask, cancellationToken);
+                var result = await _handler.Process(externalTask, cancellationToken);
 
                 await SendExecutionResult(externalTask.Id, result, cancellationToken);
             }

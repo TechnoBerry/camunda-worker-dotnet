@@ -10,25 +10,22 @@ using Microsoft.Extensions.Logging;
 
 namespace Camunda.Worker.Core
 {
-    public class DefaultExternalTaskExecutor : IExternalTaskExecutor
+    public class CompositeExternalTaskHandler : IExternalTaskHandler
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHandlerFactoryProvider _handlerFactoryProvider;
-        private readonly ILogger<DefaultExternalTaskExecutor> _logger;
+        private readonly ILogger<CompositeExternalTaskHandler> _logger;
 
-        public DefaultExternalTaskExecutor(IServiceScopeFactory scopeFactory,
+        public CompositeExternalTaskHandler(IServiceScopeFactory scopeFactory,
             IHandlerFactoryProvider handlerFactoryProvider,
-            ILogger<DefaultExternalTaskExecutor> logger)
+            ILogger<CompositeExternalTaskHandler> logger)
         {
             _scopeFactory = scopeFactory;
             _handlerFactoryProvider = handlerFactoryProvider;
             _logger = logger;
         }
 
-        public Task<IExecutionResult> Execute(ExternalTask externalTask) =>
-            Execute(externalTask, CancellationToken.None);
-
-        public async Task<IExecutionResult> Execute(ExternalTask externalTask, CancellationToken cancellationToken)
+        public async Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken)
         {
             if (externalTask == null)
             {

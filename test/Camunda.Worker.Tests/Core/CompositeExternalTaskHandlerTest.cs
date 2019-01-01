@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Camunda.Worker.Core
 {
-    public class DefaultExternalTaskExecutorTest
+    public class CompositeExternalTaskHandlerTest
     {
         [Fact]
         public async Task TestExecute()
@@ -36,19 +36,19 @@ namespace Camunda.Worker.Core
                     ["DONE"] = new Variable(true)
                 }));
 
-            var executor = new DefaultExternalTaskExecutor(
+            var executor = new CompositeExternalTaskHandler(
                 scopeFactoryMock.Object,
                 handlerFactoryProviderMock.Object,
-                new NullLogger<DefaultExternalTaskExecutor>()
+                new NullLogger<CompositeExternalTaskHandler>()
             );
 
-            var result = await executor.Execute(new ExternalTask
+            var result = await executor.Process(new ExternalTask
             {
                 Id = "1",
                 TopicName = "testTopic",
                 WorkerId = "testWorker",
                 Variables = new Dictionary<string, Variable>()
-            });
+            }, CancellationToken.None);
 
             var executionResult = Assert.IsAssignableFrom<CompleteResult>(result);
             Assert.True(executionResult.Variables.TryGetValue("DONE", out var resultVariable));

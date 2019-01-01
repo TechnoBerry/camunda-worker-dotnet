@@ -19,7 +19,7 @@ namespace Camunda.Worker
     public class DefaultCamundaWorkerTest
     {
         private readonly Mock<ICamundaApiClient> _apiClientMock = new Mock<ICamundaApiClient>();
-        private readonly Mock<IExternalTaskExecutor> _executorMock = new Mock<IExternalTaskExecutor>();
+        private readonly Mock<IExternalTaskHandler> _handlerMock = new Mock<IExternalTaskHandler>();
 
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
@@ -43,7 +43,7 @@ namespace Camunda.Worker
                 Times.Once()
             );
             _apiClientMock.VerifyNoOtherCalls();
-            _executorMock.VerifyNoOtherCalls();
+            _handlerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -59,8 +59,8 @@ namespace Camunda.Worker
                 }
             });
 
-            _executorMock
-                .Setup(executor => executor.Execute(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
+            _handlerMock
+                .Setup(executor => executor.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>()));
 
             var worker = CreateWorker();
@@ -91,8 +91,8 @@ namespace Camunda.Worker
                 }
             });
 
-            _executorMock
-                .Setup(executor => executor.Execute(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
+            _handlerMock
+                .Setup(executor => executor.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new FailureResult(new ArgumentNullException()));
 
             var worker = CreateWorker();
@@ -144,7 +144,7 @@ namespace Camunda.Worker
         {
             return new DefaultCamundaWorker(
                 _apiClientMock.Object,
-                _executorMock.Object,
+                _handlerMock.Object,
                 _options,
                 Enumerable.Empty<HandlerDescriptor>(),
                 new NullLogger<DefaultCamundaWorker>()
