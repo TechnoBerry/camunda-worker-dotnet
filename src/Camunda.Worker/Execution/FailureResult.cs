@@ -3,6 +3,9 @@
 
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Camunda.Worker.Api;
 
 namespace Camunda.Worker.Execution
 {
@@ -15,6 +18,20 @@ namespace Camunda.Worker.Execution
         {
             ErrorMessage = ex.Message;
             ErrorDetails = ex.StackTrace;
+        }
+
+        public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
+        {
+            var client = context.CamundaApiClient;
+            var taskId = context.ExternalTask.Id;
+            var workerId = context.ExternalTask.WorkerId;
+
+            await client.ReportFailure(taskId, new ReportFailureRequest
+            {
+                WorkerId = workerId,
+                ErrorMessage = ErrorMessage,
+                ErrorDetails = ErrorDetails
+            }, cancellationToken);
         }
     }
 }

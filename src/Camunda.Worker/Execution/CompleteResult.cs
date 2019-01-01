@@ -3,6 +3,9 @@
 
 
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Camunda.Worker.Api;
 
 namespace Camunda.Worker.Execution
 {
@@ -13,6 +16,19 @@ namespace Camunda.Worker.Execution
         public CompleteResult(IDictionary<string, Variable> variables)
         {
             Variables = variables ?? new Dictionary<string, Variable>();
+        }
+
+        public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
+        {
+            var client = context.CamundaApiClient;
+            var taskId = context.ExternalTask.Id;
+            var workerId = context.ExternalTask.WorkerId;
+
+            await client.Complete(taskId, new CompleteRequest
+            {
+                WorkerId = workerId,
+                Variables = Variables
+            }, cancellationToken);
         }
     }
 }
