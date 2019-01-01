@@ -15,5 +15,7 @@ namespace Camunda.Worker.Api
         Task Complete(string taskId, CompleteRequest request, CancellationToken cancellationToken);
 
         Task ReportFailure(string taskId, ReportFailureRequest request, CancellationToken cancellationToken);
+
+        Task ReportBpmnError(string taskId, BpmnErrorRequest request, CancellationToken cancellationToken);
     }
 }

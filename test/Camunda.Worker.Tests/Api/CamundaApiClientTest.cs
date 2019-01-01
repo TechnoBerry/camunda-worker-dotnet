@@ -120,6 +120,36 @@ namespace Camunda.Worker.Api
             }
         }
 
+        [Fact]
+        public async Task TestReportBpmnError()
+        {
+            using (var client = MakeClient())
+            {
+                HttpRequestMessage httpRequest = null;
+
+                _handlerMock.Setup(handler => handler.Send(It.IsAny<HttpRequestMessage>()))
+                    .Callback((HttpRequestMessage req) => httpRequest = req)
+                    .Returns(() => new HttpResponseMessage
+                    {
+                        StatusCode = HttpStatusCode.NoContent,
+                        Content = new StringContent("")
+                    });
+
+                var request = new BpmnErrorRequest
+                {
+                    WorkerId = "testWorker",
+                    ErrorCode = "testCode",
+                    ErrorMessage = "Error",
+                    Variables = new Dictionary<string, Variable>()
+                };
+
+                await client.ReportBpmnError("testTask", request, CancellationToken.None);
+
+                Assert.NotNull(httpRequest);
+                Assert.Equal(new Uri("http://test/api/external-task/testTask/bpmnError"), httpRequest.RequestUri);
+            }
+        }
+
         private CamundaApiClient MakeClient()
         {
             return new CamundaApiClient(

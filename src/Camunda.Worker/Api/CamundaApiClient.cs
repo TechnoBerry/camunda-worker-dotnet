@@ -55,6 +55,13 @@ namespace Camunda.Worker.Api
             }
         }
 
+        public async Task ReportBpmnError(string taskId, BpmnErrorRequest request, CancellationToken cancellationToken)
+        {
+            using (await SendRequest($"external-task/{taskId}/bpmnError", request, cancellationToken))
+            {
+            }
+        }
+
         private async Task<HttpResponseMessage> SendRequest(string path, object requestBody,
             CancellationToken cancellationToken)
         {
