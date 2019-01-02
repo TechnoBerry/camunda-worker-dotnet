@@ -3,6 +3,7 @@
 
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Camunda.Worker.Api
 {
@@ -41,6 +42,11 @@ namespace Camunda.Worker.Api
             /// The duration to lock the external tasks for in milliseconds
             /// </summary>
             public int LockDuration { get; set; }
+
+            public bool LocalVariables { get; set; }
+
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public IEnumerable<string> Variables { get; set; }
         }
     }
 }
