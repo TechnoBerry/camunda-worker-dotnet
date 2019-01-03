@@ -32,8 +32,20 @@ namespace Camunda.Worker.Extensions
         private static IEnumerable<HandlerDescriptor> MakeDescriptors<T>()
             where T : class, IExternalTaskHandler
         {
-            return typeof(T).GetCustomAttributes<HandlerTopicAttribute>()
-                .Select(attribute => new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>));
+            var handlerType = typeof(T);
+            
+            return handlerType.GetCustomAttributes<HandlerTopicAttribute>()
+                .Select(attribute =>
+                {
+                    var descriptor = new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>);
+
+                    var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+
+                    descriptor.LocalVariables = variablesAttribute?.LocalVariables ?? false;
+                    descriptor.Variables = variablesAttribute?.Variables?.ToList();
+                    
+                    return descriptor;
+                });
         }
 
         private static IExternalTaskHandler HandlerFactory<T>(IServiceProvider provider)

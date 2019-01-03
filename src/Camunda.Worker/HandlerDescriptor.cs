@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using Camunda.Worker.Execution;
 
 namespace Camunda.Worker
@@ -17,5 +18,7 @@ namespace Camunda.Worker
 
         public string TopicName { get; }
         public Func<IServiceProvider, IExternalTaskHandler> Factory { get; }
+        public bool LocalVariables { get; set; }
+        public IEnumerable<string> Variables { get; set; }
     }
 }
