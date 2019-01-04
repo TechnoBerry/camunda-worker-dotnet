@@ -43,7 +43,7 @@ namespace Camunda.Worker.Core
                 new NullLogger<CompositeExternalTaskHandler>()
             );
 
-            var result = await executor.Process(new ExternalTask
+            await executor.Process(new ExternalTask
             {
                 Id = "1",
                 TopicName = "testTopic",
@@ -51,9 +51,10 @@ namespace Camunda.Worker.Core
                 Variables = new Dictionary<string, Variable>()
             }, CancellationToken.None);
 
-            var executionResult = Assert.IsAssignableFrom<CompleteResult>(result);
-            Assert.True(executionResult.Variables.TryGetValue("DONE", out var resultVariable));
-            Assert.True(Assert.IsType<bool>(resultVariable.Value));
+            handlerMock.Verify(
+                handler => handler.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()),
+                Times.Once()
+            );
         }
     }
 }
