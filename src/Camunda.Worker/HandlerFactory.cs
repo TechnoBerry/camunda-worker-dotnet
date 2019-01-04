@@ -5,10 +5,7 @@
 using System;
 using Camunda.Worker.Execution;
 
-namespace Camunda.Worker.Core
+namespace Camunda.Worker
 {
-    public interface IHandlerFactoryProvider
-    {
-        HandlerFactory GetHandlerFactory(string topicName);
-    }
+    public delegate IExternalTaskHandler HandlerFactory(IServiceProvider provider);
 }

@@ -10,14 +10,14 @@ namespace Camunda.Worker
 {
     public sealed class HandlerDescriptor
     {
-        public HandlerDescriptor(string topicName, Func<IServiceProvider, IExternalTaskHandler> factory)
+        public HandlerDescriptor(string topicName, HandlerFactory factory)
         {
             TopicName = topicName ?? throw new ArgumentNullException(nameof(topicName));
             Factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         public string TopicName { get; }
-        public Func<IServiceProvider, IExternalTaskHandler> Factory { get; }
+        public HandlerFactory Factory { get; }
         public bool LocalVariables { get; set; }
         public IEnumerable<string> Variables { get; set; }
     }

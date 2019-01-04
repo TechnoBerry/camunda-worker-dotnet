@@ -19,7 +19,7 @@ namespace Camunda.Worker.Core
                 .ToDictionary(descriptor => descriptor.TopicName);
         }
 
-        public Func<IServiceProvider, IExternalTaskHandler> GetHandlerFactory(string topicName)
+        public HandlerFactory GetHandlerFactory(string topicName)
         {
             if (_descriptors.TryGetValue(topicName, out var descriptor))
             {
