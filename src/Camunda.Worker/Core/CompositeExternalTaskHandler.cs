@@ -42,7 +42,17 @@ namespace Camunda.Worker.Core
                 var handler = handlerFactory(scope.ServiceProvider);
 
                 _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
-                var result = await handler.ProcessSafe(externalTask, cancellationToken);
+
+                IExecutionResult result;
+                try
+                {
+                    result = await handler.Process(externalTask, cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    result = new FailureResult(e);
+                }
+
                 _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
 
                 return result;
