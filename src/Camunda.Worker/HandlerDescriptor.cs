@@ -4,12 +4,13 @@
 
 using System;
 using System.Collections.Generic;
-using Camunda.Worker.Execution;
 
 namespace Camunda.Worker
 {
     public sealed class HandlerDescriptor
     {
+        private int _lockDuration = 5_000;
+
         public HandlerDescriptor(string topicName, HandlerFactory factory)
         {
             TopicName = topicName ?? throw new ArgumentNullException(nameof(topicName));
@@ -17,8 +18,25 @@ namespace Camunda.Worker
         }
 
         public string TopicName { get; }
+
         public HandlerFactory Factory { get; }
+
         public bool LocalVariables { get; set; }
+
         public IEnumerable<string> Variables { get; set; }
+
+        public int LockDuration
+        {
+            get => _lockDuration;
+            set
+            {
+                if (value < 5_000)
+                {
+                    throw new ArgumentException("'LockDuration' must be greater than or equal to 5000");
+                }
+
+                _lockDuration = value;
+            }
+        }
     }
 }

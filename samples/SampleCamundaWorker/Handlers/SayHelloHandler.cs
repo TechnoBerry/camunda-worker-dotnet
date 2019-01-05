@@ -10,7 +10,7 @@ using Camunda.Worker.Execution;
 
 namespace SampleCamundaWorker.Handlers
 {
-    [HandlerTopic("sayHello")]
+    [HandlerTopic("sayHello", LockDuration = 10000)]
     [HandlerVariables("USERNAME")]
     public class SayHelloHandler : IExternalTaskHandler
     {

@@ -40,7 +40,7 @@ namespace Camunda.Worker
                 .Select(descriptor => new FetchAndLockRequest.Topic
                 {
                     TopicName = descriptor.TopicName,
-                    LockDuration = 60_000,
+                    LockDuration = descriptor.LockDuration,
                     LocalVariables = descriptor.LocalVariables,
                     Variables = descriptor.Variables
                 });

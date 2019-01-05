@@ -33,17 +33,19 @@ namespace Camunda.Worker.Extensions
             where T : class, IExternalTaskHandler
         {
             var handlerType = typeof(T);
-            
+
             return handlerType.GetCustomAttributes<HandlerTopicAttribute>()
                 .Select(attribute =>
                 {
-                    var descriptor = new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>);
-
                     var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
 
-                    descriptor.LocalVariables = variablesAttribute?.LocalVariables ?? false;
-                    descriptor.Variables = variablesAttribute?.Variables?.ToList();
-                    
+                    var descriptor = new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>)
+                    {
+                        LockDuration = attribute.LockDuration,
+                        LocalVariables = variablesAttribute?.LocalVariables ?? false,
+                        Variables = variablesAttribute?.Variables?.ToList()
+                    };
+
                     return descriptor;
                 });
         }
