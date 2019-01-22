@@ -4,11 +4,10 @@
 
 using System;
 using System.Linq;
-using Camunda.Worker.Execution;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker.Core
+namespace Camunda.Worker.Execution
 {
     public class DefaultHandlerFactoryProviderTest
     {

@@ -5,13 +5,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Camunda.Worker.Core
+namespace Camunda.Worker.Execution
 {
-    public class CompositeExternalTaskHandler : IExternalTaskHandler
+    public sealed class CompositeExternalTaskHandler : IExternalTaskHandler
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHandlerFactoryProvider _handlerFactoryProvider;
