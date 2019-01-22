@@ -3,9 +3,8 @@
 
 
 using System;
-using Camunda.Worker.Execution;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public delegate IExternalTaskHandler HandlerFactory(IServiceProvider provider);
 }

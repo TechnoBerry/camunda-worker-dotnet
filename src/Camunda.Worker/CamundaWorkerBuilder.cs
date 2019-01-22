@@ -3,6 +3,7 @@
 
 
 using System;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker

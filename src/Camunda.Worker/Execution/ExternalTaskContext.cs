@@ -4,7 +4,7 @@
 
 using Camunda.Worker.Api;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public class ExternalTaskContext
     {
