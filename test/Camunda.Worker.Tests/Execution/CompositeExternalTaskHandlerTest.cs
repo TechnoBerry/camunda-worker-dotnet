@@ -38,8 +38,7 @@ namespace Camunda.Worker.Execution
 
             var executor = new CompositeExternalTaskHandler(
                 scopeFactoryMock.Object,
-                handlerFactoryProviderMock.Object,
-                new NullLogger<CompositeExternalTaskHandler>()
+                handlerFactoryProviderMock.Object
             );
 
             await executor.Process(new ExternalTask

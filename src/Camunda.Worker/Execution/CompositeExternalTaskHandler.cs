@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Camunda.Worker.Execution
 {
@@ -18,11 +19,11 @@ namespace Camunda.Worker.Execution
 
         public CompositeExternalTaskHandler(IServiceScopeFactory scopeFactory,
             IHandlerFactoryProvider handlerFactoryProvider,
-            ILogger<CompositeExternalTaskHandler> logger)
+            ILogger<CompositeExternalTaskHandler> logger = null)
         {
             _scopeFactory = scopeFactory;
             _handlerFactoryProvider = handlerFactoryProvider;
-            _logger = logger;
+            _logger = logger ?? new NullLogger<CompositeExternalTaskHandler>();
         }
 
         public async Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken)
