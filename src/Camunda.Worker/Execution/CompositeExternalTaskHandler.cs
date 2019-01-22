@@ -33,9 +33,7 @@ namespace Camunda.Worker.Execution
                 throw new ArgumentNullException(nameof(externalTask));
             }
 
-            var topicName = externalTask.TopicName;
-
-            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(topicName);
+            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(externalTask);
 
             using (var scope = _scopeFactory.CreateScope())
             {

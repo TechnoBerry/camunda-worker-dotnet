@@ -6,6 +6,6 @@ namespace Camunda.Worker.Execution
 {
     public interface IHandlerFactoryProvider
     {
-        HandlerFactory GetHandlerFactory(string topicName);
+        HandlerFactory GetHandlerFactory(ExternalTask externalTask);
     }
 }

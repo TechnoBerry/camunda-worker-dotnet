@@ -27,8 +27,8 @@ namespace Camunda.Worker.Execution
 
             var handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
             var handlerMock = new Mock<IExternalTaskHandler>();
-            handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory("testTopic"))
-                .Returns((string topic) => provider => handlerMock.Object);
+            handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory(It.IsAny<ExternalTask>()))
+                .Returns(provider => handlerMock.Object);
 
             handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>

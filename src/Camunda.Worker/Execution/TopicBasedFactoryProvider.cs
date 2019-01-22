@@ -8,17 +8,29 @@ using System.Linq;
 
 namespace Camunda.Worker.Execution
 {
-    public class DefaultHandlerFactoryProvider : IHandlerFactoryProvider
+    public class TopicBasedFactoryProvider : IHandlerFactoryProvider
     {
         private readonly IReadOnlyDictionary<string, HandlerDescriptor> _descriptors;
 
-        public DefaultHandlerFactoryProvider(IEnumerable<HandlerDescriptor> descriptors)
+        public TopicBasedFactoryProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
             _descriptors = descriptors
                 .ToDictionary(descriptor => descriptor.TopicName);
         }
 
-        public HandlerFactory GetHandlerFactory(string topicName)
+        public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
+        {
+            if (externalTask == null)
+            {
+                throw new ArgumentNullException(nameof(externalTask));
+            }
+
+            var topicName = externalTask.TopicName;
+
+            return GetHandlerFactoryByTopicName(topicName);
+        }
+
+        private HandlerFactory GetHandlerFactoryByTopicName(string topicName)
         {
             if (_descriptors.TryGetValue(topicName, out var descriptor))
             {
