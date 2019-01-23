@@ -30,7 +30,7 @@ namespace Camunda.Worker.Execution
             return GetHandlerFactoryByTopicName(topicName);
         }
 
-        private HandlerFactory GetHandlerFactoryByTopicName(string topicName)
+        protected virtual HandlerFactory GetHandlerFactoryByTopicName(string topicName)
         {
             if (_descriptors.TryGetValue(topicName, out var descriptor))
             {
