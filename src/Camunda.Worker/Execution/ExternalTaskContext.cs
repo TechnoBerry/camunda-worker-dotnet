@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using Camunda.Worker.Api;
 
 namespace Camunda.Worker.Execution
@@ -11,11 +12,11 @@ namespace Camunda.Worker.Execution
         public ExternalTaskContext(ExternalTask externalTask,
             ICamundaApiClient camundaApiClient)
         {
-            ExternalTask = externalTask;
-            CamundaApiClient = camundaApiClient;
+            ExternalTask = externalTask ?? throw new ArgumentNullException(nameof(externalTask));
+            CamundaApiClient = camundaApiClient ?? throw new ArgumentNullException(nameof(camundaApiClient));
         }
 
-        public ExternalTask ExternalTask { get; set; }
-        public ICamundaApiClient CamundaApiClient { get; set; }
+        public ExternalTask ExternalTask { get; }
+        public ICamundaApiClient CamundaApiClient { get; }
     }
 }
