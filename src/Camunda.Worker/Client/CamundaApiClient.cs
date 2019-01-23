@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace Camunda.Worker.Api
+namespace Camunda.Worker.Client
 {
     public class CamundaApiClient : ICamundaApiClient, IDisposable
     {

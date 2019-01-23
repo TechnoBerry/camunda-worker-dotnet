@@ -5,7 +5,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Api;
+using Camunda.Worker.Client;
 
 namespace Camunda.Worker.Execution
 {

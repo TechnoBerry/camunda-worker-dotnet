@@ -3,7 +3,7 @@
 
 
 using System;
-using Camunda.Worker.Api;
+using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

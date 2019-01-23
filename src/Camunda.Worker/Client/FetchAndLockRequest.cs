@@ -5,7 +5,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Camunda.Worker.Api
+namespace Camunda.Worker.Client
 {
     public class FetchAndLockRequest
     {

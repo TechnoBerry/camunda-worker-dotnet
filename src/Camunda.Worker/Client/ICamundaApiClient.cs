@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker.Api
+namespace Camunda.Worker.Client
 {
     public interface ICamundaApiClient
     {

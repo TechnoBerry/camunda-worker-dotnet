@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Camunda.Worker.Api
+namespace Camunda.Worker.Client
 {
     public class CompleteRequest
     {

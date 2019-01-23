@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker.Api
+namespace Camunda.Worker.Client
 {
     public class CamundaApiClientTest
     {

@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Api;
+using Camunda.Worker.Client;
 using Moq;
 using Xunit;
 
