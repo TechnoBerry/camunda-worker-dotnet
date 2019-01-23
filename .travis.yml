@@ -5,9 +5,17 @@ dotnet: 2.1.403
 
 script:
   - dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+  - dotnet pack -c Release ./src/Camunda.Worker/Camunda.Worker.csproj
 
 after_script:
   - bash <(curl -s https://codecov.io/bash) -f ./test/Camunda.Worker.Tests/coverage.opencover.xml
 
 notifications:
   email: false
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: dotnet nuget push ./src/Camunda.Worker/bin/Release/Camunda.Worker.*.nupkg --api-key $NUGET_API_KEY
+  on:
+    tags: true
