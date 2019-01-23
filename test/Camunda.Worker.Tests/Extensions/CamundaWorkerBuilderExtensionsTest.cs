@@ -23,7 +23,7 @@ namespace Camunda.Worker.Extensions
             var savedDescriptors = new List<HandlerDescriptor>();
 
             builderMock
-                .Setup(builder => builder.Add(It.IsAny<HandlerDescriptor>()))
+                .Setup(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()))
                 .Callback((HandlerDescriptor descriptor) => savedDescriptors.Add(descriptor))
                 .Returns(builderMock.Object);
 
@@ -31,7 +31,7 @@ namespace Camunda.Worker.Extensions
 
             builderMock.Object.AddHandler<HandlerWithTopics>();
 
-            builderMock.Verify(builder => builder.Add(It.IsAny<HandlerDescriptor>()), Times.Exactly(2));
+            builderMock.Verify(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()), Times.Exactly(2));
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Scoped &&
                                            d.ServiceType == typeof(HandlerWithTopics));
 

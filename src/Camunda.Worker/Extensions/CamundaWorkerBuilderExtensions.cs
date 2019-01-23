@@ -26,7 +26,7 @@ namespace Camunda.Worker.Extensions
 
             var handlerDescriptors = MakeDescriptors<T>();
 
-            return handlerDescriptors.Aggregate(builder, (acc, descriptor) => acc.Add(descriptor));
+            return handlerDescriptors.Aggregate(builder, (acc, descriptor) => acc.AddHandlerDescriptor(descriptor));
         }
 
         private static IEnumerable<HandlerDescriptor> MakeDescriptors<T>()

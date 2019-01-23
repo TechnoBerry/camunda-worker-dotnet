@@ -20,7 +20,7 @@ namespace Camunda.Worker
 
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.Add(new HandlerDescriptor("testTopic", provider => handlerMock.Object));
+            builder.AddHandlerDescriptor(new HandlerDescriptor("testTopic", provider => handlerMock.Object));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ImplementationInstance != null);
@@ -32,7 +32,7 @@ namespace Camunda.Worker
             var services = new ServiceCollection();
             var builder = new CamundaWorkerBuilder(services);
 
-            Assert.Throws<ArgumentNullException>(() => builder.Add(null));
+            Assert.Throws<ArgumentNullException>(() => builder.AddHandlerDescriptor(null));
         }
     }
 }

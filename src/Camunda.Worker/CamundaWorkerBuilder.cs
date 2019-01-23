@@ -17,7 +17,7 @@ namespace Camunda.Worker
 
         public IServiceCollection Services { get; }
 
-        public ICamundaWorkerBuilder Add(HandlerDescriptor descriptor)
+        public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
         {
             if (descriptor == null)
             {
