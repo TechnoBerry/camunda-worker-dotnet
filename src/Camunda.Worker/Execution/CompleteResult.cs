@@ -9,7 +9,7 @@ using Camunda.Worker.Client;
 
 namespace Camunda.Worker.Execution
 {
-    public class CompleteResult : IExecutionResult
+    public sealed class CompleteResult : IExecutionResult
     {
         public IDictionary<string, Variable> Variables { get; }
 

@@ -9,7 +9,7 @@ using Camunda.Worker.Client;
 
 namespace Camunda.Worker.Execution
 {
-    public class BpmnErrorResult : IExecutionResult
+    public sealed class BpmnErrorResult : IExecutionResult
     {
         public string ErrorCode { get; }
         public string ErrorMessage { get; }
