@@ -17,6 +17,13 @@ namespace Camunda.Worker
 
         public IServiceCollection Services { get; }
 
+        public ICamundaWorkerBuilder AddFactoryProvider<TProvider>() where TProvider : class, IHandlerFactoryProvider
+        {
+            Services.AddTransient<IHandlerFactoryProvider, TProvider>();
+
+            return this;
+        }
+
         public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
         {
             if (descriptor == null)

@@ -34,5 +34,26 @@ namespace Camunda.Worker
 
             Assert.Throws<ArgumentNullException>(() => builder.AddHandlerDescriptor(null));
         }
+
+        [Fact]
+        public void TestAddFactoryProvider()
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            builder.AddFactoryProvider<HandlerFactoryProvider>();
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+                                           d.ServiceType == typeof(IHandlerFactoryProvider) &&
+                                           d.ImplementationType == typeof(HandlerFactoryProvider));
+        }
+
+        private class HandlerFactoryProvider : IHandlerFactoryProvider
+        {
+            public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 }
