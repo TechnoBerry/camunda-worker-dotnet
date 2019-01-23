@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Alexey Malinin</Authors>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
     <PackageTags>camunda;worker;external</PackageTags>
     <PackageProjectUrl>https://github.com/AMalininHere/camunda-worker-dotnet</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/AMalininHere/camunda-worker-dotnet/blob/master/LICENSE</PackageLicenseUrl>
