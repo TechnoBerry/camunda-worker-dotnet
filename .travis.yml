@@ -16,6 +16,6 @@ notifications:
 deploy:
   skip_cleanup: true
   provider: script
-  script: dotnet nuget push ./src/Camunda.Worker/bin/Release/Camunda.Worker.*.nupkg --api-key $NUGET_API_KEY
+  script: dotnet nuget push ./src/Camunda.Worker/bin/Release/Camunda.Worker.*.nupkg -s nuget.org --api-key $NUGET_API_KEY
   on:
     tags: true
