@@ -11,12 +11,16 @@ namespace Camunda.Worker.Execution
 {
     public sealed class CompleteResult : IExecutionResult
     {
-        public IDictionary<string, Variable> Variables { get; }
-
-        public CompleteResult(IDictionary<string, Variable> variables)
+        public CompleteResult(IDictionary<string, Variable> variables,
+            IDictionary<string, Variable> localVariables = null)
         {
             Variables = variables ?? new Dictionary<string, Variable>();
+            LocalVariables = localVariables ?? new Dictionary<string, Variable>();
         }
+
+        public IDictionary<string, Variable> Variables { get; }
+
+        public IDictionary<string, Variable> LocalVariables { get; }
 
         public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
         {
@@ -27,7 +31,8 @@ namespace Camunda.Worker.Execution
             await client.Complete(taskId, new CompleteRequest
             {
                 WorkerId = workerId,
-                Variables = Variables
+                Variables = Variables,
+                LocalVariables = LocalVariables
             }, cancellationToken);
         }
     }
