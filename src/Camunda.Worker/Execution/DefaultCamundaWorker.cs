@@ -81,12 +81,20 @@ namespace Camunda.Worker.Execution
             catch (Exception e)
             {
                 _logger.LogError(e, "Failed receiving of external tasks");
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    await Task.Delay(10_000);
-                }
-
+                await Wait(10_000, cancellationToken);
                 return null;
+            }
+        }
+
+        private static async Task Wait(int seconds, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await Task.Delay(seconds, cancellationToken);
+            }
+            catch (Exception)
+            {
+                // ignored
             }
         }
     }
