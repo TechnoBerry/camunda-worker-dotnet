@@ -30,7 +30,7 @@ namespace Camunda.Worker.Execution
             handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory(It.IsAny<ExternalTask>()))
                 .Returns(provider => handlerMock.Object);
 
-            handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
+            handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
                 .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>
                 {
                     ["DONE"] = new Variable(true)
@@ -47,10 +47,10 @@ namespace Camunda.Worker.Execution
                 TopicName = "testTopic",
                 WorkerId = "testWorker",
                 Variables = new Dictionary<string, Variable>()
-            }, CancellationToken.None);
+            });
 
             handlerMock.Verify(
-                handler => handler.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()),
+                handler => handler.Process(It.IsAny<ExternalTask>()),
                 Times.Once()
             );
         }

@@ -67,7 +67,7 @@ namespace Camunda.Worker
                 .Returns(Task.CompletedTask);
 
             _handlerMock
-                .Setup(executor => executor.Process(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
+                .Setup(executor => executor.Process(It.IsAny<ExternalTask>()))
                 .ReturnsAsync(mockResult.Object);
 
             var worker = CreateWorker();

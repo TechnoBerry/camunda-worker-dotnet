@@ -9,6 +9,6 @@ namespace Camunda.Worker.Execution
 {
     public interface IExternalTaskHandler
     {
-        Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken);
+        Task<IExecutionResult> Process(ExternalTask externalTask);
     }
 }

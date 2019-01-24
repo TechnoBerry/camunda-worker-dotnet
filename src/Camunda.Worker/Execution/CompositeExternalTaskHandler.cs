@@ -26,7 +26,7 @@ namespace Camunda.Worker.Execution
             _logger = logger ?? new NullLogger<CompositeExternalTaskHandler>();
         }
 
-        public async Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken)
+        public async Task<IExecutionResult> Process(ExternalTask externalTask)
         {
             if (externalTask == null)
             {
@@ -44,7 +44,7 @@ namespace Camunda.Worker.Execution
                 IExecutionResult result;
                 try
                 {
-                    result = await handler.Process(externalTask, cancellationToken);
+                    result = await handler.Process(externalTask);
                 }
                 catch (Exception e)
                 {

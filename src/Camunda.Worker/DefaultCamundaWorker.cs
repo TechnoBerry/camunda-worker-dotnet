@@ -56,7 +56,7 @@ namespace Camunda.Worker
 
                 var context = new ExternalTaskContext(externalTask, _camundaApiClient);
 
-                var result = await _handler.Process(externalTask, cancellationToken);
+                var result = await _handler.Process(externalTask);
 
                 await result.ExecuteResult(context, cancellationToken);
             }

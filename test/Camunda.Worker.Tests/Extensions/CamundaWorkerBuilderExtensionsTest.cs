@@ -47,8 +47,7 @@ namespace Camunda.Worker.Extensions
         [HandlerVariables("testVariable", LocalVariables = true)]
         private class HandlerWithTopics : IExternalTaskHandler
         {
-            public Task<IExecutionResult> Process(ExternalTask externalTask,
-                CancellationToken cancellationToken)
+            public Task<IExecutionResult> Process(ExternalTask externalTask)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
             }

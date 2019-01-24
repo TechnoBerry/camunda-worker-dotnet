@@ -3,7 +3,6 @@
 
 
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker;
 using Camunda.Worker.Execution;
@@ -14,11 +13,11 @@ namespace SampleCamundaWorker.Handlers
     [HandlerVariables("USERNAME")]
     public class SayHelloHandler : IExternalTaskHandler
     {
-        public async Task<IExecutionResult> Process(ExternalTask externalTask, CancellationToken cancellationToken)
+        public async Task<IExecutionResult> Process(ExternalTask externalTask)
         {
             var username = externalTask.Variables["USERNAME"].Value;
 
-            await Task.Delay(1000, cancellationToken);
+            await Task.Delay(1000);
 
             return new CompleteResult(new Dictionary<string, Variable>
             {
