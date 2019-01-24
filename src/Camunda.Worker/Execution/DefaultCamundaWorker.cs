@@ -80,7 +80,7 @@ namespace Camunda.Worker.Execution
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Failed receiving of external tasks");
+                _logger.LogError("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await Wait(10_000, cancellationToken);
                 return null;
             }
