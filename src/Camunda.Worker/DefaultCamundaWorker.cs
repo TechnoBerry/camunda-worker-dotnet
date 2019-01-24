@@ -16,13 +16,13 @@ namespace Camunda.Worker
     public class DefaultCamundaWorker : ICamundaWorker
     {
         private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
-        private readonly IExternalTaskHandler _handler;
+        private readonly IGeneralExternalTaskHandler _handler;
         private readonly CamundaWorkerOptions _options;
         private readonly IReadOnlyList<FetchAndLockRequest.Topic> _topics;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
-            IExternalTaskHandler handler,
+            IGeneralExternalTaskHandler handler,
             IOptions<CamundaWorkerOptions> options,
             IEnumerable<HandlerDescriptor> handlerDescriptors,
             ILogger<DefaultCamundaWorker> logger)

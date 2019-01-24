@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class CompositeExternalTaskHandlerTest
+    public class GeneralExternalTaskHandlerTest
     {
         [Fact]
         public async Task TestExecute()
@@ -36,7 +36,7 @@ namespace Camunda.Worker.Execution
                     ["DONE"] = new Variable(true)
                 }));
 
-            var executor = new CompositeExternalTaskHandler(
+            var executor = new GeneralExternalTaskHandler(
                 scopeFactoryMock.Object,
                 handlerFactoryProviderMock.Object
             );

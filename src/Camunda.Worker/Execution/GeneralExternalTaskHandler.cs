@@ -11,19 +11,19 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Camunda.Worker.Execution
 {
-    public sealed class CompositeExternalTaskHandler : IExternalTaskHandler
+    public sealed class GeneralExternalTaskHandler : IGeneralExternalTaskHandler
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHandlerFactoryProvider _handlerFactoryProvider;
-        private readonly ILogger<CompositeExternalTaskHandler> _logger;
+        private readonly ILogger<GeneralExternalTaskHandler> _logger;
 
-        public CompositeExternalTaskHandler(IServiceScopeFactory scopeFactory,
+        public GeneralExternalTaskHandler(IServiceScopeFactory scopeFactory,
             IHandlerFactoryProvider handlerFactoryProvider,
-            ILogger<CompositeExternalTaskHandler> logger = null)
+            ILogger<GeneralExternalTaskHandler> logger = null)
         {
             _scopeFactory = scopeFactory;
             _handlerFactoryProvider = handlerFactoryProvider;
-            _logger = logger ?? new NullLogger<CompositeExternalTaskHandler>();
+            _logger = logger ?? new NullLogger<GeneralExternalTaskHandler>();
         }
 
         public async Task<IExecutionResult> Process(ExternalTask externalTask)

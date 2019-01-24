@@ -19,7 +19,7 @@ namespace Camunda.Worker
     public class DefaultCamundaWorkerTest
     {
         private readonly Mock<IExternalTaskCamundaClient> _apiClientMock = new Mock<IExternalTaskCamundaClient>();
-        private readonly Mock<IExternalTaskHandler> _handlerMock = new Mock<IExternalTaskHandler>();
+        private readonly Mock<IGeneralExternalTaskHandler> _handlerMock = new Mock<IGeneralExternalTaskHandler>();
 
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
