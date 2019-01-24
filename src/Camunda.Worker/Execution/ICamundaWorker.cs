@@ -5,7 +5,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public interface ICamundaWorker
     {

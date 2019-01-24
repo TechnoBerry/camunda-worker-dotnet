@@ -8,13 +8,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Camunda.Worker.Execution;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public class DefaultCamundaWorkerTest
     {

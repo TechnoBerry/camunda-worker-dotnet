@@ -8,11 +8,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Camunda.Worker.Execution;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public class DefaultCamundaWorker : ICamundaWorker
     {
