@@ -26,6 +26,7 @@ namespace Camunda.Worker
                 });
 
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
+            services.AddHostedService<WorkerHostedService>();
 
             return services.AddCamundaWorkerCore();
         }
