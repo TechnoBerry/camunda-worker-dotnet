@@ -1,7 +1,8 @@
 language: csharp
 
 mono: none
-dotnet: 2.2.103
+dotnet: 2.2
+dist: xenial
 
 script:
   - dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
