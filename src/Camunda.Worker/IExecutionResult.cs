@@ -5,10 +5,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
-    public interface IExternalTaskHandler
+    public interface IExecutionResult
     {
-        Task<IExecutionResult> Process(ExternalTask externalTask);
+        Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken);
     }
 }

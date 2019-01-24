@@ -5,7 +5,7 @@
 using System;
 using Camunda.Worker.Client;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
     public class ExternalTaskContext
     {

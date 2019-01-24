@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Camunda.Worker;
-using Camunda.Worker.Execution;
 
 namespace SampleCamundaWorker.Handlers
 {

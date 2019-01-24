@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class HandlerVariablesAttribute : Attribute

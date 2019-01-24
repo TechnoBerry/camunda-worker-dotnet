@@ -9,7 +9,7 @@ using Camunda.Worker.Client;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
     public class CompleteResultTest
     {

@@ -2,13 +2,12 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
-    public interface IExecutionResult
+    public interface IExternalTaskHandler
     {
-        Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken);
+        Task<IExecutionResult> Process(ExternalTask externalTask);
     }
 }

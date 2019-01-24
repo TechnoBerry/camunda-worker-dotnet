@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,9 +9,9 @@ using Camunda.Worker.Client;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
-    public class FailureResultTest
+    public class BpmnErrorResultTest
     {
         private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
 
@@ -27,12 +26,12 @@ namespace Camunda.Worker.Execution
                 Variables = new Dictionary<string, Variable>()
             };
 
-            ReportFailureRequest calledRequest = null;
+            BpmnErrorRequest calledRequest = null;
 
             _clientMock
                 .Setup(client =>
-                    client.ReportFailure("testTask", It.IsAny<ReportFailureRequest>(), CancellationToken.None))
-                .Callback((string taskId, ReportFailureRequest request, CancellationToken ct) =>
+                    client.ReportBpmnError("testTask", It.IsAny<BpmnErrorRequest>(), CancellationToken.None))
+                .Callback((string taskId, BpmnErrorRequest request, CancellationToken ct) =>
                 {
                     calledRequest = request;
                 })
@@ -40,12 +39,12 @@ namespace Camunda.Worker.Execution
 
             var context = new ExternalTaskContext(externalTask, _clientMock.Object);
 
-            var result = new FailureResult(new Exception("Message"));
+            var result = new BpmnErrorResult("TEST_CODE", "Test message");
 
             await result.ExecuteResult(context, CancellationToken.None);
 
             _clientMock.Verify(
-                client => client.ReportFailure("testTask", It.IsAny<ReportFailureRequest>(), CancellationToken.None),
+                client => client.ReportBpmnError("testTask", It.IsAny<BpmnErrorRequest>(), CancellationToken.None),
                 Times.Once()
             );
             _clientMock.VerifyNoOtherCalls();

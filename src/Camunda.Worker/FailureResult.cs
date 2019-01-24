@@ -2,24 +2,23 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Collections.Generic;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Camunda.Worker.Execution;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
-    public sealed class BpmnErrorResult : IExecutionResult
+    public sealed class FailureResult : IExecutionResult
     {
-        public string ErrorCode { get; }
         public string ErrorMessage { get; }
-        public IDictionary<string, Variable> Variables { get; }
+        public string ErrorDetails { get; }
 
-        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable> variables = null)
+        public FailureResult(Exception ex)
         {
-            ErrorCode = errorCode;
-            ErrorMessage = errorMessage;
-            Variables = variables ?? new Dictionary<string, Variable>();
+            ErrorMessage = ex.Message;
+            ErrorDetails = ex.StackTrace;
         }
 
         public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
@@ -28,12 +27,11 @@ namespace Camunda.Worker.Execution
             var taskId = context.ExternalTask.Id;
             var workerId = context.ExternalTask.WorkerId;
 
-            await client.ReportBpmnError(taskId, new BpmnErrorRequest
+            await client.ReportFailure(taskId, new ReportFailureRequest
             {
                 WorkerId = workerId,
-                ErrorCode = ErrorCode,
                 ErrorMessage = ErrorMessage,
-                Variables = Variables
+                ErrorDetails = ErrorDetails
             }, cancellationToken);
         }
     }

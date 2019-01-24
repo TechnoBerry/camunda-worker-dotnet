@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker
 {
     public sealed class CompleteResult : IExecutionResult
     {
