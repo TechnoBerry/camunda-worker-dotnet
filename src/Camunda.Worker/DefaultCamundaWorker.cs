@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -64,17 +65,30 @@ namespace Camunda.Worker
 
         private async Task<ExternalTask> SelectExternalTask(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("Waiting for external task");
-            var externalTasks = await _externalTaskCamundaClient.FetchAndLock(new FetchAndLockRequest
+            try
             {
-                WorkerId = _options.WorkerId,
-                MaxTasks = 1,
-                UsePriority = true,
-                AsyncResponseTimeout = 10_000,
-                Topics = _topics
-            }, cancellationToken);
+                _logger.LogInformation("Waiting for external task");
+                var externalTasks = await _externalTaskCamundaClient.FetchAndLock(new FetchAndLockRequest
+                {
+                    WorkerId = _options.WorkerId,
+                    MaxTasks = 1,
+                    UsePriority = true,
+                    AsyncResponseTimeout = 10_000,
+                    Topics = _topics
+                }, cancellationToken);
 
-            return externalTasks.FirstOrDefault();
+                return externalTasks.FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed receiving of external tasks");
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(10_000);
+                }
+
+                return null;
+            }
         }
     }
 }
