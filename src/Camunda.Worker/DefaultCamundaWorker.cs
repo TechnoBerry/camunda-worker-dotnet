@@ -15,19 +15,19 @@ namespace Camunda.Worker
 {
     public class DefaultCamundaWorker : ICamundaWorker
     {
-        private readonly ICamundaApiClient _camundaApiClient;
+        private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
         private readonly IExternalTaskHandler _handler;
         private readonly CamundaWorkerOptions _options;
         private readonly IReadOnlyList<FetchAndLockRequest.Topic> _topics;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
-        public DefaultCamundaWorker(ICamundaApiClient camundaApiClient,
+        public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
             IExternalTaskHandler handler,
             IOptions<CamundaWorkerOptions> options,
             IEnumerable<HandlerDescriptor> handlerDescriptors,
             ILogger<DefaultCamundaWorker> logger)
         {
-            _camundaApiClient = camundaApiClient;
+            _externalTaskCamundaClient = externalTaskCamundaClient;
             _handler = handler;
             _options = options.Value;
             _topics = ExtractTopics(handlerDescriptors).ToList();
@@ -54,7 +54,7 @@ namespace Camunda.Worker
 
                 if (externalTask == null) continue;
 
-                var context = new ExternalTaskContext(externalTask, _camundaApiClient);
+                var context = new ExternalTaskContext(externalTask, _externalTaskCamundaClient);
 
                 var result = await _handler.Process(externalTask);
 
@@ -65,7 +65,7 @@ namespace Camunda.Worker
         private async Task<ExternalTask> SelectExternalTask(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Waiting for external task");
-            var externalTasks = await _camundaApiClient.FetchAndLock(new FetchAndLockRequest
+            var externalTasks = await _externalTaskCamundaClient.FetchAndLock(new FetchAndLockRequest
             {
                 WorkerId = _options.WorkerId,
                 MaxTasks = 1,

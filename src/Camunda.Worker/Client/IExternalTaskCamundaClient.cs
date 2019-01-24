@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Camunda.Worker.Client
 {
-    public interface ICamundaApiClient
+    public interface IExternalTaskCamundaClient
     {
         Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request, CancellationToken cancellationToken);
 

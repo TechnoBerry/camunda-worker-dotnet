@@ -18,7 +18,7 @@ namespace Camunda.Worker
         {
             services.AddOptions<CamundaWorkerOptions>()
                 .Configure(configureDelegate);
-            services.AddHttpClient<ICamundaApiClient, CamundaApiClient>()
+            services.AddHttpClient<IExternalTaskCamundaClient, ExternalTaskCamundaClient>()
                 .ConfigureHttpClient((provider, client) =>
                 {
                     var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;

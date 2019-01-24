@@ -37,7 +37,7 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(ICamundaWorker));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(ICamundaApiClient));
+                                           d.ServiceType == typeof(IExternalTaskCamundaClient));
         }
     }
 }

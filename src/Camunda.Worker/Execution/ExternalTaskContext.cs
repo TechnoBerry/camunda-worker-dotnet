@@ -10,13 +10,13 @@ namespace Camunda.Worker.Execution
     public class ExternalTaskContext
     {
         public ExternalTaskContext(ExternalTask externalTask,
-            ICamundaApiClient camundaApiClient)
+            IExternalTaskCamundaClient externalTaskCamundaClient)
         {
             ExternalTask = externalTask ?? throw new ArgumentNullException(nameof(externalTask));
-            CamundaApiClient = camundaApiClient ?? throw new ArgumentNullException(nameof(camundaApiClient));
+            ExternalTaskCamundaClient = externalTaskCamundaClient ?? throw new ArgumentNullException(nameof(externalTaskCamundaClient));
         }
 
         public ExternalTask ExternalTask { get; }
-        public ICamundaApiClient CamundaApiClient { get; }
+        public IExternalTaskCamundaClient ExternalTaskCamundaClient { get; }
     }
 }

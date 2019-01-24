@@ -13,7 +13,7 @@ namespace Camunda.Worker.Execution
 {
     public class BpmnErrorResultTest
     {
-        private readonly Mock<ICamundaApiClient> _clientMock = new Mock<ICamundaApiClient>();
+        private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
 
         [Fact]
         public async Task TestExecuteResult()

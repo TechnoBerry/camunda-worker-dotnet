@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Camunda.Worker.Client
 {
-    public class CamundaApiClientTest
+    public class ExternalTaskCamundaClientTest
     {
         private readonly Mock<FakeMessageHandler> _handlerMock = new Mock<FakeMessageHandler> {CallBase = true};
 
@@ -150,9 +150,9 @@ namespace Camunda.Worker.Client
             }
         }
 
-        private CamundaApiClient MakeClient()
+        private ExternalTaskCamundaClient MakeClient()
         {
-            return new CamundaApiClient(
+            return new ExternalTaskCamundaClient(
                 new HttpClient(_handlerMock.Object)
                 {
                     BaseAddress = new Uri("http://test/api")

@@ -24,7 +24,7 @@ namespace Camunda.Worker.Execution
 
         public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
         {
-            var client = context.CamundaApiClient;
+            var client = context.ExternalTaskCamundaClient;
             var taskId = context.ExternalTask.Id;
             var workerId = context.ExternalTask.WorkerId;
 

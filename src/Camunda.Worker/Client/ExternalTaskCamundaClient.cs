@@ -14,14 +14,14 @@ using Newtonsoft.Json.Serialization;
 
 namespace Camunda.Worker.Client
 {
-    public class CamundaApiClient : ICamundaApiClient, IDisposable
+    public class ExternalTaskCamundaClient : IExternalTaskCamundaClient, IDisposable
     {
         private const string JsonContentType = "application/json";
         private static readonly JsonSerializerSettings SerializerSettings = MakeSerializerSettings();
 
         private readonly HttpClient _httpClient;
 
-        public CamundaApiClient(HttpClient httpClient)
+        public ExternalTaskCamundaClient(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
