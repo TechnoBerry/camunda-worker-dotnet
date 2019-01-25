@@ -18,32 +18,20 @@ namespace Camunda.Worker.Execution
         private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
         private readonly IGeneralExternalTaskHandler _handler;
         private readonly CamundaWorkerOptions _options;
-        private readonly IReadOnlyList<FetchAndLockRequest.Topic> _topics;
+        private readonly ITopicsProvider _topicsProvider;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
             IGeneralExternalTaskHandler handler,
             IOptions<CamundaWorkerOptions> options,
-            IEnumerable<HandlerDescriptor> handlerDescriptors,
+            ITopicsProvider topicsProvider,
             ILogger<DefaultCamundaWorker> logger)
         {
             _externalTaskCamundaClient = externalTaskCamundaClient;
             _handler = handler;
             _options = options.Value;
-            _topics = ExtractTopics(handlerDescriptors).ToList();
+            _topicsProvider = topicsProvider;
             _logger = logger;
-        }
-
-        private static IEnumerable<FetchAndLockRequest.Topic> ExtractTopics(IEnumerable<HandlerDescriptor> descriptors)
-        {
-            return descriptors
-                .Select(descriptor => new FetchAndLockRequest.Topic
-                {
-                    TopicName = descriptor.TopicName,
-                    LockDuration = descriptor.LockDuration,
-                    LocalVariables = descriptor.LocalVariables,
-                    Variables = descriptor.Variables
-                });
         }
 
         public async Task Run(CancellationToken cancellationToken)
@@ -73,7 +61,7 @@ namespace Camunda.Worker.Execution
                     MaxTasks = 1,
                     UsePriority = true,
                     AsyncResponseTimeout = 10_000,
-                    Topics = _topics
+                    Topics = _topicsProvider.GetTopics()
                 }, cancellationToken);
 
                 return externalTasks.FirstOrDefault();

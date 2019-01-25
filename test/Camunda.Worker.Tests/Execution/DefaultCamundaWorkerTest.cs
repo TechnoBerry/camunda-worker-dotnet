@@ -19,12 +19,19 @@ namespace Camunda.Worker.Execution
     {
         private readonly Mock<IExternalTaskCamundaClient> _apiClientMock = new Mock<IExternalTaskCamundaClient>();
         private readonly Mock<IGeneralExternalTaskHandler> _handlerMock = new Mock<IGeneralExternalTaskHandler>();
+        private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
 
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
             WorkerId = "testWorker",
             BaseUri = new Uri("http://test")
         });
+
+        public DefaultCamundaWorkerTest()
+        {
+            _topicsProviderMock.Setup(provider => provider.GetTopics())
+                .Returns(Enumerable.Empty<FetchAndLockRequest.Topic>());
+        }
 
         [Fact]
         public async Task TestRunWithoutTasks()
@@ -116,7 +123,7 @@ namespace Camunda.Worker.Execution
                 _apiClientMock.Object,
                 _handlerMock.Object,
                 _options,
-                Enumerable.Empty<HandlerDescriptor>(),
+                _topicsProviderMock.Object,
                 new NullLogger<DefaultCamundaWorker>()
             );
         }

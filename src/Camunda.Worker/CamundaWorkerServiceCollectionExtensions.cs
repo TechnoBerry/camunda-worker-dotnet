@@ -25,6 +25,7 @@ namespace Camunda.Worker
                     client.BaseAddress = options.BaseUri;
                 });
 
+            services.TryAddTransient<ITopicsProvider, DefaultTopicsProvider>();
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.AddHostedService<WorkerHostedService>();
 
