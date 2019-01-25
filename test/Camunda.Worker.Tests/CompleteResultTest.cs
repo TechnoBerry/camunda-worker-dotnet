@@ -40,7 +40,7 @@ namespace Camunda.Worker
 
             var result = new CompleteResult(new Dictionary<string, Variable>());
 
-            await result.ExecuteResult(context, CancellationToken.None);
+            await result.ExecuteResult(context);
 
             _clientMock.Verify(
                 client => client.Complete("testTask", It.IsAny<CompleteRequest>(), CancellationToken.None),

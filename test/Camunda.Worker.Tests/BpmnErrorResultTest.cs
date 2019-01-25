@@ -41,7 +41,7 @@ namespace Camunda.Worker
 
             var result = new BpmnErrorResult("TEST_CODE", "Test message");
 
-            await result.ExecuteResult(context, CancellationToken.None);
+            await result.ExecuteResult(context);
 
             _clientMock.Verify(
                 client => client.ReportBpmnError("testTask", It.IsAny<BpmnErrorRequest>(), CancellationToken.None),

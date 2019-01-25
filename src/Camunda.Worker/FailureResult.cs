@@ -6,7 +6,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Camunda.Worker.Execution;
 
 namespace Camunda.Worker
 {
@@ -21,7 +20,7 @@ namespace Camunda.Worker
             ErrorDetails = ex.StackTrace;
         }
 
-        public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
+        public async Task ExecuteResult(ExternalTaskContext context)
         {
             var client = context.ExternalTaskCamundaClient;
             var taskId = context.ExternalTask.Id;
@@ -32,7 +31,7 @@ namespace Camunda.Worker
                 WorkerId = workerId,
                 ErrorMessage = ErrorMessage,
                 ErrorDetails = ErrorDetails
-            }, cancellationToken);
+            }, CancellationToken.None);
         }
     }
 }

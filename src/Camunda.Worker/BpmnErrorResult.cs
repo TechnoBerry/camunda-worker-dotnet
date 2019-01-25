@@ -22,7 +22,7 @@ namespace Camunda.Worker
             Variables = variables ?? new Dictionary<string, Variable>();
         }
 
-        public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
+        public async Task ExecuteResult(ExternalTaskContext context)
         {
             var client = context.ExternalTaskCamundaClient;
             var taskId = context.ExternalTask.Id;
@@ -34,7 +34,7 @@ namespace Camunda.Worker
                 ErrorCode = ErrorCode,
                 ErrorMessage = ErrorMessage,
                 Variables = Variables
-            }, cancellationToken);
+            }, CancellationToken.None);
         }
     }
 }

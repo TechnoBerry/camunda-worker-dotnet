@@ -68,7 +68,7 @@ namespace Camunda.Worker.Execution
             var mockResult = new Mock<IExecutionResult>();
 
             mockResult
-                .Setup(result => result.ExecuteResult(It.IsAny<ExternalTaskContext>(), It.IsAny<CancellationToken>()))
+                .Setup(result => result.ExecuteResult(It.IsAny<ExternalTaskContext>()))
                 .Callback(cts.Cancel)
                 .Returns(Task.CompletedTask);
 

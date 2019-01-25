@@ -42,7 +42,7 @@ namespace Camunda.Worker
 
             var result = new FailureResult(new Exception("Message"));
 
-            await result.ExecuteResult(context, CancellationToken.None);
+            await result.ExecuteResult(context);
 
             _clientMock.Verify(
                 client => client.ReportFailure("testTask", It.IsAny<ReportFailureRequest>(), CancellationToken.None),

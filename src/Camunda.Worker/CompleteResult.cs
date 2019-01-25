@@ -22,7 +22,7 @@ namespace Camunda.Worker
 
         public IDictionary<string, Variable> LocalVariables { get; }
 
-        public async Task ExecuteResult(ExternalTaskContext context, CancellationToken cancellationToken)
+        public async Task ExecuteResult(ExternalTaskContext context)
         {
             var client = context.ExternalTaskCamundaClient;
             var taskId = context.ExternalTask.Id;
@@ -33,7 +33,7 @@ namespace Camunda.Worker
                 WorkerId = workerId,
                 Variables = Variables,
                 LocalVariables = LocalVariables
-            }, cancellationToken);
+            }, CancellationToken.None);
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Camunda.Worker.Execution
 
                 var result = await _handler.Process(externalTask);
 
-                await result.ExecuteResult(context, cancellationToken);
+                await result.ExecuteResult(context);
             }
         }
 
