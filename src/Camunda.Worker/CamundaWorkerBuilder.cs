@@ -24,6 +24,13 @@ namespace Camunda.Worker
             return this;
         }
 
+        public ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider
+        {
+            Services.AddTransient<ITopicsProvider, TProvider>();
+
+            return this;
+        }
+
         public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
         {
             if (descriptor == null)

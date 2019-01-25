@@ -3,6 +3,8 @@
 
 
 using System;
+using System.Collections.Generic;
+using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -48,9 +50,30 @@ namespace Camunda.Worker
                                            d.ImplementationType == typeof(HandlerFactoryProvider));
         }
 
+        [Fact]
+        public void TestAddTopicsProvider()
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            builder.AddTopicsProvider<TopicsProvider>();
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+                                           d.ServiceType == typeof(ITopicsProvider) &&
+                                           d.ImplementationType == typeof(TopicsProvider));
+        }
+
         private class HandlerFactoryProvider : IHandlerFactoryProvider
         {
             public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class TopicsProvider : ITopicsProvider
+        {
+            public IEnumerable<FetchAndLockRequest.Topic> GetTopics()
             {
                 throw new NotImplementedException();
             }
