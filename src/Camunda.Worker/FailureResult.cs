@@ -20,6 +20,12 @@ namespace Camunda.Worker
             ErrorDetails = ex.StackTrace;
         }
 
+        public FailureResult(string errorMessage, string errorDetails)
+        {
+            ErrorMessage = errorMessage ?? throw new ArgumentNullException(nameof(errorMessage));
+            ErrorDetails = errorDetails ?? throw new ArgumentNullException(nameof(errorDetails));
+        }
+
         public async Task ExecuteResult(ExternalTaskContext context)
         {
             var client = context.ExternalTaskCamundaClient;
