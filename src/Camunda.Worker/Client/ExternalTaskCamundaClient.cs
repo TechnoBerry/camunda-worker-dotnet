@@ -36,6 +36,7 @@ namespace Camunda.Worker.Client
         {
             using (var response = await SendRequest("external-task/fetchAndLock", request, cancellationToken))
             {
+                response.EnsureSuccessStatusCode();
                 return await ParseResponseContent<IList<ExternalTask>>(response.Content);
             }
         }
