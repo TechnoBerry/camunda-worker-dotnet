@@ -24,7 +24,8 @@ namespace Camunda.Worker.Execution
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
             WorkerId = "testWorker",
-            BaseUri = new Uri("http://test")
+            BaseUri = new Uri("http://test"),
+            AsyncResponseTimeout = 5_000
         });
 
         public DefaultCamundaWorkerTest()

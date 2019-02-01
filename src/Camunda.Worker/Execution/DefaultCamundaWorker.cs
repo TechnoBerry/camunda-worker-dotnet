@@ -60,7 +60,7 @@ namespace Camunda.Worker.Execution
                     WorkerId = _options.WorkerId,
                     MaxTasks = 1,
                     UsePriority = true,
-                    AsyncResponseTimeout = 10_000,
+                    AsyncResponseTimeout = _options.AsyncResponseTimeout,
                     Topics = _topicsProvider.GetTopics()
                 }, cancellationToken);
 
