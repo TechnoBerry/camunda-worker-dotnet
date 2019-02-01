@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class DefaultTopicsProviderTest
+    public class StaticTopicsProviderTest
     {
         [Fact]
         public void TestGetTopics()
@@ -26,7 +26,7 @@ namespace Camunda.Worker.Execution
                 }
             };
 
-            var topicsProvider = new DefaultTopicsProvider(descriptors);
+            var topicsProvider = new StaticTopicsProvider(descriptors);
 
             var topics = topicsProvider.GetTopics().ToList();
 
