@@ -8,35 +8,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace Camunda.Worker.Execution
 {
-    public class WorkerHostedService : IHostedService
+    public class WorkerHostedService : BackgroundService
     {
         private readonly ICamundaWorker _worker;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-
-        private Task _activeTask;
 
         public WorkerHostedService(ICamundaWorker worker)
         {
             _worker = worker;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _activeTask = _worker.Run(_cts.Token);
-
-            return Task.CompletedTask;
-        }
-
-        public async Task StopAsync(CancellationToken cancellationToken)
-        {
-            if (_activeTask == null)
-            {
-                return;
-            }
-
-            _cts.Cancel();
-
-            await Task.WhenAny(_activeTask, Task.Delay(-1, cancellationToken));
-        }
+        protected override Task ExecuteAsync(CancellationToken stoppingToken) => _worker.Run(stoppingToken);
     }
 }
