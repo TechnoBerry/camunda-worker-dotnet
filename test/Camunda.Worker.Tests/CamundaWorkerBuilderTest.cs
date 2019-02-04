@@ -4,9 +4,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Moq;
 using Xunit;
 
@@ -15,7 +17,7 @@ namespace Camunda.Worker
     public class CamundaWorkerBuilderTest
     {
         [Fact]
-        public void TestAdd()
+        public void TestAddDescriptor()
         {
             var services = new ServiceCollection();
             var handlerMock = new Mock<IExternalTaskHandler>();
@@ -29,7 +31,7 @@ namespace Camunda.Worker
         }
 
         [Fact]
-        public void TestAddNull()
+        public void TestAddNullDescriptor()
         {
             var services = new ServiceCollection();
             var builder = new CamundaWorkerBuilder(services);
@@ -61,6 +63,23 @@ namespace Camunda.Worker
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(ITopicsProvider) &&
                                            d.ImplementationType == typeof(TopicsProvider));
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(4)]
+        public void TestAddHostedServices(int count)
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            builder.AddHostedServices(count);
+
+            var countOfHostedServices = services
+                .Count(d => d.ServiceType == typeof(IHostedService) &&
+                            d.ImplementationType == typeof(WorkerHostedService));
+
+            Assert.Equal(count, countOfHostedServices);
         }
 
         private class HandlerFactoryProvider : IHandlerFactoryProvider

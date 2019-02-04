@@ -29,11 +29,6 @@ namespace Camunda.Worker
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.AddHostedService<WorkerHostedService>();
 
-            return services.AddCamundaWorkerCore();
-        }
-
-        public static ICamundaWorkerBuilder AddCamundaWorkerCore(this IServiceCollection services)
-        {
             services.TryAddTransient<IHandlerFactoryProvider, TopicBasedFactoryProvider>();
             services.TryAddTransient<IGeneralExternalTaskHandler, GeneralExternalTaskHandler>();
 

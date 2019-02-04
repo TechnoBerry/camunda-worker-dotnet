@@ -31,6 +31,21 @@ namespace Camunda.Worker
             return this;
         }
 
+        public ICamundaWorkerBuilder AddHostedServices(int count)
+        {
+            if (count < 1)
+            {
+                throw new ArgumentException("Must be greater than or equal to 1", nameof(count));
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                Services.AddHostedService<WorkerHostedService>();
+            }
+
+            return this;
+        }
+
         public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
         {
             if (descriptor == null)
