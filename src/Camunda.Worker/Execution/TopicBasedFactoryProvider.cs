@@ -20,10 +20,7 @@ namespace Camunda.Worker.Execution
 
         public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
         {
-            if (externalTask == null)
-            {
-                throw new ArgumentNullException(nameof(externalTask));
-            }
+            Guard.NotNull(externalTask, nameof(externalTask));
 
             var topicName = externalTask.TopicName;
 

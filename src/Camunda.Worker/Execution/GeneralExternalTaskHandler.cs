@@ -28,10 +28,7 @@ namespace Camunda.Worker.Execution
 
         public async Task<IExecutionResult> Process(ExternalTask externalTask)
         {
-            if (externalTask == null)
-            {
-                throw new ArgumentNullException(nameof(externalTask));
-            }
+            Guard.NotNull(externalTask, nameof(externalTask));
 
             var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(externalTask);
 
