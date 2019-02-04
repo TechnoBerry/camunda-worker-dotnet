@@ -124,8 +124,7 @@ namespace Camunda.Worker.Execution
                 _apiClientMock.Object,
                 _handlerMock.Object,
                 _options,
-                _topicsProviderMock.Object,
-                new NullLogger<DefaultCamundaWorker>()
+                _topicsProviderMock.Object
             );
         }
     }

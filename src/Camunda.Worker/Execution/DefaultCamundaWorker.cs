@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution
@@ -25,13 +26,13 @@ namespace Camunda.Worker.Execution
             IGeneralExternalTaskHandler handler,
             IOptions<CamundaWorkerOptions> options,
             ITopicsProvider topicsProvider,
-            ILogger<DefaultCamundaWorker> logger)
+            ILogger<DefaultCamundaWorker> logger = null)
         {
             _externalTaskCamundaClient = externalTaskCamundaClient;
             _handler = handler;
             _options = options.Value;
             _topicsProvider = topicsProvider;
-            _logger = logger;
+            _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
 
         public async Task Run(CancellationToken cancellationToken)
