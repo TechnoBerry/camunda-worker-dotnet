@@ -39,19 +39,18 @@ namespace Camunda.Worker.Execution
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var externalTask = await SelectExternalTask(cancellationToken);
+                var externalTasks = await SelectExternalTasks(cancellationToken);
 
-                if (externalTask == null) continue;
+                var activeAsyncTasks = externalTasks
+                    .Select(CreateContext)
+                    .Select(ExecuteInContext)
+                    .ToList();
 
-                var context = new ExternalTaskContext(externalTask, _externalTaskCamundaClient);
-
-                var result = await _handler.Process(externalTask);
-
-                await result.ExecuteResult(context);
+                await Task.WhenAll(activeAsyncTasks);
             }
         }
 
-        private async Task<ExternalTask> SelectExternalTask(CancellationToken cancellationToken)
+        private async Task<IEnumerable<ExternalTask>> SelectExternalTasks(CancellationToken cancellationToken)
         {
             try
             {
@@ -65,13 +64,13 @@ namespace Camunda.Worker.Execution
                     Topics = _topicsProvider.GetTopics()
                 }, cancellationToken);
 
-                return externalTasks.FirstOrDefault();
+                return externalTasks;
             }
             catch (Exception e)
             {
                 _logger.LogError("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await Wait(10_000, cancellationToken);
-                return null;
+                return Enumerable.Empty<ExternalTask>();
             }
         }
 
@@ -85,6 +84,16 @@ namespace Camunda.Worker.Execution
             {
                 // ignored
             }
+        }
+
+        private ExternalTaskContext CreateContext(ExternalTask externalTask) =>
+            new ExternalTaskContext(externalTask, _externalTaskCamundaClient);
+
+        private async Task ExecuteInContext(ExternalTaskContext context)
+        {
+            var result = await _handler.Process(context.ExternalTask);
+
+            await result.ExecuteResult(context);
         }
     }
 }
