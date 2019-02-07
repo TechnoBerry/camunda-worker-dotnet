@@ -4,10 +4,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
 
@@ -15,19 +13,24 @@ namespace Camunda.Worker.Execution
 {
     public class GeneralExternalTaskHandlerTest
     {
+        private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
+        private readonly Mock<IServiceScope> _scopeMock = new Mock<IServiceScope>();
+        private readonly Mock<IServiceProvider> _providerMock = new Mock<IServiceProvider>();
+
+        private readonly Mock<IHandlerFactoryProvider>
+            _handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
+
+        public GeneralExternalTaskHandlerTest()
+        {
+            _scopeFactoryMock.Setup(factory => factory.CreateScope()).Returns(_scopeMock.Object);
+            _scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(_providerMock.Object);
+        }
+
         [Fact]
         public async Task TestExecute()
         {
-            var scopeFactoryMock = new Mock<IServiceScopeFactory>();
-            var scopeMock = new Mock<IServiceScope>();
-            var providerMock = new Mock<IServiceProvider>();
-
-            scopeFactoryMock.Setup(factory => factory.CreateScope()).Returns(scopeMock.Object);
-            scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(providerMock.Object);
-
-            var handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
             var handlerMock = new Mock<IExternalTaskHandler>();
-            handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory(It.IsAny<ExternalTask>()))
+            _handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory(It.IsAny<ExternalTask>()))
                 .Returns(provider => handlerMock.Object);
 
             handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
@@ -37,8 +40,8 @@ namespace Camunda.Worker.Execution
                 }));
 
             var executor = new GeneralExternalTaskHandler(
-                scopeFactoryMock.Object,
-                handlerFactoryProviderMock.Object
+                _scopeFactoryMock.Object,
+                _handlerFactoryProviderMock.Object
             );
 
             await executor.Process(new ExternalTask
@@ -53,6 +56,17 @@ namespace Camunda.Worker.Execution
                 handler => handler.Process(It.IsAny<ExternalTask>()),
                 Times.Once()
             );
+        }
+
+        [Fact]
+        public async Task TestExecuteWithNullArg()
+        {
+            var executor = new GeneralExternalTaskHandler(
+                _scopeFactoryMock.Object,
+                _handlerFactoryProviderMock.Object
+            );
+
+            await Assert.ThrowsAsync<ArgumentNullException>(() => executor.Process(null));
         }
     }
 }
