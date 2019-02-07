@@ -13,8 +13,8 @@ namespace Camunda.Worker
 
         public HandlerDescriptor(string topicName, HandlerFactory factory)
         {
-            TopicName = topicName ?? throw new ArgumentNullException(nameof(topicName));
-            Factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            TopicName = Guard.NotNull(topicName, nameof(topicName));
+            Factory = Guard.NotNull(factory, nameof(factory));
         }
 
         public string TopicName { get; }

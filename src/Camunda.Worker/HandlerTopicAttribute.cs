@@ -13,7 +13,7 @@ namespace Camunda.Worker
 
         public HandlerTopicAttribute(string topicName)
         {
-            TopicName = topicName ?? throw new ArgumentNullException(nameof(topicName));
+            TopicName = Guard.NotNull(topicName, nameof(topicName));
         }
 
         public string TopicName { get; }

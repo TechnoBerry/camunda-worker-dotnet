@@ -12,8 +12,8 @@ namespace Camunda.Worker
         public ExternalTaskContext(ExternalTask externalTask,
             IExternalTaskCamundaClient externalTaskCamundaClient)
         {
-            ExternalTask = externalTask ?? throw new ArgumentNullException(nameof(externalTask));
-            ExternalTaskCamundaClient = externalTaskCamundaClient ?? throw new ArgumentNullException(nameof(externalTaskCamundaClient));
+            ExternalTask = Guard.NotNull(externalTask, nameof(externalTask));
+            ExternalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
         }
 
         public ExternalTask ExternalTask { get; }

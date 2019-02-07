@@ -22,8 +22,8 @@ namespace Camunda.Worker
 
         public FailureResult(string errorMessage, string errorDetails)
         {
-            ErrorMessage = errorMessage ?? throw new ArgumentNullException(nameof(errorMessage));
-            ErrorDetails = errorDetails ?? throw new ArgumentNullException(nameof(errorDetails));
+            ErrorMessage = Guard.NotNull(errorMessage, nameof(errorMessage));
+            ErrorDetails = Guard.NotNull(errorDetails, nameof(errorDetails));
         }
 
         public async Task ExecuteResult(ExternalTaskContext context)
