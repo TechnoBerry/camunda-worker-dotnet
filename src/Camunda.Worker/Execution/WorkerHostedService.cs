@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Camunda.Worker.Execution
 {
-    public class WorkerHostedService : BackgroundService
+    public sealed class WorkerHostedService : BackgroundService
     {
         private readonly ICamundaWorker _worker;
 

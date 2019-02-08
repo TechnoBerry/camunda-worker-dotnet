@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution
 {
-    public class DefaultCamundaWorker : ICamundaWorker
+    public sealed class DefaultCamundaWorker : ICamundaWorker
     {
         private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
         private readonly IGeneralExternalTaskHandler _handler;
