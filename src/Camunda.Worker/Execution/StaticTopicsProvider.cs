@@ -19,10 +19,8 @@ namespace Camunda.Worker.Execution
 
         protected virtual FetchAndLockRequest.Topic ConvertDescriptorToTopic(HandlerDescriptor descriptor)
         {
-            return new FetchAndLockRequest.Topic
+            return new FetchAndLockRequest.Topic(descriptor.TopicName, descriptor.LockDuration)
             {
-                TopicName = descriptor.TopicName,
-                LockDuration = descriptor.LockDuration,
                 LocalVariables = descriptor.LocalVariables,
                 Variables = descriptor.Variables
             };

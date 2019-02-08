@@ -38,18 +38,12 @@ namespace Camunda.Worker.Client
                         ]", Encoding.UTF8, "application/json")
                     });
 
-                var request = new FetchAndLockRequest
+                var request = new FetchAndLockRequest("testWorker", 10)
                 {
-                    WorkerId = "testWorker",
-                    MaxTasks = 10,
                     AsyncResponseTimeout = 10_000,
                     Topics = new[]
                     {
-                        new FetchAndLockRequest.Topic
-                        {
-                            TopicName = "testTopic",
-                            LockDuration = 10_000
-                        }
+                        new FetchAndLockRequest.Topic("testTopic", 10_000)
                     }
                 };
 

@@ -55,14 +55,17 @@ namespace Camunda.Worker.Execution
             try
             {
                 _logger.LogInformation("Waiting for external task");
-                var externalTasks = await _externalTaskCamundaClient.FetchAndLock(new FetchAndLockRequest
+
+                var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
                 {
-                    WorkerId = _options.WorkerId,
-                    MaxTasks = 1,
                     UsePriority = true,
                     AsyncResponseTimeout = _options.AsyncResponseTimeout,
                     Topics = _topicsProvider.GetTopics()
-                }, cancellationToken);
+                };
+
+                var externalTasks = await _externalTaskCamundaClient.FetchAndLock(
+                    fetchAndLockRequest, cancellationToken
+                );
 
                 return externalTasks;
             }

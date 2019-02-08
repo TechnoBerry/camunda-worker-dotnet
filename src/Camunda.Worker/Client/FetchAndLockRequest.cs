@@ -9,15 +9,21 @@ namespace Camunda.Worker.Client
 {
     public class FetchAndLockRequest
     {
+        public FetchAndLockRequest(string workerId, int maxTasks = 1)
+        {
+            WorkerId = Guard.NotNull(workerId, nameof(workerId));
+            MaxTasks = maxTasks;
+        }
+
         /// <summary>
         /// The id of the worker on which behalf tasks are fetched
         /// </summary>
-        public string WorkerId { get; set; }
+        public string WorkerId { get; }
 
         /// <summary>
         /// The maximum number of tasks to return
         /// </summary>
-        public int MaxTasks { get; set; }
+        public int MaxTasks { get; }
 
         /// <summary>
         /// A value, which indicates whether the task should be fetched based on its priority or arbitrarily
@@ -33,15 +39,21 @@ namespace Camunda.Worker.Client
 
         public class Topic
         {
+            public Topic(string topicName, int lockDuration)
+            {
+                TopicName = Guard.NotNull(topicName, nameof(topicName));
+                LockDuration = lockDuration;
+            }
+
             /// <summary>
             /// The topic's name
             /// </summary>
-            public string TopicName { get; set; }
+            public string TopicName { get; }
 
             /// <summary>
             /// The duration to lock the external tasks for in milliseconds
             /// </summary>
-            public int LockDuration { get; set; }
+            public int LockDuration { get; }
 
             public bool LocalVariables { get; set; }
 
