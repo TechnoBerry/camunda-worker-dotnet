@@ -37,7 +37,8 @@ namespace Camunda.Worker.Client
             using (var response = await SendRequest("external-task/fetchAndLock", request, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                return await ParseResponseContent<IList<ExternalTask>>(response.Content);
+                var externalTasks = await response.Content.ReadAsObjectAsync<IList<ExternalTask>>(SerializerSettings);
+                return externalTasks;
             }
         }
 
@@ -76,12 +77,6 @@ namespace Camunda.Worker.Client
         {
             var jsonRequestBody = JsonConvert.SerializeObject(requestBody, SerializerSettings);
             return new StringContent(jsonRequestBody, Encoding.UTF8, JsonContentType);
-        }
-
-        private static async Task<T> ParseResponseContent<T>(HttpContent content)
-        {
-            var jsonResponse = await content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(jsonResponse, SerializerSettings);
         }
 
         private static JsonSerializerSettings MakeSerializerSettings()
