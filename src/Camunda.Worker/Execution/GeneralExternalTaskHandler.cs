@@ -37,20 +37,23 @@ namespace Camunda.Worker.Execution
                 var handler = handlerFactory(scope.ServiceProvider);
 
                 _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
-
-                IExecutionResult result;
-                try
-                {
-                    result = await handler.Process(externalTask);
-                }
-                catch (Exception e)
-                {
-                    result = new FailureResult(e);
-                }
-
+                var result = await ProcessSafe(handler, externalTask);
                 _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
 
                 return result;
+            }
+        }
+
+        private static async Task<IExecutionResult> ProcessSafe(IExternalTaskHandler handler, ExternalTask task)
+        {
+            try
+            {
+                var result =  await handler.Process(task);
+                return result;
+            }
+            catch (Exception e)
+            {
+                return new FailureResult(e);
             }
         }
     }
