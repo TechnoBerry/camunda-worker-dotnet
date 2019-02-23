@@ -94,9 +94,16 @@ namespace Camunda.Worker.Execution
 
         private async Task ExecuteInContext(ExternalTaskContext context)
         {
-            var result = await _handler.Process(context.ExternalTask);
+            try
+            {
+                var result = await _handler.Process(context.ExternalTask);
 
-            await result.ExecuteResult(context);
+                await result.ExecuteResult(context);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failed execution of task {Id}", context.ExternalTask.Id);
+            }
         }
     }
 }
