@@ -28,9 +28,8 @@ namespace Camunda.Worker
             var taskId = context.ExternalTask.Id;
             var workerId = context.ExternalTask.WorkerId;
 
-            await client.Complete(taskId, new CompleteRequest
+            await client.Complete(taskId, new CompleteRequest(workerId)
             {
-                WorkerId = workerId,
                 Variables = Variables,
                 LocalVariables = LocalVariables
             }, CancellationToken.None);

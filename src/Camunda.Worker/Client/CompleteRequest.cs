@@ -8,7 +8,12 @@ namespace Camunda.Worker.Client
 {
     public class CompleteRequest
     {
-        public string WorkerId { get; set; }
+        public CompleteRequest(string workerId)
+        {
+            WorkerId = Guard.NotNull(workerId, nameof(workerId));
+        }
+
+        public string WorkerId { get; }
         public IDictionary<string, Variable> Variables { get; set; }
         public IDictionary<string, Variable> LocalVariables { get; set; }
     }

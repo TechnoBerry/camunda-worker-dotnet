@@ -72,9 +72,8 @@ namespace Camunda.Worker.Client
                         Content = new StringContent("")
                     });
 
-                var request = new CompleteRequest
+                var request = new CompleteRequest("testWorker")
                 {
-                    WorkerId = "testWorker",
                     Variables = new Dictionary<string, Variable>()
                 };
 
