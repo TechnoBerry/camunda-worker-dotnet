@@ -8,8 +8,14 @@ namespace Camunda.Worker.Client
 {
     public class BpmnErrorRequest
     {
-        public string WorkerId { get; set; }
-        public string ErrorCode { get; set; }
+        public BpmnErrorRequest(string workerId, string errorCode)
+        {
+            WorkerId = Guard.NotNull(workerId, nameof(workerId));
+            ErrorCode = Guard.NotNull(errorCode, nameof(errorCode));
+        }
+
+        public string WorkerId { get; }
+        public string ErrorCode { get; }
         public string ErrorMessage { get; set; }
         public IDictionary<string, Variable> Variables { get; set; }
     }

@@ -127,10 +127,8 @@ namespace Camunda.Worker.Client
                         Content = new StringContent("")
                     });
 
-                var request = new BpmnErrorRequest
+                var request = new BpmnErrorRequest("testWorker", "testCode")
                 {
-                    WorkerId = "testWorker",
-                    ErrorCode = "testCode",
                     ErrorMessage = "Error",
                     Variables = new Dictionary<string, Variable>()
                 };

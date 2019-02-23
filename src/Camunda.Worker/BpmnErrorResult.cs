@@ -28,10 +28,8 @@ namespace Camunda.Worker
             var taskId = context.ExternalTask.Id;
             var workerId = context.ExternalTask.WorkerId;
 
-            await client.ReportBpmnError(taskId, new BpmnErrorRequest
+            await client.ReportBpmnError(taskId, new BpmnErrorRequest(workerId, ErrorCode)
             {
-                WorkerId = workerId,
-                ErrorCode = ErrorCode,
                 ErrorMessage = ErrorMessage,
                 Variables = Variables
             }, CancellationToken.None);
