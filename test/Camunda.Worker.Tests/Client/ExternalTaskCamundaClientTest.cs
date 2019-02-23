@@ -99,9 +99,8 @@ namespace Camunda.Worker.Client
                         Content = new StringContent("")
                     });
 
-                var request = new ReportFailureRequest
+                var request = new ReportFailureRequest("testWorker")
                 {
-                    WorkerId = "testWorker",
                     ErrorMessage = "Error",
                     ErrorDetails = "Details"
                 };

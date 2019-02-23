@@ -32,9 +32,8 @@ namespace Camunda.Worker
             var taskId = context.ExternalTask.Id;
             var workerId = context.ExternalTask.WorkerId;
 
-            await client.ReportFailure(taskId, new ReportFailureRequest
+            await client.ReportFailure(taskId, new ReportFailureRequest(workerId)
             {
-                WorkerId = workerId,
                 ErrorMessage = ErrorMessage,
                 ErrorDetails = ErrorDetails
             }, CancellationToken.None);
