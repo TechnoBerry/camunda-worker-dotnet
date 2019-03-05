@@ -18,20 +18,20 @@ namespace Camunda.Worker.Execution
     {
         private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
         private readonly IGeneralExternalTaskHandler _handler;
-        private readonly CamundaWorkerOptions _options;
         private readonly ITopicsProvider _topicsProvider;
+        private readonly CamundaWorkerOptions _options;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
             IGeneralExternalTaskHandler handler,
-            IOptions<CamundaWorkerOptions> options,
             ITopicsProvider topicsProvider,
+            IOptions<CamundaWorkerOptions> options,
             ILogger<DefaultCamundaWorker> logger = null)
         {
-            _externalTaskCamundaClient = externalTaskCamundaClient;
-            _handler = handler;
+            _externalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
+            _handler = Guard.NotNull(handler, nameof(handler));
+            _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _options = options.Value;
-            _topicsProvider = topicsProvider;
             _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
 

@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -123,8 +122,8 @@ namespace Camunda.Worker.Execution
             return new DefaultCamundaWorker(
                 _apiClientMock.Object,
                 _handlerMock.Object,
-                _options,
-                _topicsProviderMock.Object
+                _topicsProviderMock.Object,
+                _options
             );
         }
     }

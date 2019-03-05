@@ -14,7 +14,7 @@ namespace Camunda.Worker.Execution
 
         public WorkerHostedService(ICamundaWorker worker)
         {
-            _worker = worker;
+            _worker = Guard.NotNull(worker, nameof(worker));
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken) => _worker.Run(stoppingToken);

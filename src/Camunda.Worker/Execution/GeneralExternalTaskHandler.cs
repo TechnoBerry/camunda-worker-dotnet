@@ -21,8 +21,8 @@ namespace Camunda.Worker.Execution
             IHandlerFactoryProvider handlerFactoryProvider,
             ILogger<GeneralExternalTaskHandler> logger = null)
         {
-            _scopeFactory = scopeFactory;
-            _handlerFactoryProvider = handlerFactoryProvider;
+            _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
+            _handlerFactoryProvider = Guard.NotNull(handlerFactoryProvider, nameof(handlerFactoryProvider));
             _logger = logger ?? new NullLogger<GeneralExternalTaskHandler>();
         }
 
