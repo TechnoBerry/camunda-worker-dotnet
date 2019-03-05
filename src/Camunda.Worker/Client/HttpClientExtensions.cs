@@ -3,6 +3,8 @@
 
 
 using System.Net.Http;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -10,6 +12,20 @@ namespace Camunda.Worker.Client
 {
     internal static class HttpClientExtensions
     {
+        private const string JsonContentType = "application/json";
+
+        internal static async Task<HttpResponseMessage> PostJsonAsync(this HttpClient client,
+            string path,
+            object requestBody,
+            JsonSerializerSettings serializerSettings,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var jsonRequestBody = JsonConvert.SerializeObject(requestBody, serializerSettings);
+            var requestContent = new StringContent(jsonRequestBody, Encoding.UTF8, JsonContentType);
+            var response = await client.PostAsync(path, requestContent, cancellationToken);
+            return response;
+        }
+
         internal static async Task<T> ReadAsObjectAsync<T>(this HttpContent content,
             JsonSerializerSettings serializerSettings)
         {

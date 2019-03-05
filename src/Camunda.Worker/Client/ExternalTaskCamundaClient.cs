@@ -16,7 +16,6 @@ namespace Camunda.Worker.Client
 {
     public class ExternalTaskCamundaClient : IExternalTaskCamundaClient, IDisposable
     {
-        private const string JsonContentType = "application/json";
         private static readonly JsonSerializerSettings SerializerSettings = MakeSerializerSettings();
 
         private readonly HttpClient _httpClient;
@@ -64,19 +63,13 @@ namespace Camunda.Worker.Client
             }
         }
 
-        private async Task<HttpResponseMessage> SendRequest(string path, object requestBody,
+        private async Task<HttpResponseMessage> SendRequest(string path, object body,
             CancellationToken cancellationToken)
         {
             var basePath = _httpClient.BaseAddress.AbsolutePath.TrimEnd('/');
-            var requestContent = MakeRequestContent(requestBody);
-            var response = await _httpClient.PostAsync($"{basePath}/{path}", requestContent, cancellationToken);
+            var requestPath = $"{basePath}/{path}";
+            var response = await _httpClient.PostJsonAsync(requestPath, body, SerializerSettings, cancellationToken);
             return response;
-        }
-
-        private static HttpContent MakeRequestContent(object requestBody)
-        {
-            var jsonRequestBody = JsonConvert.SerializeObject(requestBody, SerializerSettings);
-            return new StringContent(jsonRequestBody, Encoding.UTF8, JsonContentType);
         }
 
         private static JsonSerializerSettings MakeSerializerSettings()
