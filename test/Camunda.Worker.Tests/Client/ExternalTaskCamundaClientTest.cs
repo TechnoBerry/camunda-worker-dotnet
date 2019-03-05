@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Moq;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Camunda.Worker.Client
@@ -33,7 +34,13 @@ namespace Camunda.Worker.Client
                         StatusCode = HttpStatusCode.OK,
                         Content = new StringContent(@"[
                             {
-                                ""id"": ""testTask""
+                                ""id"": ""testTask"",
+                                ""variables"": {
+                                    ""TEST"": {
+                                        ""value"": ""testString"",
+                                        ""type"": ""String""
+                                    }
+                                }
                             }
                         ]", Encoding.UTF8, "application/json")
                     });
@@ -53,7 +60,12 @@ namespace Camunda.Worker.Client
                 Assert.Equal(new Uri("http://test/api/external-task/fetchAndLock"), httpRequest.RequestUri);
 
                 Assert.Single(externalTasks);
-                Assert.Equal("testTask", externalTasks.First().Id);
+
+                var firstTask = externalTasks.First();
+                Assert.Equal("testTask", firstTask.Id);
+                var testVariable = Assert.Contains("TEST", firstTask.Variables);
+                Assert.Equal("testString", testVariable.Value);
+                Assert.Equal(VariableType.String, testVariable.Type);
             }
         }
 
@@ -74,13 +86,19 @@ namespace Camunda.Worker.Client
 
                 var request = new CompleteRequest("testWorker")
                 {
-                    Variables = new Dictionary<string, Variable>()
+                    Variables = new Dictionary<string, Variable>
+                    {
+                        ["TEST"] = new Variable("testString")
+                    }
                 };
 
                 await client.Complete("testTask", request, CancellationToken.None);
 
                 Assert.NotNull(httpRequest);
                 Assert.Equal(new Uri("http://test/api/external-task/testTask/complete"), httpRequest.RequestUri);
+                var requestContent = await httpRequest.Content.ReadAsStringAsync();
+                var requestObject = JObject.Parse(requestContent);
+                Assert.True(requestObject.ContainsKey("variables"));
             }
         }
 

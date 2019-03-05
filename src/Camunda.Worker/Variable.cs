@@ -3,37 +3,30 @@
 
 
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json;
 
 namespace Camunda.Worker
 {
     public class Variable
     {
         [ExcludeFromCodeCoverage]
-        public Variable(bool value)
+        public Variable(bool value) : this(value, VariableType.Boolean)
         {
-            Value = value;
-            Type = VariableType.Boolean;
         }
 
         [ExcludeFromCodeCoverage]
-        public Variable(short value)
+        public Variable(short value) : this(value, VariableType.Short)
         {
-            Value = value;
-            Type = VariableType.Short;
         }
 
         [ExcludeFromCodeCoverage]
-        public Variable(int value)
+        public Variable(int value) : this(value, VariableType.Integer)
         {
-            Value = value;
-            Type = VariableType.Integer;
         }
 
         [ExcludeFromCodeCoverage]
-        public Variable(long value)
+        public Variable(long value) : this(value, VariableType.Long)
         {
-            Value = value;
-            Type = VariableType.Long;
         }
 
         [ExcludeFromCodeCoverage]
@@ -42,24 +35,23 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
-        public Variable(double value)
+        public Variable(double value) : this(value, VariableType.Double)
         {
-            Value = value;
-            Type = VariableType.Double;
         }
 
         [ExcludeFromCodeCoverage]
-        public Variable(string value)
+        public Variable(string value) : this(value, VariableType.String)
+        {
+        }
+
+        [JsonConstructor]
+        public Variable(object value, VariableType type)
         {
             Value = value;
-            Type = VariableType.String;
+            Type = type;
         }
 
-        public Variable()
-        {
-        }
-
-        public object Value { get; set; }
-        public VariableType Type { get; set; }
+        public object Value { get; }
+        public VariableType Type { get; }
     }
 }
