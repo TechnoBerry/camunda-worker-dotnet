@@ -30,11 +30,6 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
-        public Variable(float value) : this((double) value)
-        {
-        }
-
-        [ExcludeFromCodeCoverage]
         public Variable(double value) : this(value, VariableType.Double)
         {
         }
