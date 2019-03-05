@@ -16,8 +16,6 @@ namespace Camunda.Worker.Client
 {
     public class ExternalTaskCamundaClient : IExternalTaskCamundaClient, IDisposable
     {
-        private static readonly JsonSerializerSettings SerializerSettings = MakeSerializerSettings();
-
         private readonly HttpClient _httpClient;
 
         public ExternalTaskCamundaClient(HttpClient httpClient)
@@ -36,7 +34,7 @@ namespace Camunda.Worker.Client
             using (var response = await SendRequest("external-task/fetchAndLock", request, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
-                var externalTasks = await response.Content.ReadAsObjectAsync<IList<ExternalTask>>(SerializerSettings);
+                var externalTasks = await response.Content.ReadAsObjectAsync<IList<ExternalTask>>();
                 return externalTasks;
             }
         }
@@ -68,27 +66,8 @@ namespace Camunda.Worker.Client
         {
             var basePath = _httpClient.BaseAddress.AbsolutePath.TrimEnd('/');
             var requestPath = $"{basePath}/{path}";
-            var response = await _httpClient.PostJsonAsync(requestPath, body, SerializerSettings, cancellationToken);
+            var response = await _httpClient.PostJsonAsync(requestPath, body, cancellationToken);
             return response;
-        }
-
-        private static JsonSerializerSettings MakeSerializerSettings()
-        {
-            return new JsonSerializerSettings
-            {
-                ContractResolver = new DefaultContractResolver
-                {
-                    NamingStrategy = new CamelCaseNamingStrategy
-                    {
-                        ProcessDictionaryKeys = false,
-                        OverrideSpecifiedNames = true
-                    }
-                },
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter()
-                }
-            };
         }
     }
 }
