@@ -24,9 +24,9 @@ namespace Camunda.Worker
 
         public async Task ExecuteResult(ExternalTaskContext context)
         {
-            var client = context.ExternalTaskCamundaClient;
-            var taskId = context.ExternalTask.Id;
-            var workerId = context.ExternalTask.WorkerId;
+            var client = context.Client;
+            var taskId = context.Task.Id;
+            var workerId = context.Task.WorkerId;
 
             await client.ReportBpmnError(taskId, new BpmnErrorRequest(workerId, ErrorCode)
             {

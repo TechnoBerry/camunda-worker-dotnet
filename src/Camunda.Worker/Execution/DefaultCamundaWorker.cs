@@ -96,13 +96,13 @@ namespace Camunda.Worker.Execution
         {
             try
             {
-                var result = await _handler.Process(context.ExternalTask);
+                var result = await _handler.Process(context.Task);
 
                 await result.ExecuteResult(context);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Failed execution of task {Id}", context.ExternalTask.Id);
+                _logger.LogError(e, "Failed execution of task {Id}", context.Task.Id);
             }
         }
     }

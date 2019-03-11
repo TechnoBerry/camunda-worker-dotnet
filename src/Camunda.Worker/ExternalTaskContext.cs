@@ -2,21 +2,19 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System;
 using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
     public class ExternalTaskContext
     {
-        public ExternalTaskContext(ExternalTask externalTask,
-            IExternalTaskCamundaClient externalTaskCamundaClient)
+        public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client)
         {
-            ExternalTask = Guard.NotNull(externalTask, nameof(externalTask));
-            ExternalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
+            Task = Guard.NotNull(task, nameof(task));
+            Client = Guard.NotNull(client, nameof(client));
         }
 
-        public ExternalTask ExternalTask { get; }
-        public IExternalTaskCamundaClient ExternalTaskCamundaClient { get; }
+        public ExternalTask Task { get; }
+        public IExternalTaskCamundaClient Client { get; }
     }
 }
