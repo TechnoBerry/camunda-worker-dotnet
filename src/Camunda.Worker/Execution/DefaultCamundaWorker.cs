@@ -83,7 +83,7 @@ namespace Camunda.Worker.Execution
             {
                 await Task.Delay(seconds, cancellationToken);
             }
-            catch (Exception)
+            catch (TaskCanceledException)
             {
                 // ignored
             }
