@@ -10,12 +10,16 @@ namespace Camunda.Worker.Client
 {
     public interface IExternalTaskCamundaClient
     {
-        Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request, CancellationToken cancellationToken);
+        Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
+            CancellationToken cancellationToken = default(CancellationToken));
 
-        Task Complete(string taskId, CompleteRequest request, CancellationToken cancellationToken);
+        Task Complete(string taskId, CompleteRequest request,
+            CancellationToken cancellationToken = default(CancellationToken));
 
-        Task ReportFailure(string taskId, ReportFailureRequest request, CancellationToken cancellationToken);
+        Task ReportFailure(string taskId, ReportFailureRequest request,
+            CancellationToken cancellationToken = default(CancellationToken));
 
-        Task ReportBpmnError(string taskId, BpmnErrorRequest request, CancellationToken cancellationToken);
+        Task ReportBpmnError(string taskId, BpmnErrorRequest request,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

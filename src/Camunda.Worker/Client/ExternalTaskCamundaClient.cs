@@ -29,7 +29,7 @@ namespace Camunda.Worker.Client
         }
 
         public async Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             using (var response = await SendRequest("external-task/fetchAndLock", request, cancellationToken))
             {
@@ -39,7 +39,8 @@ namespace Camunda.Worker.Client
             }
         }
 
-        public async Task Complete(string taskId, CompleteRequest request, CancellationToken cancellationToken)
+        public async Task Complete(string taskId, CompleteRequest request,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             using (await SendRequest($"external-task/{taskId}/complete", request, cancellationToken))
             {
@@ -47,14 +48,15 @@ namespace Camunda.Worker.Client
         }
 
         public async Task ReportFailure(string taskId, ReportFailureRequest request,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             using (await SendRequest($"external-task/{taskId}/failure", request, cancellationToken))
             {
             }
         }
 
-        public async Task ReportBpmnError(string taskId, BpmnErrorRequest request, CancellationToken cancellationToken)
+        public async Task ReportBpmnError(string taskId, BpmnErrorRequest request,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             using (await SendRequest($"external-task/{taskId}/bpmnError", request, cancellationToken))
             {

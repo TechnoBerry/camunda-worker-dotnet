@@ -32,7 +32,7 @@ namespace Camunda.Worker
             {
                 Variables = Variables,
                 LocalVariables = LocalVariables
-            }, CancellationToken.None);
+            });
         }
     }
 }

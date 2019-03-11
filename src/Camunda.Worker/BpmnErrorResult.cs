@@ -32,7 +32,7 @@ namespace Camunda.Worker
             {
                 ErrorMessage = ErrorMessage,
                 Variables = Variables
-            }, CancellationToken.None);
+            });
         }
     }
 }

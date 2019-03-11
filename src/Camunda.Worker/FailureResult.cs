@@ -36,7 +36,7 @@ namespace Camunda.Worker
             {
                 ErrorMessage = ErrorMessage,
                 ErrorDetails = ErrorDetails
-            }, CancellationToken.None);
+            });
         }
     }
 }
