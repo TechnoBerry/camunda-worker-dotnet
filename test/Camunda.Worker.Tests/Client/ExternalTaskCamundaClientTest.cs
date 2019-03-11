@@ -7,43 +7,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Moq;
-using Newtonsoft.Json.Linq;
+using RichardSzalay.MockHttp;
 using Xunit;
 
 namespace Camunda.Worker.Client
 {
     public class ExternalTaskCamundaClientTest
     {
-        private readonly Mock<FakeMessageHandler> _handlerMock = new Mock<FakeMessageHandler> {CallBase = true};
+        private readonly MockHttpMessageHandler _handlerMock = new MockHttpMessageHandler();
 
         [Fact]
         public async Task TestFetchAndLock()
         {
             using (var client = MakeClient())
             {
-                HttpRequestMessage httpRequest = null;
-
-                _handlerMock.Setup(handler => handler.Send(It.IsAny<HttpRequestMessage>()))
-                    .Callback((HttpRequestMessage req) => httpRequest = req)
-                    .Returns(() => new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.OK,
-                        Content = new StringContent(@"[
-                            {
-                                ""id"": ""testTask"",
-                                ""variables"": {
-                                    ""TEST"": {
-                                        ""value"": ""testString"",
-                                        ""type"": ""String""
-                                    }
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
+                    .Respond("application/json", @"[
+                        {
+                            ""id"": ""testTask"",
+                            ""variables"": {
+                                ""TEST"": {
+                                    ""value"": ""testString"",
+                                    ""type"": ""String""
                                 }
                             }
-                        ]", Encoding.UTF8, "application/json")
-                    });
+                        }
+                    ]");
 
                 var request = new FetchAndLockRequest("testWorker", 10)
                 {
@@ -56,11 +47,8 @@ namespace Camunda.Worker.Client
 
                 var externalTasks = await client.FetchAndLock(request, CancellationToken.None);
 
-                Assert.NotNull(httpRequest);
-                Assert.Equal(new Uri("http://test/api/external-task/fetchAndLock"), httpRequest.RequestUri);
-
+                _handlerMock.VerifyNoOutstandingExpectation();
                 Assert.Single(externalTasks);
-
                 var firstTask = externalTasks.First();
                 Assert.Equal("testTask", firstTask.Id);
                 var testVariable = Assert.Contains("TEST", firstTask.Variables);
@@ -74,15 +62,8 @@ namespace Camunda.Worker.Client
         {
             using (var client = MakeClient())
             {
-                HttpRequestMessage httpRequest = null;
-
-                _handlerMock.Setup(handler => handler.Send(It.IsAny<HttpRequestMessage>()))
-                    .Callback((HttpRequestMessage req) => httpRequest = req)
-                    .Returns(() => new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.NoContent,
-                        Content = new StringContent("")
-                    });
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/complete")
+                    .Respond(HttpStatusCode.NoContent);
 
                 var request = new CompleteRequest("testWorker")
                 {
@@ -94,11 +75,7 @@ namespace Camunda.Worker.Client
 
                 await client.Complete("testTask", request, CancellationToken.None);
 
-                Assert.NotNull(httpRequest);
-                Assert.Equal(new Uri("http://test/api/external-task/testTask/complete"), httpRequest.RequestUri);
-                var requestContent = await httpRequest.Content.ReadAsStringAsync();
-                var requestObject = JObject.Parse(requestContent);
-                Assert.True(requestObject.ContainsKey("variables"));
+                _handlerMock.VerifyNoOutstandingExpectation();
             }
         }
 
@@ -107,15 +84,8 @@ namespace Camunda.Worker.Client
         {
             using (var client = MakeClient())
             {
-                HttpRequestMessage httpRequest = null;
-
-                _handlerMock.Setup(handler => handler.Send(It.IsAny<HttpRequestMessage>()))
-                    .Callback((HttpRequestMessage req) => httpRequest = req)
-                    .Returns(() => new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.NoContent,
-                        Content = new StringContent("")
-                    });
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/failure")
+                    .Respond(HttpStatusCode.NoContent);
 
                 var request = new ReportFailureRequest("testWorker")
                 {
@@ -125,8 +95,7 @@ namespace Camunda.Worker.Client
 
                 await client.ReportFailure("testTask", request, CancellationToken.None);
 
-                Assert.NotNull(httpRequest);
-                Assert.Equal(new Uri("http://test/api/external-task/testTask/failure"), httpRequest.RequestUri);
+                _handlerMock.VerifyNoOutstandingExpectation();
             }
         }
 
@@ -135,15 +104,8 @@ namespace Camunda.Worker.Client
         {
             using (var client = MakeClient())
             {
-                HttpRequestMessage httpRequest = null;
-
-                _handlerMock.Setup(handler => handler.Send(It.IsAny<HttpRequestMessage>()))
-                    .Callback((HttpRequestMessage req) => httpRequest = req)
-                    .Returns(() => new HttpResponseMessage
-                    {
-                        StatusCode = HttpStatusCode.NoContent,
-                        Content = new StringContent("")
-                    });
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/bpmnError")
+                    .Respond(HttpStatusCode.NoContent);
 
                 var request = new BpmnErrorRequest("testWorker", "testCode")
                 {
@@ -153,34 +115,18 @@ namespace Camunda.Worker.Client
 
                 await client.ReportBpmnError("testTask", request, CancellationToken.None);
 
-                Assert.NotNull(httpRequest);
-                Assert.Equal(new Uri("http://test/api/external-task/testTask/bpmnError"), httpRequest.RequestUri);
+                _handlerMock.VerifyNoOutstandingExpectation();
             }
         }
 
         private ExternalTaskCamundaClient MakeClient()
         {
             return new ExternalTaskCamundaClient(
-                new HttpClient(_handlerMock.Object)
+                new HttpClient(_handlerMock)
                 {
                     BaseAddress = new Uri("http://test/api")
                 }
             );
-        }
-
-
-        public class FakeMessageHandler : HttpMessageHandler
-        {
-            public virtual HttpResponseMessage Send(HttpRequestMessage request)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-                CancellationToken cancellationToken)
-            {
-                return Task.FromResult(Send(request));
-            }
         }
     }
 }
