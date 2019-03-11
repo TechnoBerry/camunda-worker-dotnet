@@ -69,23 +69,15 @@ namespace Camunda.Worker.Execution
 
                 return externalTasks;
             }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 _logger.LogError("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
-                await Wait(10_000, cancellationToken);
+                await Task.Delay(10_000, cancellationToken);
                 return Enumerable.Empty<ExternalTask>();
-            }
-        }
-
-        private static async Task Wait(int seconds, CancellationToken cancellationToken)
-        {
-            try
-            {
-                await Task.Delay(seconds, cancellationToken);
-            }
-            catch (TaskCanceledException)
-            {
-                // ignored
             }
         }
 
