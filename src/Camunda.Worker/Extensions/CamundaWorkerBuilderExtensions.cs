@@ -30,21 +30,28 @@ namespace Camunda.Worker.Extensions
             where T : class, IExternalTaskHandler
         {
             var handlerType = typeof(T);
+            var topicAttributes = handlerType.GetCustomAttributes<HandlerTopicAttribute>().ToList();
 
-            return handlerType.GetCustomAttributes<HandlerTopicAttribute>()
-                .Select(attribute =>
+            if (!topicAttributes.Any())
+            {
+                throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicAttribute\"");
+            }
+
+            var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+            var localVariables = variablesAttribute?.LocalVariables ?? false;
+            var variables = variablesAttribute?.Variables?.ToList();
+
+            return topicAttributes.Select(attribute =>
+            {
+                var descriptor = new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>)
                 {
-                    var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+                    LockDuration = attribute.LockDuration,
+                    LocalVariables = localVariables,
+                    Variables = variables
+                };
 
-                    var descriptor = new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>)
-                    {
-                        LockDuration = attribute.LockDuration,
-                        LocalVariables = variablesAttribute?.LocalVariables ?? false,
-                        Variables = variablesAttribute?.Variables?.ToList()
-                    };
-
-                    return descriptor;
-                });
+                return descriptor;
+            });
         }
 
         private static IExternalTaskHandler HandlerFactory<T>(IServiceProvider provider)
