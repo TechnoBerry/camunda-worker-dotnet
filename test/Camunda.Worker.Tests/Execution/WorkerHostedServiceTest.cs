@@ -4,6 +4,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -13,18 +14,26 @@ namespace Camunda.Worker.Execution
     {
         private readonly Mock<ICamundaWorker> _workerMock = new Mock<ICamundaWorker>();
 
-        [Fact]
-        public async Task TestRunWorkerOnStart()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(4)]
+        public async Task TestRunWorkerOnStart(int workerCount)
         {
             _workerMock.Setup(w => w.Run(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            using (var workerHostedService = new WorkerHostedService(_workerMock.Object))
+            var options = Options.Create(new CamundaWorkerOptions
+            {
+                WorkerCount = workerCount
+            });
+
+            using (var workerHostedService =
+                new WorkerHostedService(_workerMock.Object, options))
             {
                 await workerHostedService.StartAsync(CancellationToken.None);
             }
 
-            _workerMock.Verify(w => w.Run(It.IsAny<CancellationToken>()), Times.Once());
+            _workerMock.Verify(w => w.Run(It.IsAny<CancellationToken>()), Times.Exactly(options.Value.WorkerCount));
         }
     }
 }

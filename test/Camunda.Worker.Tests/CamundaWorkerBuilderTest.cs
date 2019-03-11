@@ -65,23 +65,6 @@ namespace Camunda.Worker
                                            d.ImplementationType == typeof(TopicsProvider));
         }
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData(4)]
-        public void TestAddHostedServices(int count)
-        {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
-
-            builder.AddHostedServices(count);
-
-            var countOfHostedServices = services
-                .Count(d => d.ServiceType == typeof(IHostedService) &&
-                            d.ImplementationType == typeof(WorkerHostedService));
-
-            Assert.Equal(count, countOfHostedServices);
-        }
-
         private class HandlerFactoryProvider : IHandlerFactoryProvider
         {
             public HandlerFactory GetHandlerFactory(ExternalTask externalTask)

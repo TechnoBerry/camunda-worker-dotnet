@@ -8,13 +8,28 @@ namespace Camunda.Worker
 {
     public class CamundaWorkerOptions
     {
-        private int _asyncResponseTimeout = 10_000;
         private string _workerId = "camunda-worker";
+        private int _workerCount = 1;
+        private int _asyncResponseTimeout = 10_000;
 
         public string WorkerId
         {
             get => _workerId;
             set => _workerId = Guard.NotNull(value, nameof(value));
+        }
+
+        public int WorkerCount
+        {
+            get => _workerCount;
+            set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentException("'WorkerCount' must be greater than or equal to 1");
+                }
+
+                _workerCount = value;
+            }
         }
 
         public Uri BaseUri { get; set; }

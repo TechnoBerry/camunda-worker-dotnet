@@ -15,8 +15,6 @@ namespace Camunda.Worker
 
         ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
 
-        ICamundaWorkerBuilder AddHostedServices(int count);
-
         ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor);
     }
 }
