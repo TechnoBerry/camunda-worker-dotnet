@@ -2,10 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -14,26 +13,30 @@ namespace Camunda.Worker.Extensions
 {
     public class CamundaWorkerBuilderExtensionsTest
     {
+        private readonly IServiceCollection _services = new ServiceCollection();
+        private readonly Mock<ICamundaWorkerBuilder> _builderMock = new Mock<ICamundaWorkerBuilder>();
+
+        public CamundaWorkerBuilderExtensionsTest()
+        {
+            _builderMock.SetupGet(builder => builder.Services).Returns(_services);
+        }
+
         [Fact]
         public void TestAddHandlerWithAttributes()
         {
-            var services = new ServiceCollection();
-            var builderMock = new Mock<ICamundaWorkerBuilder>();
-
             var savedDescriptors = new List<HandlerDescriptor>();
 
-            builderMock
+            _builderMock
                 .Setup(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()))
                 .Callback((HandlerDescriptor descriptor) => savedDescriptors.Add(descriptor))
-                .Returns(builderMock.Object);
+                .Returns(_builderMock.Object);
 
-            builderMock.SetupGet(builder => builder.Services).Returns(services);
+            _builderMock.Object.AddHandler<HandlerWithTopics>();
 
-            builderMock.Object.AddHandler<HandlerWithTopics>();
-
-            builderMock.Verify(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()), Times.Exactly(2));
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Scoped &&
-                                           d.ServiceType == typeof(HandlerWithTopics));
+            _builderMock.Verify(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()),
+                Times.Exactly(2));
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Scoped &&
+                                            d.ServiceType == typeof(HandlerWithTopics));
 
             Assert.Equal(2, savedDescriptors.Count);
             Assert.Equal(savedDescriptors[0].Variables, savedDescriptors[1].Variables);
@@ -42,10 +45,28 @@ namespace Camunda.Worker.Extensions
             Assert.Contains(savedDescriptors[0].Variables, v => v == "testVariable");
         }
 
+        [Fact]
+        public void TestAddHandlerWithoutTopic()
+        {
+            _builderMock
+                .Setup(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()))
+                .Returns(_builderMock.Object);
+
+            Assert.Throws<Exception>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
+        }
+
         [HandlerTopic("testTopic_1")]
         [HandlerTopic("testTopic_2")]
         [HandlerVariables("testVariable", LocalVariables = true)]
         private class HandlerWithTopics : IExternalTaskHandler
+        {
+            public Task<IExecutionResult> Process(ExternalTask externalTask)
+            {
+                return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
+            }
+        }
+
+        private class HandlerWithoutTopics : IExternalTaskHandler
         {
             public Task<IExecutionResult> Process(ExternalTask externalTask)
             {
