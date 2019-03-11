@@ -9,8 +9,13 @@ namespace Camunda.Worker
     public class CamundaWorkerOptions
     {
         private int _asyncResponseTimeout = 10_000;
+        private string _workerId = "camunda-worker";
 
-        public string WorkerId { get; set; }
+        public string WorkerId
+        {
+            get => _workerId;
+            set => _workerId = Guard.NotNull(value, nameof(value));
+        }
 
         public Uri BaseUri { get; set; }
 
