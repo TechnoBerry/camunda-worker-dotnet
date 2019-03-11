@@ -5,12 +5,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 
 namespace Camunda.Worker.Client
 {
@@ -20,7 +16,7 @@ namespace Camunda.Worker.Client
 
         public ExternalTaskCamundaClient(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            _httpClient = Guard.NotNull(httpClient, nameof(httpClient));
         }
 
         public void Dispose()
@@ -31,6 +27,8 @@ namespace Camunda.Worker.Client
         public async Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Guard.NotNull(request, nameof(request));
+
             using (var response = await SendRequest("external-task/fetchAndLock", request, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
@@ -42,6 +40,9 @@ namespace Camunda.Worker.Client
         public async Task Complete(string taskId, CompleteRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Guard.NotNull(taskId, nameof(taskId));
+            Guard.NotNull(request, nameof(request));
+
             using (await SendRequest($"external-task/{taskId}/complete", request, cancellationToken))
             {
             }
@@ -50,6 +51,9 @@ namespace Camunda.Worker.Client
         public async Task ReportFailure(string taskId, ReportFailureRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Guard.NotNull(taskId, nameof(taskId));
+            Guard.NotNull(request, nameof(request));
+
             using (await SendRequest($"external-task/{taskId}/failure", request, cancellationToken))
             {
             }
@@ -58,6 +62,9 @@ namespace Camunda.Worker.Client
         public async Task ReportBpmnError(string taskId, BpmnErrorRequest request,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Guard.NotNull(taskId, nameof(taskId));
+            Guard.NotNull(request, nameof(request));
+
             using (await SendRequest($"external-task/{taskId}/bpmnError", request, cancellationToken))
             {
             }
