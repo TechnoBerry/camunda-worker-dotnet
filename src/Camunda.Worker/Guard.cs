@@ -3,11 +3,13 @@
 
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Camunda.Worker
 {
     internal static class Guard
     {
+        [ExcludeFromCodeCoverage]
         internal static T NotNull<T>(T parameterValue, string parameterName) where T : class
         {
             if (parameterValue == null)
