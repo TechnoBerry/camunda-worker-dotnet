@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -20,7 +19,7 @@ namespace Camunda.Worker.Client
 
         private static JsonSerializerSettings MakeSerializerSettings()
         {
-            return new JsonSerializerSettings
+            var settings = new JsonSerializerSettings
             {
                 ContractResolver = new DefaultContractResolver
                 {
@@ -29,12 +28,12 @@ namespace Camunda.Worker.Client
                         ProcessDictionaryKeys = false,
                         OverrideSpecifiedNames = true
                     }
-                },
-                Converters = new List<JsonConverter>
-                {
-                    new StringEnumConverter()
                 }
             };
+
+            settings.Converters.Add(new StringEnumConverter());
+
+            return settings;
         }
 
         internal static async Task<HttpResponseMessage> PostJsonAsync(this HttpClient client,
