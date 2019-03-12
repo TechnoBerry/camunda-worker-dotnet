@@ -81,10 +81,10 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private ExternalTaskContext CreateContext(ExternalTask externalTask) =>
+        private IExternalTaskContext CreateContext(ExternalTask externalTask) =>
             new ExternalTaskContext(externalTask, _externalTaskCamundaClient);
 
-        private async Task ExecuteInContext(ExternalTaskContext context)
+        private async Task ExecuteInContext(IExternalTaskContext context)
         {
             try
             {

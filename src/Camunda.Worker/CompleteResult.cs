@@ -22,17 +22,9 @@ namespace Camunda.Worker
 
         public IDictionary<string, Variable> LocalVariables { get; }
 
-        public async Task ExecuteResult(ExternalTaskContext context)
+        public Task ExecuteResult(IExternalTaskContext context)
         {
-            var client = context.Client;
-            var taskId = context.Task.Id;
-            var workerId = context.Task.WorkerId;
-
-            await client.Complete(taskId, new CompleteRequest(workerId)
-            {
-                Variables = Variables,
-                LocalVariables = LocalVariables
-            });
+            return context.CompleteAsync(Variables, LocalVariables);
         }
     }
 }

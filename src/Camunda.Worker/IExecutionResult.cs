@@ -8,6 +8,6 @@ namespace Camunda.Worker
 {
     public interface IExecutionResult
     {
-        Task ExecuteResult(ExternalTaskContext context);
+        Task ExecuteResult(IExternalTaskContext context);
     }
 }

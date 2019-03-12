@@ -2,11 +2,13 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
-    public class ExternalTaskContext
+    public sealed class ExternalTaskContext : IExternalTaskContext
     {
         public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client)
         {
@@ -16,5 +18,46 @@ namespace Camunda.Worker
 
         public ExternalTask Task { get; }
         public IExternalTaskCamundaClient Client { get; }
+
+        public Task CompleteAsync(IDictionary<string, Variable> variables,
+            IDictionary<string, Variable> localVariables = null)
+        {
+            var taskId = Task.Id;
+            var workerId = Task.WorkerId;
+            var request = new CompleteRequest(workerId)
+            {
+                Variables = variables,
+                LocalVariables = localVariables
+            };
+
+            return Client.Complete(taskId, request);
+        }
+
+        public Task ReportFailureAsync(string errorMessage, string errorDetails)
+        {
+            var taskId = Task.Id;
+            var workerId = Task.WorkerId;
+            var request = new ReportFailureRequest(workerId)
+            {
+                ErrorMessage = errorMessage,
+                ErrorDetails = errorDetails
+            };
+
+            return Client.ReportFailure(taskId, request);
+        }
+
+        public Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
+            IDictionary<string, Variable> variables = null)
+        {
+            var taskId = Task.Id;
+            var workerId = Task.WorkerId;
+            var request = new BpmnErrorRequest(workerId, errorCode)
+            {
+                ErrorMessage = errorMessage,
+                Variables = variables
+            };
+
+            return Client.ReportBpmnError(taskId, request);
+        }
     }
 }

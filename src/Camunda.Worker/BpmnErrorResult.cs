@@ -22,17 +22,9 @@ namespace Camunda.Worker
         public string ErrorMessage { get; }
         public IDictionary<string, Variable> Variables { get; }
 
-        public async Task ExecuteResult(ExternalTaskContext context)
+        public Task ExecuteResult(IExternalTaskContext context)
         {
-            var client = context.Client;
-            var taskId = context.Task.Id;
-            var workerId = context.Task.WorkerId;
-
-            await client.ReportBpmnError(taskId, new BpmnErrorRequest(workerId, ErrorCode)
-            {
-                ErrorMessage = ErrorMessage,
-                Variables = Variables
-            });
+            return context.ReportBpmnErrorAsync(ErrorCode, ErrorMessage, Variables);
         }
     }
 }

@@ -26,17 +26,9 @@ namespace Camunda.Worker
             ErrorDetails = Guard.NotNull(errorDetails, nameof(errorDetails));
         }
 
-        public async Task ExecuteResult(ExternalTaskContext context)
+        public Task ExecuteResult(IExternalTaskContext context)
         {
-            var client = context.Client;
-            var taskId = context.Task.Id;
-            var workerId = context.Task.WorkerId;
-
-            await client.ReportFailure(taskId, new ReportFailureRequest(workerId)
-            {
-                ErrorMessage = ErrorMessage,
-                ErrorDetails = ErrorDetails
-            });
+            return context.ReportFailureAsync(ErrorMessage, ErrorDetails);
         }
     }
 }
