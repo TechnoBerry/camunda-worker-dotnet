@@ -39,7 +39,7 @@ namespace Camunda.Worker.Client
         internal static async Task<HttpResponseMessage> PostJsonAsync(this HttpClient client,
             string path,
             object requestBody,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             var jsonRequestBody = JsonConvert.SerializeObject(requestBody, SerializerSettings);
             var requestContent = new StringContent(jsonRequestBody, Encoding.UTF8, JsonContentType);

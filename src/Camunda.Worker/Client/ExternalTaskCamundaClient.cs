@@ -25,7 +25,7 @@ namespace Camunda.Worker.Client
         }
 
         public async Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Guard.NotNull(request, nameof(request));
 
@@ -38,7 +38,7 @@ namespace Camunda.Worker.Client
         }
 
         public async Task Complete(string taskId, CompleteRequest request,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
@@ -49,7 +49,7 @@ namespace Camunda.Worker.Client
         }
 
         public async Task ReportFailure(string taskId, ReportFailureRequest request,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
@@ -60,7 +60,7 @@ namespace Camunda.Worker.Client
         }
 
         public async Task ReportBpmnError(string taskId, BpmnErrorRequest request,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
@@ -71,7 +71,7 @@ namespace Camunda.Worker.Client
         }
 
         public async Task ExtendLock(string taskId, ExtendLockRequest request,
-            CancellationToken cancellationToken = default(CancellationToken))
+            CancellationToken cancellationToken = default)
         {
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));

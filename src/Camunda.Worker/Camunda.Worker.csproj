@@ -8,6 +8,7 @@
     <PackageTags>camunda;worker;external</PackageTags>
     <PackageProjectUrl>https://github.com/AMalininHere/camunda-worker-dotnet</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
