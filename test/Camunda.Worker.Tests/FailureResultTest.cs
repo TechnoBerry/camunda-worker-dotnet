@@ -3,10 +3,7 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Client;
 using Moq;
 using Xunit;
 
@@ -14,44 +11,24 @@ namespace Camunda.Worker
 {
     public class FailureResultTest
     {
-        private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
 
         [Fact]
         public async Task TestExecuteResult()
         {
-            var externalTask = new ExternalTask
-            {
-                Id = "testTask",
-                WorkerId = "testWorker",
-                TopicName = "testTopic",
-                Variables = new Dictionary<string, Variable>()
-            };
-
-            ReportFailureRequest calledRequest = null;
-
-            _clientMock
-                .Setup(client =>
-                    client.ReportFailure("testTask", It.IsAny<ReportFailureRequest>(), CancellationToken.None))
-                .Callback((string taskId, ReportFailureRequest request, CancellationToken ct) =>
-                {
-                    calledRequest = request;
-                })
+            _contextMock
+                .Setup(context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.CompletedTask);
-
-            var context = new ExternalTaskContext(externalTask, _clientMock.Object);
 
             var result = new FailureResult(new Exception("Message"));
 
-            await result.ExecuteResult(context);
+            await result.ExecuteResult(_contextMock.Object);
 
-            _clientMock.Verify(
-                client => client.ReportFailure("testTask", It.IsAny<ReportFailureRequest>(), CancellationToken.None),
+            _contextMock.Verify(
+                context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()),
                 Times.Once()
             );
-            _clientMock.VerifyNoOtherCalls();
-
-            Assert.NotNull(calledRequest);
-            Assert.Equal("testWorker", calledRequest.WorkerId);
+            _contextMock.VerifyNoOtherCalls();
         }
     }
 }

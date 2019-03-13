@@ -2,7 +2,9 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -18,30 +20,72 @@ namespace Camunda.Worker
         [Fact]
         public async Task TestCompleteAsync()
         {
-            var externalTask = new ExternalTask
+            const string taskId = "testTask";
+            var externalTask = CreateTask(taskId);
+
+            Expression<Func<IExternalTaskCamundaClient, Task>> expression =
+                client => client.Complete(taskId, It.IsNotNull<CompleteRequest>(), CancellationToken.None);
+
+            _clientMock.Setup(expression).Returns(Task.CompletedTask);
+
+            var context = CreateContext(externalTask);
+
+            await context.CompleteAsync(new Dictionary<string, Variable>());
+
+            _clientMock.Verify(expression, Times.Once());
+            _clientMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task TestReportFailureAsync()
+        {
+            const string taskId = "testTask";
+            var externalTask = CreateTask(taskId);
+
+            Expression<Func<IExternalTaskCamundaClient, Task>> expression =
+                client => client.ReportFailure(taskId, It.IsNotNull<ReportFailureRequest>(), CancellationToken.None);
+
+            _clientMock.Setup(expression).Returns(Task.CompletedTask);
+
+            var context = CreateContext(externalTask);
+
+            await context.ReportFailureAsync("message", "details");
+
+            _clientMock.Verify(expression, Times.Once());
+            _clientMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task TestReportBpmnErrorAsync()
+        {
+            const string taskId = "testTask";
+            var externalTask = CreateTask(taskId);
+
+            Expression<Func<IExternalTaskCamundaClient, Task>> expression =
+                client => client.ReportBpmnError(taskId, It.IsNotNull<BpmnErrorRequest>(), CancellationToken.None);
+
+            _clientMock.Setup(expression).Returns(Task.CompletedTask);
+
+            var context = CreateContext(externalTask);
+
+            await context.ReportBpmnErrorAsync("code", "message");
+
+            _clientMock.Verify(expression, Times.Once());
+            _clientMock.VerifyNoOtherCalls();
+        }
+
+        private static ExternalTask CreateTask(string id)
+        {
+            return new ExternalTask
             {
-                Id = "testTask",
+                Id = id,
                 WorkerId = "testWorker",
                 TopicName = "testTopic",
                 Variables = new Dictionary<string, Variable>()
             };
-
-            _clientMock
-                .Setup(client => client.Complete("testTask", It.IsNotNull<CompleteRequest>(), CancellationToken.None))
-                .Returns(Task.CompletedTask);
-
-            var context = Create(externalTask);
-
-            await context.CompleteAsync(new Dictionary<string, Variable>());
-
-            _clientMock.Verify(
-                client => client.Complete("testTask", It.IsAny<CompleteRequest>(), CancellationToken.None),
-                Times.Once()
-            );
-            _clientMock.VerifyNoOtherCalls();
         }
 
-        private IExternalTaskContext Create(ExternalTask task)
+        private IExternalTaskContext CreateContext(ExternalTask task)
         {
             return new ExternalTaskContext(task, _clientMock.Object);
         }

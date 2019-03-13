@@ -3,9 +3,7 @@
 
 
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Client;
 using Moq;
 using Xunit;
 
@@ -13,44 +11,28 @@ namespace Camunda.Worker
 {
     public class BpmnErrorResultTest
     {
-        private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
 
         [Fact]
         public async Task TestExecuteResult()
         {
-            var externalTask = new ExternalTask
-            {
-                Id = "testTask",
-                WorkerId = "testWorker",
-                TopicName = "testTopic",
-                Variables = new Dictionary<string, Variable>()
-            };
-
-            BpmnErrorRequest calledRequest = null;
-
-            _clientMock
-                .Setup(client =>
-                    client.ReportBpmnError("testTask", It.IsAny<BpmnErrorRequest>(), CancellationToken.None))
-                .Callback((string taskId, BpmnErrorRequest request, CancellationToken ct) =>
-                {
-                    calledRequest = request;
-                })
+            _contextMock
+                .Setup(context => context.ReportBpmnErrorAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
+                ))
                 .Returns(Task.CompletedTask);
-
-            var context = new ExternalTaskContext(externalTask, _clientMock.Object);
 
             var result = new BpmnErrorResult("TEST_CODE", "Test message");
 
-            await result.ExecuteResult(context);
+            await result.ExecuteResult(_contextMock.Object);
 
-            _clientMock.Verify(
-                client => client.ReportBpmnError("testTask", It.IsAny<BpmnErrorRequest>(), CancellationToken.None),
+            _contextMock.Verify(
+                context => context.ReportBpmnErrorAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
+                ),
                 Times.Once()
             );
-            _clientMock.VerifyNoOtherCalls();
-
-            Assert.NotNull(calledRequest);
-            Assert.Equal("testWorker", calledRequest.WorkerId);
+            _contextMock.VerifyNoOtherCalls();
         }
     }
 }
