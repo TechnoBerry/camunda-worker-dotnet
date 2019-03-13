@@ -3,14 +3,23 @@
 
 
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Camunda.Worker
 {
     public class ExternalTask
     {
-        public string Id { get; set; }
-        public string WorkerId { get; set; }
-        public string TopicName { get; set; }
+        [JsonConstructor]
+        public ExternalTask(string id, string workerId, string topicName)
+        {
+            Id = Guard.NotNull(id, nameof(id));
+            WorkerId = Guard.NotNull(workerId, nameof(workerId));
+            TopicName = Guard.NotNull(topicName, nameof(topicName));
+        }
+
+        public string Id { get; }
+        public string WorkerId { get; }
+        public string TopicName { get; }
         public string TenantId { get; set; }
         public string ProcessDefinitionId { get; set; }
         public string ProcessDefinitionKey { get; set; }

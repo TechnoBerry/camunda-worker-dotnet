@@ -44,11 +44,8 @@ namespace Camunda.Worker.Execution
                 _handlerFactoryProviderMock.Object
             );
 
-            await executor.Process(new ExternalTask
+            await executor.Process(new ExternalTask("1", "testWorker", "testTopic")
             {
-                Id = "1",
-                TopicName = "testTopic",
-                WorkerId = "testWorker",
                 Variables = new Dictionary<string, Variable>()
             });
 

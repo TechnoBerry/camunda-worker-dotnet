@@ -75,6 +75,8 @@ namespace Camunda.Worker.Client
                     .Respond("application/json", @"[
                         {
                             ""id"": ""testTask"",
+                            ""workerId"": ""testWorker"",
+                            ""topicName"": ""testTopic"",
                             ""variables"": {
                                 ""TEST"": {
                                     ""value"": ""testString"",

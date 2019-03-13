@@ -59,10 +59,7 @@ namespace Camunda.Worker.Execution
 
             ConfigureApiService(cts, new List<ExternalTask>
             {
-                new ExternalTask
-                {
-                    Id = "1"
-                }
+                new ExternalTask("test", "test", "test")
             });
 
             var mockResult = new Mock<IExecutionResult>();

@@ -21,10 +21,7 @@ namespace Camunda.Worker.Execution
                 new HandlerDescriptor("topic1", p => handlerMock.Object)
             });
 
-            var factory = provider.GetHandlerFactory(new ExternalTask
-            {
-                TopicName = "topic1"
-            });
+            var factory = provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"));
             Assert.NotNull(factory);
         }
 
@@ -32,10 +29,9 @@ namespace Camunda.Worker.Execution
         public void TestGetUnknownHandlerFactory()
         {
             var provider = new TopicBasedFactoryProvider(Enumerable.Empty<HandlerDescriptor>());
-            Assert.Throws<ArgumentException>(() => provider.GetHandlerFactory(new ExternalTask
-            {
-                TopicName = "topic1"
-            }));
+            Assert.Throws<ArgumentException>(
+                () => provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"))
+            );
         }
     }
 }

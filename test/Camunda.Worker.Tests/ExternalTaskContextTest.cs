@@ -76,11 +76,8 @@ namespace Camunda.Worker
 
         private static ExternalTask CreateTask(string id)
         {
-            return new ExternalTask
+            return new ExternalTask(id, "testWorker", "testTopic")
             {
-                Id = id,
-                WorkerId = "testWorker",
-                TopicName = "testTopic",
                 Variables = new Dictionary<string, Variable>()
             };
         }
