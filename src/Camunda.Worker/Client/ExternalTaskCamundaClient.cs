@@ -70,6 +70,17 @@ namespace Camunda.Worker.Client
             }
         }
 
+        public async Task ExtendLock(string taskId, ExtendLockRequest request,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            Guard.NotNull(taskId, nameof(taskId));
+            Guard.NotNull(request, nameof(request));
+
+            using (await SendRequest($"external-task/{taskId}/extendLock", request, cancellationToken))
+            {
+            }
+        }
+
         private async Task<HttpResponseMessage> SendRequest(string path, object body,
             CancellationToken cancellationToken)
         {

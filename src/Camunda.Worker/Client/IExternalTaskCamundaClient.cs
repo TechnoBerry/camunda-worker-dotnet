@@ -21,5 +21,8 @@ namespace Camunda.Worker.Client
 
         Task ReportBpmnError(string taskId, BpmnErrorRequest request,
             CancellationToken cancellationToken = default(CancellationToken));
+
+        Task ExtendLock(string taskId, ExtendLockRequest request,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

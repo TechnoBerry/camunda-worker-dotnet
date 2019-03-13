@@ -64,6 +64,14 @@ namespace Camunda.Worker.Client
             {
                 new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure(null, new ReportFailureRequest("test")))
             };
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.ExtendLock("taskId", null))
+            };
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.ExtendLock(null, new ExtendLockRequest("test", 10)))
+            };
         }
 
         [Fact]
@@ -164,6 +172,22 @@ namespace Camunda.Worker.Client
                 };
 
                 await client.ReportBpmnError("testTask", request, CancellationToken.None);
+
+                _handlerMock.VerifyNoOutstandingExpectation();
+            }
+        }
+
+        [Fact]
+        public async Task TestExtendLock()
+        {
+            using (var client = MakeClient())
+            {
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/extendLock")
+                    .Respond(HttpStatusCode.NoContent);
+
+                var request = new ExtendLockRequest("testWorker", 10_000);
+
+                await client.ExtendLock("testTask", request, CancellationToken.None);
 
                 _handlerMock.VerifyNoOutstandingExpectation();
             }
