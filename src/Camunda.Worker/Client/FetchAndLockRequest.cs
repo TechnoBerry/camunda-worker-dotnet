@@ -55,6 +55,9 @@ namespace Camunda.Worker.Client
             /// </summary>
             public int LockDuration { get; }
 
+            /// <summary>
+            /// If <c>true</c> only local variables will be fetched
+            /// </summary>
             public bool LocalVariables { get; set; }
 
             [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
