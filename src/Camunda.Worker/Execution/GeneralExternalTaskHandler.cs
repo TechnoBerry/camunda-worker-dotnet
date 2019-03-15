@@ -48,7 +48,7 @@ namespace Camunda.Worker.Execution
         {
             try
             {
-                var result =  await handler.Process(task);
+                var result = await handler.Process(task);
                 return result;
             }
             catch (Exception e)
