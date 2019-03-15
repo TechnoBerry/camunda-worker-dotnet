@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Camunda.Worker
 {
-    public class CamundaWorkerServiceCollectionExtensionsTest
+    public class ServiceCollectionExtensionsTest
     {
         [Fact]
         public void TestAddCamundaWorker()
