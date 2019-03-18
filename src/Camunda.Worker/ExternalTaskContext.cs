@@ -17,7 +17,7 @@ namespace Camunda.Worker
         }
 
         public ExternalTask Task { get; }
-        public IExternalTaskCamundaClient Client { get; }
+        private IExternalTaskCamundaClient Client { get; }
 
         public Task CompleteAsync(IDictionary<string, Variable> variables,
             IDictionary<string, Variable> localVariables = null)
