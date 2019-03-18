@@ -60,8 +60,21 @@ namespace Camunda.Worker.Client
             /// </summary>
             public bool LocalVariables { get; set; }
 
-            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
             public IEnumerable<string> Variables { get; set; }
+
+            public string BusinessKey { get; set; }
+
+            public string ProcessDefinitionId { get; set; }
+
+            public IEnumerable<string> ProcessDefinitionIdIn { get; set; }
+
+            public string ProcessDefinitionKey { get; set; }
+
+            public IEnumerable<string> ProcessDefinitionKeyIn { get; set; }
+
+            public bool WithoutTenantId { get; set; }
+
+            public IEnumerable<string> TenantIdIn { get; set; }
         }
     }
 }
