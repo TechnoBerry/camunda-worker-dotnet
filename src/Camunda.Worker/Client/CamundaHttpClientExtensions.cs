@@ -28,7 +28,8 @@ namespace Camunda.Worker.Client
                         ProcessDictionaryKeys = false,
                         OverrideSpecifiedNames = true
                     }
-                }
+                },
+                NullValueHandling = NullValueHandling.Ignore
             };
 
             settings.Converters.Add(new StringEnumConverter());
