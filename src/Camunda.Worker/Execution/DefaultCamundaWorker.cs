@@ -90,7 +90,7 @@ namespace Camunda.Worker.Execution
             {
                 var result = await _handler.Process(context.Task);
 
-                await result.ExecuteResult(context);
+                await result.ExecuteResultAsync(context);
             }
             catch (Exception e)
             {

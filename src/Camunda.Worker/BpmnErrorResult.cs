@@ -22,7 +22,7 @@ namespace Camunda.Worker
         public string ErrorMessage { get; }
         public IDictionary<string, Variable> Variables { get; }
 
-        public Task ExecuteResult(IExternalTaskContext context)
+        public Task ExecuteResultAsync(IExternalTaskContext context)
         {
             return context.ReportBpmnErrorAsync(ErrorCode, ErrorMessage, Variables);
         }

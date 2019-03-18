@@ -14,7 +14,7 @@ namespace Camunda.Worker
         private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
 
         [Fact]
-        public async Task TestExecuteResult()
+        public async Task TestExecuteResultAsync()
         {
             _contextMock
                 .Setup(context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()))
@@ -22,7 +22,7 @@ namespace Camunda.Worker
 
             var result = new FailureResult(new Exception("Message"));
 
-            await result.ExecuteResult(_contextMock.Object);
+            await result.ExecuteResultAsync(_contextMock.Object);
 
             _contextMock.Verify(
                 context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()),

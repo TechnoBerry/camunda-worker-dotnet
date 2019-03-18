@@ -26,7 +26,7 @@ namespace Camunda.Worker
             ErrorDetails = Guard.NotNull(errorDetails, nameof(errorDetails));
         }
 
-        public Task ExecuteResult(IExternalTaskContext context)
+        public Task ExecuteResultAsync(IExternalTaskContext context)
         {
             return context.ReportFailureAsync(ErrorMessage, ErrorDetails);
         }

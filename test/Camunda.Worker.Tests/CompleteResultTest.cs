@@ -14,7 +14,7 @@ namespace Camunda.Worker
         private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
 
         [Fact]
-        public async Task TestExecuteResult()
+        public async Task TestExecuteResultAsync()
         {
             _contextMock
                 .Setup(context => context.CompleteAsync(
@@ -25,7 +25,7 @@ namespace Camunda.Worker
 
             var result = new CompleteResult(new Dictionary<string, Variable>());
 
-            await result.ExecuteResult(_contextMock.Object);
+            await result.ExecuteResultAsync(_contextMock.Object);
 
             _contextMock.Verify(
                 context => context.CompleteAsync(
