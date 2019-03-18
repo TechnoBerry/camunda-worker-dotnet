@@ -85,6 +85,8 @@ namespace Camunda.Worker.Client
                             ""id"": ""testTask"",
                             ""workerId"": ""testWorker"",
                             ""topicName"": ""testTopic"",
+                            ""processDefinitionId"": ""testDefinitionId"",
+                            ""processDefinitionKey"": ""testDefinitionKey"",
                             ""variables"": {
                                 ""TEST"": {
                                     ""value"": ""testString"",
@@ -109,6 +111,10 @@ namespace Camunda.Worker.Client
                 Assert.Single(externalTasks);
                 var firstTask = externalTasks.First();
                 Assert.Equal("testTask", firstTask.Id);
+                Assert.Equal("testTopic", firstTask.TopicName);
+                Assert.Equal("testWorker", firstTask.WorkerId);
+                Assert.Equal("testDefinitionId", firstTask.ProcessDefinitionId);
+                Assert.Equal("testDefinitionKey", firstTask.ProcessDefinitionKey);
                 var testVariable = Assert.Contains("TEST", firstTask.Variables);
                 Assert.Equal("testString", testVariable.Value);
                 Assert.Equal(VariableType.String, testVariable.Type);
