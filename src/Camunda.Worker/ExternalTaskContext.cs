@@ -12,6 +12,8 @@ namespace Camunda.Worker
 {
     public sealed class ExternalTaskContext : IExternalTaskContext
     {
+        private bool _completed;
+
         public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client)
         {
             Task = Guard.NotNull(task, nameof(task));
@@ -21,9 +23,11 @@ namespace Camunda.Worker
         public ExternalTask Task { get; }
         private IExternalTaskCamundaClient Client { get; }
 
-        public Task CompleteAsync(IDictionary<string, Variable> variables,
+        public async Task CompleteAsync(IDictionary<string, Variable> variables,
             IDictionary<string, Variable> localVariables = null)
         {
+            ThrowIfCompleted();
+
             var taskId = Task.Id;
             var workerId = Task.WorkerId;
             var request = new CompleteRequest(workerId)
@@ -32,11 +36,15 @@ namespace Camunda.Worker
                 LocalVariables = localVariables
             };
 
-            return Client.Complete(taskId, request);
+            await Client.Complete(taskId, request);
+
+            _completed = true;
         }
 
-        public Task ReportFailureAsync(string errorMessage, string errorDetails)
+        public async Task ReportFailureAsync(string errorMessage, string errorDetails)
         {
+            ThrowIfCompleted();
+
             var taskId = Task.Id;
             var workerId = Task.WorkerId;
             var request = new ReportFailureRequest(workerId)
@@ -45,12 +53,16 @@ namespace Camunda.Worker
                 ErrorDetails = errorDetails
             };
 
-            return Client.ReportFailure(taskId, request);
+            await Client.ReportFailure(taskId, request);
+
+            _completed = true;
         }
 
-        public Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
+        public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
             IDictionary<string, Variable> variables = null)
         {
+            ThrowIfCompleted();
+
             var taskId = Task.Id;
             var workerId = Task.WorkerId;
             var request = new BpmnErrorRequest(workerId, errorCode)
@@ -59,7 +71,17 @@ namespace Camunda.Worker
                 Variables = variables
             };
 
-            return Client.ReportBpmnError(taskId, request);
+            await Client.ReportBpmnError(taskId, request);
+
+            _completed = true;
+        }
+
+        private void ThrowIfCompleted()
+        {
+            if (_completed)
+            {
+                throw new CamundaWorkerException("Unable to complete already completed task");
+            }
         }
     }
 }
