@@ -13,6 +13,8 @@ namespace Camunda.Worker
     {
         ExternalTask Task { get; }
 
+        bool Completed { get; }
+
         Task CompleteAsync(IDictionary<string, Variable> variables,
             IDictionary<string, Variable> localVariables = null);
 

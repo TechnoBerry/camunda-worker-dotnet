@@ -12,8 +12,6 @@ namespace Camunda.Worker
 {
     public sealed class ExternalTaskContext : IExternalTaskContext
     {
-        private bool _completed;
-
         public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client)
         {
             Task = Guard.NotNull(task, nameof(task));
@@ -22,6 +20,7 @@ namespace Camunda.Worker
 
         public ExternalTask Task { get; }
         private IExternalTaskCamundaClient Client { get; }
+        public bool Completed { get; private set; }
 
         public async Task CompleteAsync(IDictionary<string, Variable> variables,
             IDictionary<string, Variable> localVariables = null)
@@ -38,7 +37,7 @@ namespace Camunda.Worker
 
             await Client.Complete(taskId, request);
 
-            _completed = true;
+            Completed = true;
         }
 
         public async Task ReportFailureAsync(string errorMessage, string errorDetails)
@@ -55,7 +54,7 @@ namespace Camunda.Worker
 
             await Client.ReportFailure(taskId, request);
 
-            _completed = true;
+            Completed = true;
         }
 
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
@@ -73,12 +72,12 @@ namespace Camunda.Worker
 
             await Client.ReportBpmnError(taskId, request);
 
-            _completed = true;
+            Completed = true;
         }
 
         private void ThrowIfCompleted()
         {
-            if (_completed)
+            if (Completed)
             {
                 throw new CamundaWorkerException("Unable to complete already completed task");
             }

@@ -33,6 +33,7 @@ namespace Camunda.Worker
 
             await context.CompleteAsync(new Dictionary<string, Variable>());
             _clientMock.VerifyAll();
+            Assert.True(context.Completed);
         }
 
         [Fact]
@@ -50,6 +51,7 @@ namespace Camunda.Worker
             await context.ReportFailureAsync("message", "details");
 
             _clientMock.VerifyAll();
+            Assert.True(context.Completed);
         }
 
         [Fact]
@@ -67,6 +69,7 @@ namespace Camunda.Worker
             await context.ReportBpmnErrorAsync("code", "message");
 
             _clientMock.VerifyAll();
+            Assert.True(context.Completed);
         }
 
         [Theory]
