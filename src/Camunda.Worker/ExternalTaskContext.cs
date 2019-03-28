@@ -22,6 +22,15 @@ namespace Camunda.Worker
         private IExternalTaskCamundaClient Client { get; }
         public bool Completed { get; private set; }
 
+        public async Task ExtendLockAsync(int newDuration)
+        {
+            var taskId = Task.Id;
+            var workerId = Task.WorkerId;
+            var request = new ExtendLockRequest(workerId, newDuration);
+
+            await Client.ExtendLock(taskId, request);
+        }
+
         public async Task CompleteAsync(IDictionary<string, Variable> variables,
             IDictionary<string, Variable> localVariables = null)
         {

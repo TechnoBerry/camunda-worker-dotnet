@@ -20,6 +20,24 @@ namespace Camunda.Worker
         private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
 
         [Fact]
+        public async Task TestExtendLockAsync()
+        {
+            const string taskId = "testTask";
+            var externalTask = CreateTask(taskId);
+
+            _clientMock.Setup(client =>
+                client.ExtendLock(It.IsAny<string>(), It.IsNotNull<ExtendLockRequest>(), CancellationToken.None)
+            ).Returns(Task.CompletedTask);
+
+            var context = CreateContext(externalTask);
+
+            await context.ExtendLockAsync(5_000);
+
+            _clientMock.VerifyAll();
+            Assert.False(context.Completed);
+        }
+
+        [Fact]
         public async Task TestCompleteAsync()
         {
             const string taskId = "testTask";
