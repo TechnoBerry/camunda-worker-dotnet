@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Alexey Malinin</Authors>
-    <Version>0.4.0</Version>
+    <Version>0.4.1</Version>
     <Description>Ultimate solution to connect your ASP.NET Core application to Camunda</Description>
     <PackageTags>camunda;worker;external</PackageTags>
     <PackageProjectUrl>https://github.com/AMalininHere/camunda-worker-dotnet</PackageProjectUrl>
