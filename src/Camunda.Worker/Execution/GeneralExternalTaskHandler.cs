@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -16,14 +18,17 @@ namespace Camunda.Worker.Execution
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHandlerFactoryProvider _handlerFactoryProvider;
+        private readonly IExceptionHandler _exceptionHandler;
         private readonly ILogger<GeneralExternalTaskHandler> _logger;
 
         public GeneralExternalTaskHandler(IServiceScopeFactory scopeFactory,
             IHandlerFactoryProvider handlerFactoryProvider,
+            IExceptionHandler exceptionHandler,
             ILogger<GeneralExternalTaskHandler> logger = null)
         {
             _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
             _handlerFactoryProvider = Guard.NotNull(handlerFactoryProvider, nameof(handlerFactoryProvider));
+            _exceptionHandler = Guard.NotNull(exceptionHandler, nameof(exceptionHandler));
             _logger = logger ?? new NullLogger<GeneralExternalTaskHandler>();
         }
 
@@ -45,7 +50,7 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private static async Task<IExecutionResult> ProcessSafe(IExternalTaskHandler handler, ExternalTask task)
+        private async Task<IExecutionResult> ProcessSafe(IExternalTaskHandler handler, ExternalTask task)
         {
             try
             {
@@ -54,7 +59,12 @@ namespace Camunda.Worker.Execution
             }
             catch (Exception e)
             {
-                return new FailureResult(e);
+                if (_exceptionHandler.TryTransformToResult(e, out var result))
+                {
+                    return result;
+                }
+
+                throw;
             }
         }
     }
