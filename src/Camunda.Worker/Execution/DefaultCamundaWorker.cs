@@ -33,7 +33,7 @@ namespace Camunda.Worker.Execution
             _externalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
             _handler = Guard.NotNull(handler, nameof(handler));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
-            _options = options.Value;
+            _options = Guard.NotNull(options, nameof(options)).Value;
             _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
 
