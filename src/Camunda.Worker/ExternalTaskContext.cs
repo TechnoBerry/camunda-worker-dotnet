@@ -4,6 +4,7 @@
 #endregion
 
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -12,6 +13,8 @@ namespace Camunda.Worker
 {
     public sealed class ExternalTaskContext : IExternalTaskContext
     {
+        private bool _disposed;
+
         public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client)
         {
             Task = Guard.NotNull(task, nameof(task));
@@ -24,6 +27,8 @@ namespace Camunda.Worker
 
         public async Task ExtendLockAsync(int newDuration)
         {
+            ThrowIfDisposed();
+
             var taskId = Task.Id;
             var workerId = Task.WorkerId;
             var request = new ExtendLockRequest(workerId, newDuration);
@@ -34,6 +39,7 @@ namespace Camunda.Worker
         public async Task CompleteAsync(IDictionary<string, Variable> variables,
             IDictionary<string, Variable> localVariables = null)
         {
+            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var taskId = Task.Id;
@@ -51,6 +57,7 @@ namespace Camunda.Worker
 
         public async Task ReportFailureAsync(string errorMessage, string errorDetails)
         {
+            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var taskId = Task.Id;
@@ -69,6 +76,7 @@ namespace Camunda.Worker
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
             IDictionary<string, Variable> variables = null)
         {
+            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var taskId = Task.Id;
@@ -84,12 +92,25 @@ namespace Camunda.Worker
             Completed = true;
         }
 
+        private void ThrowIfDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+
         private void ThrowIfCompleted()
         {
             if (Completed)
             {
                 throw new CamundaWorkerException("Unable to complete already completed task");
             }
+        }
+
+        public void Dispose()
+        {
+            _disposed = true;
         }
     }
 }

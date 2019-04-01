@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -88,15 +90,18 @@ namespace Camunda.Worker.Execution
 
         private async Task ExecuteInContext(IExternalTaskContext context)
         {
-            try
+            using (context)
             {
-                var result = await _handler.Process(context.Task);
+                try
+                {
+                    var result = await _handler.Process(context.Task);
 
-                await result.ExecuteResultAsync(context);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Failed execution of task {Id}", context.Task.Id);
+                    await result.ExecuteResultAsync(context);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Failed execution of task {Id}", context.Task.Id);
+                }
             }
         }
     }

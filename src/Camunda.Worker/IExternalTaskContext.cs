@@ -4,12 +4,13 @@
 #endregion
 
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Camunda.Worker
 {
-    public interface IExternalTaskContext
+    public interface IExternalTaskContext : IDisposable
     {
         ExternalTask Task { get; }
 
