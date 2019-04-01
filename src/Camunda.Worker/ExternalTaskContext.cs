@@ -8,21 +8,27 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker
 {
-    public sealed class ExternalTaskContext : IExternalTaskContext
+    public sealed class ExternalTaskContext : IExternalTaskContext, IDisposable
     {
         private bool _disposed;
+        private readonly IExternalTaskCamundaClient _client;
+        private readonly IServiceScope _scope;
 
-        public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client)
+        public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client, IServiceScope scope)
         {
             Task = Guard.NotNull(task, nameof(task));
-            Client = Guard.NotNull(client, nameof(client));
+            _client = Guard.NotNull(client, nameof(client));
+            _scope = Guard.NotNull(scope, nameof(scope));
         }
 
         public ExternalTask Task { get; }
-        private IExternalTaskCamundaClient Client { get; }
+
+        public IServiceProvider ServiceProvider => _scope.ServiceProvider;
+
         public bool Completed { get; private set; }
 
         public async Task ExtendLockAsync(int newDuration)
@@ -33,7 +39,7 @@ namespace Camunda.Worker
             var workerId = Task.WorkerId;
             var request = new ExtendLockRequest(workerId, newDuration);
 
-            await Client.ExtendLock(taskId, request);
+            await _client.ExtendLock(taskId, request);
         }
 
         public async Task CompleteAsync(IDictionary<string, Variable> variables,
@@ -50,7 +56,7 @@ namespace Camunda.Worker
                 LocalVariables = localVariables
             };
 
-            await Client.Complete(taskId, request);
+            await _client.Complete(taskId, request);
 
             Completed = true;
         }
@@ -68,7 +74,7 @@ namespace Camunda.Worker
                 ErrorDetails = errorDetails
             };
 
-            await Client.ReportFailure(taskId, request);
+            await _client.ReportFailure(taskId, request);
 
             Completed = true;
         }
@@ -87,7 +93,7 @@ namespace Camunda.Worker
                 Variables = variables
             };
 
-            await Client.ReportBpmnError(taskId, request);
+            await _client.ReportBpmnError(taskId, request);
 
             Completed = true;
         }
@@ -108,8 +114,10 @@ namespace Camunda.Worker
             }
         }
 
+
         public void Dispose()
         {
+            _scope?.Dispose();
             _disposed = true;
         }
     }

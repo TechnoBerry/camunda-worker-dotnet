@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -18,6 +19,7 @@ namespace Camunda.Worker
     public class ExternalTaskContextTest
     {
         private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
+        private readonly Mock<IServiceScope> _scopeMock = new Mock<IServiceScope>();
 
         [Fact]
         public async Task TestExtendLockAsync()
@@ -139,7 +141,7 @@ namespace Camunda.Worker
 
         private IExternalTaskContext CreateContext(ExternalTask task)
         {
-            return new ExternalTaskContext(task, _clientMock.Object);
+            return new ExternalTaskContext(task, _clientMock.Object, _scopeMock.Object);
         }
     }
 }

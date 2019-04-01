@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -21,6 +22,7 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IExternalTaskCamundaClient> _apiClientMock = new Mock<IExternalTaskCamundaClient>();
         private readonly Mock<IGeneralExternalTaskHandler> _handlerMock = new Mock<IGeneralExternalTaskHandler>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
+        private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
 
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
@@ -33,6 +35,13 @@ namespace Camunda.Worker.Execution
         {
             _topicsProviderMock.Setup(provider => provider.GetTopics())
                 .Returns(Enumerable.Empty<FetchAndLockRequest.Topic>());
+
+            _scopeFactoryMock.Setup(factory => factory.CreateScope())
+                .Returns(() =>
+                {
+                    var scopeMock = new Mock<IServiceScope>();
+                    return scopeMock.Object;
+                });
         }
 
         [Fact]
@@ -79,6 +88,7 @@ namespace Camunda.Worker.Execution
 
             await worker.Run(cts.Token);
 
+            _scopeFactoryMock.Verify(factory => factory.CreateScope(), Times.Once());
             _apiClientMock.Verify(
                 client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()),
                 Times.Once()
@@ -98,22 +108,6 @@ namespace Camunda.Worker.Execution
                     }
                 })
                 .ReturnsAsync(externalTasks);
-
-            _apiClientMock
-                .Setup(client => client.Complete(
-                    It.IsAny<string>(),
-                    It.IsAny<CompleteRequest>(),
-                    It.IsAny<CancellationToken>()))
-                .Callback(cts.Cancel)
-                .Returns(Task.CompletedTask);
-
-            _apiClientMock
-                .Setup(client => client.ReportFailure(
-                    It.IsAny<string>(),
-                    It.IsAny<ReportFailureRequest>(),
-                    It.IsAny<CancellationToken>()))
-                .Callback(cts.Cancel)
-                .Returns(Task.CompletedTask);
         }
 
         private ICamundaWorker CreateWorker()
@@ -122,6 +116,7 @@ namespace Camunda.Worker.Execution
                 _apiClientMock.Object,
                 _handlerMock.Object,
                 _topicsProviderMock.Object,
+                _scopeFactoryMock.Object,
                 _options
             );
         }

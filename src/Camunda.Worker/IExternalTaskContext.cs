@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 
 namespace Camunda.Worker
 {
-    public interface IExternalTaskContext : IDisposable
+    public interface IExternalTaskContext
     {
         ExternalTask Task { get; }
+
+        IServiceProvider ServiceProvider { get; }
 
         bool Completed { get; }
 

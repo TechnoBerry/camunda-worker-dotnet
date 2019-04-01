@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -23,18 +24,21 @@ namespace Camunda.Worker.Execution
         private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
         private readonly IGeneralExternalTaskHandler _handler;
         private readonly ITopicsProvider _topicsProvider;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly CamundaWorkerOptions _options;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
             IGeneralExternalTaskHandler handler,
             ITopicsProvider topicsProvider,
+            IServiceScopeFactory scopeFactory,
             IOptions<CamundaWorkerOptions> options,
             ILogger<DefaultCamundaWorker> logger = null)
         {
             _externalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
             _handler = Guard.NotNull(handler, nameof(handler));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
+            _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
             _options = Guard.NotNull(options, nameof(options)).Value;
             _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
@@ -85,10 +89,14 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private IExternalTaskContext CreateContext(ExternalTask externalTask) =>
-            new ExternalTaskContext(externalTask, _externalTaskCamundaClient);
+        private ExternalTaskContext CreateContext(ExternalTask externalTask)
+        {
+            var scope = _scopeFactory.CreateScope();
+            var context = new ExternalTaskContext(externalTask, _externalTaskCamundaClient, scope);
+            return context;
+        }
 
-        private async Task ExecuteInContext(IExternalTaskContext context)
+        private async Task ExecuteInContext(ExternalTaskContext context)
         {
             using (context)
             {
