@@ -62,7 +62,7 @@ namespace Camunda.Worker.Execution
         {
             try
             {
-                _logger.LogInformation("Waiting for external task");
+                _logger.LogDebug("Waiting for external task");
 
                 var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
                 {
@@ -83,7 +83,7 @@ namespace Camunda.Worker.Execution
             }
             catch (Exception e)
             {
-                _logger.LogError("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
+                _logger.LogWarning("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await Task.Delay(10_000, cancellationToken);
                 return Enumerable.Empty<ExternalTask>();
             }
@@ -106,7 +106,7 @@ namespace Camunda.Worker.Execution
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Failed execution of task {Id}", context.Task.Id);
+                    _logger.LogWarning(e, "Failed execution of task {Id}", context.Task.Id);
                 }
             }
         }
