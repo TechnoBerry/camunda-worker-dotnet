@@ -22,21 +22,21 @@ namespace Camunda.Worker.Execution
     public sealed class DefaultCamundaWorker : ICamundaWorker
     {
         private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
-        private readonly IGeneralExternalTaskHandler _handler;
+        private readonly IExternalTaskExecutor _executor;
         private readonly ITopicsProvider _topicsProvider;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly CamundaWorkerOptions _options;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
-            IGeneralExternalTaskHandler handler,
+            IExternalTaskExecutor executor,
             ITopicsProvider topicsProvider,
             IServiceScopeFactory scopeFactory,
             IOptions<CamundaWorkerOptions> options,
             ILogger<DefaultCamundaWorker> logger = null)
         {
             _externalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
-            _handler = Guard.NotNull(handler, nameof(handler));
+            _executor = Guard.NotNull(executor, nameof(executor));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
             _options = Guard.NotNull(options, nameof(options)).Value;
@@ -102,9 +102,7 @@ namespace Camunda.Worker.Execution
             {
                 try
                 {
-                    var result = await _handler.Process(context.Task);
-
-                    await result.ExecuteResultAsync(context);
+                    await _executor.Execute(context);
                 }
                 catch (Exception e)
                 {

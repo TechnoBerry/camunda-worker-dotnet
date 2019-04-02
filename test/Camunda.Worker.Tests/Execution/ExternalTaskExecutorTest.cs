@@ -7,29 +7,26 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class GeneralExternalTaskHandlerTest
+    public class ExternalTaskExecutorTest
     {
-        private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
-        private readonly Mock<IServiceScope> _scopeMock = new Mock<IServiceScope>();
         private readonly Mock<IServiceProvider> _providerMock = new Mock<IServiceProvider>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
 
         private readonly Mock<IHandlerFactoryProvider>
             _handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
 
         private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new Mock<IExceptionHandler>();
 
-        public GeneralExternalTaskHandlerTest()
+        public ExternalTaskExecutorTest()
         {
-            _scopeFactoryMock.Setup(factory => factory.CreateScope()).Returns(_scopeMock.Object);
-            _scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(_providerMock.Object);
+            _contextMock.SetupGet(context => context.ServiceProvider).Returns(_providerMock.Object);
+            _contextMock.SetupGet(context => context.Task).Returns(new ExternalTask("1", "testWorker", "testTopic"));
         }
 
         [Fact]
@@ -37,18 +34,16 @@ namespace Camunda.Worker.Execution
         {
             var handlerMock = MakeHandlerMock();
 
+            var resultMock = new Mock<IExecutionResult>();
+
             handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
-                .ReturnsAsync(new CompleteResult(new Dictionary<string, Variable>
-                {
-                    ["DONE"] = new Variable(true)
-                }));
+                .ReturnsAsync(resultMock.Object);
 
             var executor = MakeExecutor();
 
-            var result = await executor.Process(new ExternalTask("1", "testWorker", "testTopic"));
+            await executor.Execute(_contextMock.Object);
 
-            handlerMock.VerifyAll();
-            Assert.IsType<CompleteResult>(result);
+            resultMock.Verify(result => result.ExecuteResultAsync(It.IsAny<IExternalTaskContext>()), Times.Once());
         }
 
         [Fact]
@@ -58,18 +53,23 @@ namespace Camunda.Worker.Execution
 
             handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
                 .ThrowsAsync(new Exception("Test exception"));
-            IExecutionResult failureResult = new FailureResult("TEST", "TEST");
+
+            var transformedResultMock = new Mock<IExecutionResult>();
+            var transformedResult = transformedResultMock.Object;
             _exceptionHandlerMock
-                .Setup(handler => handler.TryTransformToResult(It.IsAny<Exception>(), out failureResult))
+                .Setup(handler => handler.TryTransformToResult(It.IsAny<Exception>(), out transformedResult))
                 .Returns(true);
 
             var executor = MakeExecutor();
 
-            var result = await executor.Process(new ExternalTask("1", "testWorker", "testTopic"));
+            await executor.Execute(_contextMock.Object);
 
             handlerMock.VerifyAll();
             _exceptionHandlerMock.VerifyAll();
-            Assert.IsType<FailureResult>(result);
+            transformedResultMock.Verify(
+                result => result.ExecuteResultAsync(It.IsAny<IExternalTaskContext>()),
+                Times.Once()
+            );
         }
 
         [Fact]
@@ -86,8 +86,7 @@ namespace Camunda.Worker.Execution
 
             var executor = MakeExecutor();
 
-            await Assert.ThrowsAsync<Exception>(async () =>
-                await executor.Process(new ExternalTask("1", "testWorker", "testTopic")));
+            await Assert.ThrowsAsync<Exception>(async () => await executor.Execute(_contextMock.Object));
 
             handlerMock.VerifyAll();
             _exceptionHandlerMock.VerifyAll();
@@ -106,13 +105,12 @@ namespace Camunda.Worker.Execution
         {
             var executor = MakeExecutor();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => executor.Process(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => executor.Execute(null));
         }
 
-        private IGeneralExternalTaskHandler MakeExecutor()
+        private IExternalTaskExecutor MakeExecutor()
         {
-            return new GeneralExternalTaskHandler(
-                _scopeFactoryMock.Object,
+            return new ExternalTaskExecutor(
                 _handlerFactoryProviderMock.Object,
                 _exceptionHandlerMock.Object
             );

@@ -4,9 +4,12 @@
 #endregion
 
 
+using System.Threading.Tasks;
+
 namespace Camunda.Worker.Execution
 {
-    public interface IGeneralExternalTaskHandler : IExternalTaskHandler
+    public interface IExternalTaskExecutor
     {
+        Task Execute(IExternalTaskContext context);
     }
 }

@@ -8,46 +8,40 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Camunda.Worker.Execution
 {
-    public sealed class GeneralExternalTaskHandler : IGeneralExternalTaskHandler
+    public sealed class ExternalTaskExecutor : IExternalTaskExecutor
     {
-        private readonly IServiceScopeFactory _scopeFactory;
         private readonly IHandlerFactoryProvider _handlerFactoryProvider;
         private readonly IExceptionHandler _exceptionHandler;
-        private readonly ILogger<GeneralExternalTaskHandler> _logger;
+        private readonly ILogger<ExternalTaskExecutor> _logger;
 
-        public GeneralExternalTaskHandler(IServiceScopeFactory scopeFactory,
-            IHandlerFactoryProvider handlerFactoryProvider,
+        public ExternalTaskExecutor(IHandlerFactoryProvider handlerFactoryProvider,
             IExceptionHandler exceptionHandler,
-            ILogger<GeneralExternalTaskHandler> logger = null)
+            ILogger<ExternalTaskExecutor> logger = null)
         {
-            _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
             _handlerFactoryProvider = Guard.NotNull(handlerFactoryProvider, nameof(handlerFactoryProvider));
             _exceptionHandler = Guard.NotNull(exceptionHandler, nameof(exceptionHandler));
-            _logger = logger ?? new NullLogger<GeneralExternalTaskHandler>();
+            _logger = logger ?? new NullLogger<ExternalTaskExecutor>();
         }
 
-        public async Task<IExecutionResult> Process(ExternalTask externalTask)
+        public async Task Execute(IExternalTaskContext context)
         {
-            Guard.NotNull(externalTask, nameof(externalTask));
+            Guard.NotNull(context, nameof(context));
 
+            var externalTask = context.Task;
             var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(externalTask);
+            var handler = handlerFactory(context.ServiceProvider);
 
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                var handler = handlerFactory(scope.ServiceProvider);
+            _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
 
-                _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
-                var result = await ProcessSafe(handler, externalTask);
-                _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
+            var executionResult = await ProcessSafe(handler, externalTask);
+            await executionResult.ExecuteResultAsync(context);
 
-                return result;
-            }
+            _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
         }
 
         private async Task<IExecutionResult> ProcessSafe(IExternalTaskHandler handler, ExternalTask task)

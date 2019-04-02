@@ -33,7 +33,7 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(IHandlerFactoryProvider));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(IGeneralExternalTaskHandler));
+                                           d.ServiceType == typeof(IExternalTaskExecutor));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(IExceptionHandler));
