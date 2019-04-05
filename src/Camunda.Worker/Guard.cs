@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -20,6 +22,17 @@ namespace Camunda.Worker
             }
 
             return parameterValue;
+        }
+
+        [ExcludeFromCodeCoverage]
+        internal static int GreaterThanOrEqual(int value, int minValue, string parameterName)
+        {
+            if (value < minValue)
+            {
+                throw new ArgumentException($"'{parameterName}' must be greater than or equal to {minValue}");
+            }
+
+            return value;
         }
     }
 }

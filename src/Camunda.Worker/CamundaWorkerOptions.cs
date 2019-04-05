@@ -17,21 +17,13 @@ namespace Camunda.Worker
         public string WorkerId
         {
             get => _workerId;
-            set => _workerId = Guard.NotNull(value, nameof(value));
+            set => _workerId = Guard.NotNull(value, nameof(WorkerId));
         }
 
         public int WorkerCount
         {
             get => _workerCount;
-            set
-            {
-                if (value < 1)
-                {
-                    throw new ArgumentException("'WorkerCount' must be greater than or equal to 1");
-                }
-
-                _workerCount = value;
-            }
+            set => _workerCount = Guard.GreaterThanOrEqual(value, 1, nameof(WorkerCount));
         }
 
         public Uri BaseUri { get; set; }
@@ -39,15 +31,7 @@ namespace Camunda.Worker
         public int AsyncResponseTimeout
         {
             get => _asyncResponseTimeout;
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentException("'AsyncResponseTimeout' must be greater than or equal to 0");
-                }
-
-                _asyncResponseTimeout = value;
-            }
+            set => _asyncResponseTimeout = Guard.GreaterThanOrEqual(value, 0, nameof(AsyncResponseTimeout));
         }
     }
 }

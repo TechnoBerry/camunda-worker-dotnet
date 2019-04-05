@@ -29,15 +29,7 @@ namespace Camunda.Worker
         public int LockDuration
         {
             get => _lockDuration;
-            set
-            {
-                if (value < 5_000)
-                {
-                    throw new ArgumentException("'LockDuration' must be greater than or equal to 5000");
-                }
-
-                _lockDuration = value;
-            }
+            set => _lockDuration = Guard.GreaterThanOrEqual(value, 5_000, nameof(LockDuration));
         }
     }
 }

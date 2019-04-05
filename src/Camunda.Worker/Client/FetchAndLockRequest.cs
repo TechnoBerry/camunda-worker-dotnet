@@ -13,7 +13,7 @@ namespace Camunda.Worker.Client
         public FetchAndLockRequest(string workerId, int maxTasks = 1)
         {
             WorkerId = Guard.NotNull(workerId, nameof(workerId));
-            MaxTasks = maxTasks;
+            MaxTasks = Guard.GreaterThanOrEqual(maxTasks, 1, nameof(maxTasks));
         }
 
         /// <summary>

@@ -42,10 +42,7 @@ namespace Camunda.Worker
 
         public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
         {
-            if (descriptor == null)
-            {
-                throw new ArgumentNullException(nameof(descriptor));
-            }
+            Guard.NotNull(descriptor, nameof(descriptor));
 
             Services.AddSingleton(descriptor);
             return this;
