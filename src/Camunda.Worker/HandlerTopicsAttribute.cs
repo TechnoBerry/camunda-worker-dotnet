@@ -1,24 +1,30 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Camunda.Worker
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class HandlerTopicAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class)]
+    public class HandlerTopicsAttribute : Attribute
     {
         private int _lockDuration = 5_000;
 
-        public HandlerTopicAttribute(string topicName)
+        public HandlerTopicsAttribute(params string[] topicNames)
         {
-            TopicName = Guard.NotNull(topicName, nameof(topicName));
+            Guard.NotNull(topicNames, nameof(topicNames));
+
+            TopicNames = topicNames.ToList();
         }
 
-        public string TopicName { get; }
+        public IReadOnlyList<string> TopicNames { get; }
 
         public int LockDuration
         {

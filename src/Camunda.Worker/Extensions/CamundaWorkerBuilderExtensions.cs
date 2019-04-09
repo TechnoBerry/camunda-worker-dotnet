@@ -31,22 +31,24 @@ namespace Camunda.Worker.Extensions
             where T : class, IExternalTaskHandler
         {
             var handlerType = typeof(T);
-            var topicAttributes = handlerType.GetCustomAttributes<HandlerTopicAttribute>().ToList();
+            var topicsAttribute = handlerType.GetCustomAttribute<HandlerTopicsAttribute>();
 
-            if (!topicAttributes.Any())
+            if (topicsAttribute == null)
             {
-                throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicAttribute\"");
+                throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicsAttribute\"");
             }
 
             var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+
+            var lockDuration = topicsAttribute.LockDuration;
             var localVariables = variablesAttribute?.LocalVariables ?? false;
             var variables = variablesAttribute?.Variables?.ToList();
 
-            return topicAttributes.Select(attribute =>
+            return topicsAttribute.TopicNames.Select(topicName =>
             {
-                var descriptor = new HandlerDescriptor(attribute.TopicName, HandlerFactory<T>)
+                var descriptor = new HandlerDescriptor(topicName, HandlerFactory<T>)
                 {
-                    LockDuration = attribute.LockDuration,
+                    LockDuration = lockDuration,
                     LocalVariables = localVariables,
                     Variables = variables
                 };

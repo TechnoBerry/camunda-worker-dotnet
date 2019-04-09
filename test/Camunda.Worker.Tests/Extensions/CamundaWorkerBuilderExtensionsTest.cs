@@ -57,8 +57,7 @@ namespace Camunda.Worker.Extensions
             Assert.Throws<Exception>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
         }
 
-        [HandlerTopic("testTopic_1")]
-        [HandlerTopic("testTopic_2")]
+        [HandlerTopics("testTopic_1", "testTopic_1")]
         [HandlerVariables("testVariable", LocalVariables = true)]
         private class HandlerWithTopics : IExternalTaskHandler
         {
