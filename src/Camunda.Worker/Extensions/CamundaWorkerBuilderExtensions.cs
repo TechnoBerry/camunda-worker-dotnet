@@ -22,15 +22,30 @@ namespace Camunda.Worker.Extensions
             var services = builder.Services;
             services.AddScoped<T>();
 
-            var handlerDescriptors = MakeDescriptors<T>();
+            var handlerMetadata = CollectMetadataFromAttributes(typeof(T));
+            var handlerDescriptors = MakeDescriptors<T>(handlerMetadata);
 
             return handlerDescriptors.Aggregate(builder, (acc, descriptor) => acc.AddHandlerDescriptor(descriptor));
         }
 
-        private static IEnumerable<HandlerDescriptor> MakeDescriptors<T>()
+        private static IEnumerable<HandlerDescriptor> MakeDescriptors<T>(HandlerMetadata metadata)
             where T : class, IExternalTaskHandler
         {
-            var handlerType = typeof(T);
+            return metadata.TopicNames.Select(topicName =>
+            {
+                var descriptor = new HandlerDescriptor(topicName, HandlerFactory<T>)
+                {
+                    LockDuration = metadata.LockDuration,
+                    LocalVariables = metadata.LocalVariables,
+                    Variables = metadata.Variables
+                };
+
+                return descriptor;
+            });
+        }
+
+        private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)
+        {
             var topicsAttribute = handlerType.GetCustomAttribute<HandlerTopicsAttribute>();
 
             if (topicsAttribute == null)
@@ -40,21 +55,13 @@ namespace Camunda.Worker.Extensions
 
             var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
 
-            var lockDuration = topicsAttribute.LockDuration;
-            var localVariables = variablesAttribute?.LocalVariables ?? false;
-            var variables = variablesAttribute?.Variables?.ToList();
-
-            return topicsAttribute.TopicNames.Select(topicName =>
+            return new HandlerMetadata
             {
-                var descriptor = new HandlerDescriptor(topicName, HandlerFactory<T>)
-                {
-                    LockDuration = lockDuration,
-                    LocalVariables = localVariables,
-                    Variables = variables
-                };
-
-                return descriptor;
-            });
+                TopicNames = topicsAttribute.TopicNames,
+                LockDuration = topicsAttribute.LockDuration,
+                LocalVariables = variablesAttribute?.LocalVariables ?? false,
+                Variables = variablesAttribute?.Variables
+            };
         }
 
         private static IExternalTaskHandler HandlerFactory<T>(IServiceProvider provider)
