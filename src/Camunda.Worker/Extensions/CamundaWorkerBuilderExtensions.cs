@@ -23,17 +23,16 @@ namespace Camunda.Worker.Extensions
             services.AddScoped<T>();
 
             var handlerMetadata = CollectMetadataFromAttributes(typeof(T));
-            var handlerDescriptors = MakeDescriptors<T>(handlerMetadata);
+            var handlerDescriptors = MakeDescriptors(HandlerFactory<T>, handlerMetadata);
 
             return handlerDescriptors.Aggregate(builder, (acc, descriptor) => acc.AddHandlerDescriptor(descriptor));
         }
 
-        private static IEnumerable<HandlerDescriptor> MakeDescriptors<T>(HandlerMetadata metadata)
-            where T : class, IExternalTaskHandler
+        private static IEnumerable<HandlerDescriptor> MakeDescriptors(HandlerFactory factory, HandlerMetadata metadata)
         {
             return metadata.TopicNames.Select(topicName =>
             {
-                var descriptor = new HandlerDescriptor(topicName, HandlerFactory<T>)
+                var descriptor = new HandlerDescriptor(topicName, factory)
                 {
                     LockDuration = metadata.LockDuration,
                     LocalVariables = metadata.LocalVariables,
