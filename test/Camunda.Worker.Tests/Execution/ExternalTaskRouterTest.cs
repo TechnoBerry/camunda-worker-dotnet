@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class ExternalTaskExecutorTest
+    public class ExternalTaskRouterTest
     {
         private readonly Mock<IServiceProvider> _providerMock = new Mock<IServiceProvider>();
         private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
@@ -23,7 +23,7 @@ namespace Camunda.Worker.Execution
 
         private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new Mock<IExceptionHandler>();
 
-        public ExternalTaskExecutorTest()
+        public ExternalTaskRouterTest()
         {
             _contextMock.SetupGet(context => context.ServiceProvider).Returns(_providerMock.Object);
             _contextMock.SetupGet(context => context.Task).Returns(new ExternalTask("1", "testWorker", "testTopic"));
@@ -108,9 +108,9 @@ namespace Camunda.Worker.Execution
             await Assert.ThrowsAsync<ArgumentNullException>(() => executor.Execute(null));
         }
 
-        private IExternalTaskExecutor MakeExecutor()
+        private IExternalTaskRouter MakeExecutor()
         {
-            return new ExternalTaskExecutor(
+            return new ExternalTaskRouter(
                 _handlerFactoryProviderMock.Object,
                 _exceptionHandlerMock.Object
             );

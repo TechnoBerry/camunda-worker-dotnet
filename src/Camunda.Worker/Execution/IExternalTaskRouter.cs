@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Camunda.Worker.Execution
 {
-    public interface IExternalTaskExecutor
+    public interface IExternalTaskRouter
     {
         Task Execute(IExternalTaskContext context);
     }

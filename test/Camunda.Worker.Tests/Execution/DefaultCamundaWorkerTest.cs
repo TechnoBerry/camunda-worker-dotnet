@@ -20,7 +20,7 @@ namespace Camunda.Worker.Execution
     public class DefaultCamundaWorkerTest
     {
         private readonly Mock<IExternalTaskCamundaClient> _apiClientMock = new Mock<IExternalTaskCamundaClient>();
-        private readonly Mock<IExternalTaskExecutor> _executorMock = new Mock<IExternalTaskExecutor>();
+        private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
         private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
 
@@ -60,7 +60,7 @@ namespace Camunda.Worker.Execution
                 Times.Once()
             );
             _apiClientMock.VerifyNoOtherCalls();
-            _executorMock.VerifyNoOtherCalls();
+            _routerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -73,7 +73,7 @@ namespace Camunda.Worker.Execution
                 new ExternalTask("test", "test", "test")
             });
 
-            _executorMock
+            _routerMock
                 .Setup(executor => executor.Execute(It.IsAny<IExternalTaskContext>()))
                 .Callback(cts.Cancel)
                 .Returns(Task.CompletedTask);
@@ -108,7 +108,7 @@ namespace Camunda.Worker.Execution
         {
             return new DefaultCamundaWorker(
                 _apiClientMock.Object,
-                _executorMock.Object,
+                _routerMock.Object,
                 _topicsProviderMock.Object,
                 _scopeFactoryMock.Object,
                 _options
