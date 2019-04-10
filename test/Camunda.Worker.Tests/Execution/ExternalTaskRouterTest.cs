@@ -30,7 +30,7 @@ namespace Camunda.Worker.Execution
         }
 
         [Fact]
-        public async Task TestExecute()
+        public async Task TestRouteAsync()
         {
             var handlerMock = MakeHandlerMock();
 
@@ -41,7 +41,7 @@ namespace Camunda.Worker.Execution
 
             var executor = MakeExecutor();
 
-            await executor.Execute(_contextMock.Object);
+            await executor.RouteAsync(_contextMock.Object);
 
             resultMock.Verify(result => result.ExecuteResultAsync(It.IsAny<IExternalTaskContext>()), Times.Once());
         }
@@ -62,7 +62,7 @@ namespace Camunda.Worker.Execution
 
             var executor = MakeExecutor();
 
-            await executor.Execute(_contextMock.Object);
+            await executor.RouteAsync(_contextMock.Object);
 
             handlerMock.VerifyAll();
             _exceptionHandlerMock.VerifyAll();
@@ -73,7 +73,7 @@ namespace Camunda.Worker.Execution
         }
 
         [Fact]
-        public async Task TestExecuteWithUntransformedException()
+        public async Task TestRouteAsyncWithUntransformedException()
         {
             var handlerMock = MakeHandlerMock();
 
@@ -86,7 +86,7 @@ namespace Camunda.Worker.Execution
 
             var executor = MakeExecutor();
 
-            await Assert.ThrowsAsync<Exception>(async () => await executor.Execute(_contextMock.Object));
+            await Assert.ThrowsAsync<Exception>(async () => await executor.RouteAsync(_contextMock.Object));
 
             handlerMock.VerifyAll();
             _exceptionHandlerMock.VerifyAll();
@@ -101,11 +101,11 @@ namespace Camunda.Worker.Execution
         }
 
         [Fact]
-        public async Task TestExecuteWithNullArg()
+        public async Task TestRouteAsyncWithNullArg()
         {
             var executor = MakeExecutor();
 
-            await Assert.ThrowsAsync<ArgumentNullException>(() => executor.Execute(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(() => executor.RouteAsync(null));
         }
 
         private IExternalTaskRouter MakeExecutor()

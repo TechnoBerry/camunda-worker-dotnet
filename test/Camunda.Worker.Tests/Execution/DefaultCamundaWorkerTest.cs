@@ -74,7 +74,7 @@ namespace Camunda.Worker.Execution
             });
 
             _routerMock
-                .Setup(executor => executor.Execute(It.IsAny<IExternalTaskContext>()))
+                .Setup(executor => executor.RouteAsync(It.IsAny<IExternalTaskContext>()))
                 .Callback(cts.Cancel)
                 .Returns(Task.CompletedTask);
 

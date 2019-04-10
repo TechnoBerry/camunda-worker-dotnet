@@ -28,7 +28,7 @@ namespace Camunda.Worker.Execution
             _logger = logger ?? new NullLogger<ExternalTaskRouter>();
         }
 
-        public async Task Execute(IExternalTaskContext context)
+        public async Task RouteAsync(IExternalTaskContext context)
         {
             Guard.NotNull(context, nameof(context));
 

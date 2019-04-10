@@ -10,6 +10,6 @@ namespace Camunda.Worker.Execution
 {
     public interface IExternalTaskRouter
     {
-        Task Execute(IExternalTaskContext context);
+        Task RouteAsync(IExternalTaskContext context);
     }
 }

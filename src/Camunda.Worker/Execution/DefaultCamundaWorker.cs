@@ -104,7 +104,7 @@ namespace Camunda.Worker.Execution
             {
                 try
                 {
-                    await _router.Execute(context);
+                    await _router.RouteAsync(context);
                 }
                 catch (Exception e)
                 {
