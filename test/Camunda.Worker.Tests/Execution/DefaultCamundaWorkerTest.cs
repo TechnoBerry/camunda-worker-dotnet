@@ -25,13 +25,7 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
         private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
-
-        private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
-        {
-            WorkerId = "testWorker",
-            BaseUri = new Uri("http://test"),
-            AsyncResponseTimeout = 5_000
-        });
+        private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
 
         public DefaultCamundaWorkerTest()
         {
@@ -56,18 +50,14 @@ namespace Camunda.Worker.Execution
         {
             var cts = new CancellationTokenSource();
 
-            ConfigureApiService(cts, new List<ExternalTask>());
+            ConfigureSelector(cts, new List<ExternalTask>());
 
             var worker = CreateWorker();
 
             await worker.Run(cts.Token);
 
-            _apiClientMock.Verify(
-                client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()),
-                Times.Once()
-            );
-            _apiClientMock.VerifyNoOtherCalls();
             _routerMock.VerifyNoOtherCalls();
+            _selectorMock.VerifyAll();
         }
 
         [Fact]
@@ -75,7 +65,7 @@ namespace Camunda.Worker.Execution
         {
             var cts = new CancellationTokenSource();
 
-            ConfigureApiService(cts, new List<ExternalTask>
+            ConfigureSelector(cts, new List<ExternalTask>
             {
                 new ExternalTask("test", "test", "test")
             });
@@ -90,14 +80,10 @@ namespace Camunda.Worker.Execution
             await worker.Run(cts.Token);
 
             _scopeFactoryMock.Verify(factory => factory.CreateScope(), Times.Once());
-            _apiClientMock.Verify(
-                client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()),
-                Times.Once()
-            );
-            _apiClientMock.VerifyNoOtherCalls();
+            _selectorMock.VerifyAll();
         }
 
-        private void ConfigureApiService(CancellationTokenSource cts, IList<ExternalTask> externalTasks)
+        private void ConfigureSelector(CancellationTokenSource cts, IList<ExternalTask> externalTasks)
         {
             _apiClientMock
                 .Setup(client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
@@ -109,16 +95,23 @@ namespace Camunda.Worker.Execution
                     }
                 })
                 .ReturnsAsync(externalTasks);
+
+            _selectorMock
+                .Setup(selector => selector.SelectAsync(
+                    It.IsAny<IEnumerable<FetchAndLockRequest.Topic>>(),
+                    It.IsAny<CancellationToken>()
+                ))
+                .Callback(cts.Cancel)
+                .ReturnsAsync(externalTasks);
         }
 
         private ICamundaWorker CreateWorker()
         {
             return new DefaultCamundaWorker(
-                _apiClientMock.Object,
                 _routerMock.Object,
                 _topicsProviderMock.Object,
-                _scopeFactoryMock.Object,
-                _options
+                _selectorMock.Object,
+                _scopeFactoryMock.Object
             );
         }
     }

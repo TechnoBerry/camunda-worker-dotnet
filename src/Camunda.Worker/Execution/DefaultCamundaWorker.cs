@@ -11,35 +11,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution
 {
     public sealed class DefaultCamundaWorker : ICamundaWorker
     {
-        private readonly IExternalTaskCamundaClient _externalTaskCamundaClient;
         private readonly IExternalTaskRouter _router;
         private readonly ITopicsProvider _topicsProvider;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly CamundaWorkerOptions _options;
+        private readonly IExternalTaskSelector _selector;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
-        public DefaultCamundaWorker(IExternalTaskCamundaClient externalTaskCamundaClient,
-            IExternalTaskRouter router,
+        public DefaultCamundaWorker(IExternalTaskRouter router,
             ITopicsProvider topicsProvider,
+            IExternalTaskSelector selector,
             IServiceScopeFactory scopeFactory,
-            IOptions<CamundaWorkerOptions> options,
             ILogger<DefaultCamundaWorker> logger = null)
         {
-            _externalTaskCamundaClient = Guard.NotNull(externalTaskCamundaClient, nameof(externalTaskCamundaClient));
             _router = Guard.NotNull(router, nameof(router));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
+            _selector = Guard.NotNull(selector, nameof(selector));
             _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
-            _options = Guard.NotNull(options, nameof(options)).Value;
             _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
 
@@ -58,37 +53,11 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private async Task<IEnumerable<ExternalTask>> SelectExternalTasks(CancellationToken cancellationToken)
+        private Task<IEnumerable<ExternalTask>> SelectExternalTasks(CancellationToken cancellationToken)
         {
-            try
-            {
-                _logger.LogDebug("Waiting for external task");
-
-                var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
-                {
-                    UsePriority = true,
-                    AsyncResponseTimeout = _options.AsyncResponseTimeout,
-                    Topics = _topicsProvider.GetTopics()
-                };
-
-                var externalTasks = await _externalTaskCamundaClient.FetchAndLock(
-                    fetchAndLockRequest, cancellationToken
-                );
-
-                _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
-
-                return externalTasks;
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
-                await Task.Delay(10_000, cancellationToken);
-                return Enumerable.Empty<ExternalTask>();
-            }
+            var topics = _topicsProvider.GetTopics();
+            var selectedTasks = _selector.SelectAsync(topics, cancellationToken);
+            return selectedTasks;
         }
 
         private ExternalTaskContext CreateContext(ExternalTask externalTask)
