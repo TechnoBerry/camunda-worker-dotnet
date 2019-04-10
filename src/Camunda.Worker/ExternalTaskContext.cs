@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -15,14 +17,14 @@ namespace Camunda.Worker
     public sealed class ExternalTaskContext : IExternalTaskContext, IDisposable
     {
         private bool _disposed;
-        private readonly IExternalTaskCamundaClient _client;
         private readonly IServiceScope _scope;
+        private readonly IExternalTaskCamundaClient _client;
 
-        public ExternalTaskContext(ExternalTask task, IExternalTaskCamundaClient client, IServiceScope scope)
+        public ExternalTaskContext(ExternalTask task, IServiceScope scope)
         {
             Task = Guard.NotNull(task, nameof(task));
-            _client = Guard.NotNull(client, nameof(client));
             _scope = Guard.NotNull(scope, nameof(scope));
+            _client = _scope.ServiceProvider.GetRequiredService<IExternalTaskCamundaClient>();
         }
 
         public ExternalTask Task { get; }

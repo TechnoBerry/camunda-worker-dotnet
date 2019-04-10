@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -36,10 +38,15 @@ namespace Camunda.Worker.Execution
             _topicsProviderMock.Setup(provider => provider.GetTopics())
                 .Returns(Enumerable.Empty<FetchAndLockRequest.Topic>());
 
+            var providerMock = new Mock<IServiceProvider>();
+            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskCamundaClient)))
+                .Returns(_apiClientMock.Object);
+
             _scopeFactoryMock.Setup(factory => factory.CreateScope())
                 .Returns(() =>
                 {
                     var scopeMock = new Mock<IServiceScope>();
+                    scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(providerMock.Object);
                     return scopeMock.Object;
                 });
         }

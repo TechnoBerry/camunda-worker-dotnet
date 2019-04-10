@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -20,6 +22,15 @@ namespace Camunda.Worker
     {
         private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
         private readonly Mock<IServiceScope> _scopeMock = new Mock<IServiceScope>();
+
+        public ExternalTaskContextTest()
+        {
+            var providerMock = new Mock<IServiceProvider>();
+            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskCamundaClient)))
+                .Returns(_clientMock.Object);
+            _scopeMock.SetupGet(scope => scope.ServiceProvider)
+                .Returns(providerMock.Object);
+        }
 
         [Fact]
         public async Task TestExtendLockAsync()
@@ -141,7 +152,7 @@ namespace Camunda.Worker
 
         private IExternalTaskContext CreateContext(ExternalTask task)
         {
-            return new ExternalTaskContext(task, _clientMock.Object, _scopeMock.Object);
+            return new ExternalTaskContext(task, _scopeMock.Object);
         }
     }
 }

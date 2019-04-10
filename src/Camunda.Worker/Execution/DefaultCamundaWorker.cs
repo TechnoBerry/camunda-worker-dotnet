@@ -94,7 +94,7 @@ namespace Camunda.Worker.Execution
         private ExternalTaskContext CreateContext(ExternalTask externalTask)
         {
             var scope = _scopeFactory.CreateScope();
-            var context = new ExternalTaskContext(externalTask, _externalTaskCamundaClient, scope);
+            var context = new ExternalTaskContext(externalTask, scope);
             return context;
         }
 
