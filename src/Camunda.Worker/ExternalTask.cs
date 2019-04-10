@@ -22,11 +22,18 @@ namespace Camunda.Worker
         public string Id { get; }
         public string WorkerId { get; }
         public string TopicName { get; }
+        public int Priority { get; set; }
+        public string ExecutionId { get; set; }
+        public string ActivityId { get; set; }
+        public string ActivityInstanceId { get; set; }
         public string TenantId { get; set; }
         public string ProcessDefinitionId { get; set; }
         public string ProcessDefinitionKey { get; set; }
         public string ProcessInstanceId { get; set; }
         public string BusinessKey { get; set; }
+        public int? Retries { get; set; }
+        public string ErrorMessage { get; set; }
+        public string ErrorDetails { get; set; }
         public IDictionary<string, Variable> Variables { get; set; }
     }
 }
