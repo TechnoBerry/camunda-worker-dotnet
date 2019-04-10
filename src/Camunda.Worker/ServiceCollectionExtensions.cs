@@ -29,6 +29,7 @@ namespace Camunda.Worker
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
+            services.TryAddTransient<IExternalTaskSelector, ExternalTaskSelector>();
             services.AddHostedService<WorkerHostedService>();
 
             services.TryAddTransient<IExternalTaskRouter, ExternalTaskRouter>();
