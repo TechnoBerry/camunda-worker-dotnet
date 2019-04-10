@@ -75,6 +75,8 @@ namespace Camunda.Worker.Execution
                     fetchAndLockRequest, cancellationToken
                 );
 
+                _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
+
                 return externalTasks;
             }
             catch (OperationCanceledException)
