@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -16,7 +18,12 @@ namespace SampleCamundaWorker.Handlers
     {
         public async Task<IExecutionResult> Process(ExternalTask externalTask)
         {
-            var username = externalTask.Variables["USERNAME"].Value;
+            if (!externalTask.Variables.TryGetValue("USERNAME", out var usernameVariable))
+            {
+                return new BpmnErrorResult("NO_USER", "Username not provided");
+            }
+
+            var username = usernameVariable.Value;
 
             await Task.Delay(1000);
 

@@ -1,6 +1,8 @@
 ﻿#region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -33,7 +35,8 @@ namespace SampleCamundaWorker
                     options.WorkerCount = 4;
                     options.BaseUri = new Uri("http://localhost:8080/engine-rest");
                 })
-                .AddHandler<SayHelloHandler>();
+                .AddHandler<SayHelloHandler>()
+                .AddHandler<SayHelloGuestHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
