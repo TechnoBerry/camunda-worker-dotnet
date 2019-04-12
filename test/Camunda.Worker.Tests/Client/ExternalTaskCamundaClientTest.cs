@@ -21,62 +21,6 @@ namespace Camunda.Worker.Client
         private readonly MockHttpMessageHandler _handlerMock = new MockHttpMessageHandler();
 
         [Fact]
-        public void TestConstructWithNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => new ExternalTaskCamundaClient(null));
-        }
-
-        [Theory]
-        [MemberData(nameof(GetActionsWithNullArgument))]
-        public async Task TestCallWithNullArgument(Func<IExternalTaskCamundaClient, Task> func)
-        {
-            using (var client = MakeClient())
-            {
-                await Assert.ThrowsAsync<ArgumentNullException>(() => func(client));
-            }
-        }
-
-        public static IEnumerable<object[]> GetActionsWithNullArgument()
-        {
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.FetchAndLock(null))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.Complete("taskId", null))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.Complete(null, new CompleteRequest("test")))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure("taskId", null))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure(null, new ReportFailureRequest("test")))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure("taskId", null))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure(null, new ReportFailureRequest("test")))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ExtendLock("taskId", null))
-            };
-            yield return new object[]
-            {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ExtendLock(null, new ExtendLockRequest("test", 10)))
-            };
-        }
-
-        [Fact]
         public async Task TestFetchAndLock()
         {
             using (var client = MakeClient())
