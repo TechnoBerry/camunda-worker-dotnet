@@ -32,6 +32,14 @@ namespace Camunda.Worker.Client
                             ""topicName"": ""testTopic"",
                             ""processDefinitionId"": ""testDefinitionId"",
                             ""processDefinitionKey"": ""testDefinitionKey"",
+                            ""activityId"": ""anActivityId"",
+                            ""activityInstanceId"": ""anActivityInstanceId"",
+                            ""errorMessage"": ""anErrorMessage"",
+                            ""errorDetails"": ""anErrorDetails"",
+                            ""executionId"": ""anExecutionId"",
+                            ""tenantId"": null,
+                            ""retries"": 3,
+                            ""priority"": 4,
                             ""variables"": {
                                 ""TEST"": {
                                     ""value"": ""testString"",
@@ -55,14 +63,6 @@ namespace Camunda.Worker.Client
                 _handlerMock.VerifyNoOutstandingExpectation();
                 var firstTask = Assert.Single(externalTasks);
                 Assert.NotNull(firstTask);
-                Assert.Equal("testTask", firstTask.Id);
-                Assert.Equal("testTopic", firstTask.TopicName);
-                Assert.Equal("testWorker", firstTask.WorkerId);
-                Assert.Equal("testDefinitionId", firstTask.ProcessDefinitionId);
-                Assert.Equal("testDefinitionKey", firstTask.ProcessDefinitionKey);
-                var testVariable = Assert.Contains("TEST", firstTask.Variables);
-                Assert.Equal("testString", testVariable.Value);
-                Assert.Equal(VariableType.String, testVariable.Type);
             }
         }
 
