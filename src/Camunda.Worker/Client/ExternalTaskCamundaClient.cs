@@ -33,7 +33,6 @@ namespace Camunda.Worker.Client
 
             using (var response = await SendRequest("external-task/fetchAndLock", request, cancellationToken))
             {
-                response.EnsureSuccessStatusCode();
                 var externalTasks = await response.Content.ReadAsObjectAsync<IList<ExternalTask>>();
                 return externalTasks;
             }
@@ -89,7 +88,7 @@ namespace Camunda.Worker.Client
             var basePath = _httpClient.BaseAddress.AbsolutePath.TrimEnd('/');
             var requestPath = $"{basePath}/{path}";
             var response = await _httpClient.PostJsonAsync(requestPath, body, cancellationToken);
-            return response;
+            return response.EnsureSuccessStatusCode();
         }
     }
 }

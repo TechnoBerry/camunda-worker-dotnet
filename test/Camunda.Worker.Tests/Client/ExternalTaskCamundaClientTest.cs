@@ -201,6 +201,52 @@ namespace Camunda.Worker.Client
             }
         }
 
+        [Theory]
+        [MemberData(nameof(GetApiActions))]
+        public async Task TestThrowsExceptionOnNonSuccessfulStatusCode(Func<IExternalTaskCamundaClient, Task> action)
+        {
+            using (var client = MakeClient())
+            {
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/extendLock")
+                    .Respond(HttpStatusCode.InternalServerError);
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/complete")
+                    .Respond(HttpStatusCode.InternalServerError);
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/failure")
+                    .Respond(HttpStatusCode.InternalServerError);
+                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/bpmnError")
+                    .Respond(HttpStatusCode.InternalServerError);
+
+                await Assert.ThrowsAsync<HttpRequestException>(() => action(client));
+            }
+        }
+
+        public static IEnumerable<object[]> GetApiActions()
+        {
+            var fetchAndLockRequest = new FetchAndLockRequest("testWorker", 10);
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.FetchAndLock(fetchAndLockRequest))
+            };
+
+            var completeRequest = new CompleteRequest("testWorker");
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.Complete("taskId", completeRequest))
+            };
+
+            var reportFailureRequest = new ReportFailureRequest("test");
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure("taskId", reportFailureRequest))
+            };
+
+            var bpmnErrorRequest = new BpmnErrorRequest("test", "test");
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportBpmnError("taskId", bpmnErrorRequest))
+            };
+        }
+
         private ExternalTaskCamundaClient MakeClient()
         {
             return new ExternalTaskCamundaClient(
