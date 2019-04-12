@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -54,8 +53,8 @@ namespace Camunda.Worker.Client
                 var externalTasks = await client.FetchAndLock(request, CancellationToken.None);
 
                 _handlerMock.VerifyNoOutstandingExpectation();
-                Assert.Single(externalTasks);
-                var firstTask = externalTasks.First();
+                var firstTask = Assert.Single(externalTasks);
+                Assert.NotNull(firstTask);
                 Assert.Equal("testTask", firstTask.Id);
                 Assert.Equal("testTopic", firstTask.TopicName);
                 Assert.Equal("testWorker", firstTask.WorkerId);
