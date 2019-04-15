@@ -4,6 +4,7 @@
 #endregion
 
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
@@ -38,6 +39,11 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public Variable(string value) : this(value, VariableType.String)
+        {
+        }
+
+        [ExcludeFromCodeCoverage]
+        public Variable(byte[] value) : this(Convert.ToBase64String(value), VariableType.Bytes)
         {
         }
 
