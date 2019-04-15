@@ -1,10 +1,13 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
 using System;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -18,18 +21,22 @@ namespace Camunda.Worker
         [Fact]
         public async Task TestExecuteResultAsync()
         {
+            Expression<Func<IExternalTaskContext, Task>> expression = context => context.ReportFailureAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int?>(),
+                It.IsAny<int?>()
+            );
+
             _contextMock
-                .Setup(context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(expression)
                 .Returns(Task.CompletedTask);
 
             var result = new FailureResult(new Exception("Message"));
 
             await result.ExecuteResultAsync(_contextMock.Object);
 
-            _contextMock.Verify(
-                context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()),
-                Times.Once()
-            );
+            _contextMock.Verify(expression, Times.Once());
             _contextMock.VerifyNoOtherCalls();
         }
     }

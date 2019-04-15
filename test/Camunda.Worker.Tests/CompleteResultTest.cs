@@ -6,7 +6,9 @@
 #endregion
 
 
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -57,8 +59,15 @@ namespace Camunda.Worker
                     Message = "an error message"
                 }, HttpStatusCode.InternalServerError));
 
+            Expression<Func<IExternalTaskContext, Task>> failureExpression = context => context.ReportFailureAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int?>(),
+                It.IsAny<int?>()
+            );
+
             _contextMock
-                .Setup(context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(failureExpression)
                 .Returns(Task.CompletedTask);
 
             var result = new CompleteResult(new Dictionary<string, Variable>());
@@ -72,10 +81,7 @@ namespace Camunda.Worker
                 ),
                 Times.Once()
             );
-            _contextMock.Verify(
-                context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>()),
-                Times.Once()
-            );
+            _contextMock.Verify(failureExpression, Times.Once());
             _contextMock.VerifyNoOtherCalls();
         }
     }

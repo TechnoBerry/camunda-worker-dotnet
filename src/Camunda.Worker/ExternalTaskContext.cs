@@ -63,7 +63,9 @@ namespace Camunda.Worker
             Completed = true;
         }
 
-        public async Task ReportFailureAsync(string errorMessage, string errorDetails)
+        public async Task ReportFailureAsync(string errorMessage, string errorDetails,
+            int? retries = default,
+            int? retryTimeout = default)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
@@ -73,7 +75,9 @@ namespace Camunda.Worker
             var request = new ReportFailureRequest(workerId)
             {
                 ErrorMessage = errorMessage,
-                ErrorDetails = errorDetails
+                ErrorDetails = errorDetails,
+                Retries = retries,
+                RetryTimeout = retryTimeout
             };
 
             await _client.ReportFailure(taskId, request);
