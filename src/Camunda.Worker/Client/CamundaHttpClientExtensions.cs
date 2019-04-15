@@ -1,10 +1,13 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,5 +59,8 @@ namespace Camunda.Worker.Client
             var result = JsonConvert.DeserializeObject<T>(jsonResponse, SerializerSettings);
             return result;
         }
+
+        internal static bool IsJson(this HttpContentHeaders headers) =>
+            headers.ContentType.MediaType == JsonContentType;
     }
 }

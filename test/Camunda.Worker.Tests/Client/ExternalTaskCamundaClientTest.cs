@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using RichardSzalay.MockHttp;
@@ -176,7 +177,7 @@ namespace Camunda.Worker.Client
                         ""type"": ""An error type"",
                         ""message"": ""An error message""
                     }
-                ");
+                ", Encoding.UTF8, "application/json");
 
                 _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
                     .Respond(HttpStatusCode.InternalServerError, errorContent);
