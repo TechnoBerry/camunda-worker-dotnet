@@ -88,6 +88,14 @@ namespace Camunda.Worker.Client
             var basePath = _httpClient.BaseAddress.AbsolutePath.TrimEnd('/');
             var requestPath = $"{basePath}/{path}";
             var response = await _httpClient.PostJsonAsync(requestPath, body, cancellationToken);
+
+            if (!response.IsSuccessStatusCode && response.Content != null)
+            {
+                var errorResponse = await response.Content.ReadAsObjectAsync<ErrorResponse>();
+                response.Content.Dispose();
+                throw new ClientException(errorResponse, response.StatusCode);
+            }
+
             return response.EnsureSuccessStatusCode();
         }
     }

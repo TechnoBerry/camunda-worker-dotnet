@@ -1,11 +1,15 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
+using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
@@ -22,9 +26,16 @@ namespace Camunda.Worker
 
         public IDictionary<string, Variable> LocalVariables { get; }
 
-        public Task ExecuteResultAsync(IExternalTaskContext context)
+        public async Task ExecuteResultAsync(IExternalTaskContext context)
         {
-            return context.CompleteAsync(Variables, LocalVariables);
+            try
+            {
+                await context.CompleteAsync(Variables, LocalVariables);
+            }
+            catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                await context.ReportFailureAsync(e.ErrorType, e.ErrorMessage);
+            }
         }
     }
 }

@@ -146,20 +146,53 @@ namespace Camunda.Worker.Client
 
         [Theory]
         [MemberData(nameof(GetApiActions))]
-        public async Task TestThrowsExceptionOnNonSuccessfulStatusCode(Func<IExternalTaskCamundaClient, Task> action)
+        public async Task TestThrowsHttpRequestException(Func<IExternalTaskCamundaClient, Task> action)
         {
             using (var client = MakeClient())
             {
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/extendLock")
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
                     .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/complete")
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
                     .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/failure")
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
                     .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/bpmnError")
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
+                    .Respond(HttpStatusCode.InternalServerError);
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
                     .Respond(HttpStatusCode.InternalServerError);
 
                 await Assert.ThrowsAsync<HttpRequestException>(() => action(client));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetApiActions))]
+        public async Task TestThrowsClientException(Func<IExternalTaskCamundaClient, Task> action)
+        {
+            using (var client = MakeClient())
+            {
+                var errorContent = new StringContent(@"
+                    {
+                        ""type"": ""An error type"",
+                        ""message"": ""An error message""
+                    }
+                ");
+
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
+                    .Respond(HttpStatusCode.InternalServerError, errorContent);
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
+                    .Respond(HttpStatusCode.InternalServerError, errorContent);
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
+                    .Respond(HttpStatusCode.InternalServerError, errorContent);
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
+                    .Respond(HttpStatusCode.InternalServerError, errorContent);
+                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
+                    .Respond(HttpStatusCode.InternalServerError, errorContent);
+
+                var clientException = await Assert.ThrowsAsync<ClientException>(() => action(client));
+                Assert.Equal(HttpStatusCode.InternalServerError, clientException.StatusCode);
+                Assert.Equal("An error type", clientException.ErrorType);
+                Assert.Equal("An error message", clientException.ErrorMessage);
             }
         }
 
@@ -169,6 +202,12 @@ namespace Camunda.Worker.Client
             yield return new object[]
             {
                 new Func<IExternalTaskCamundaClient, Task>(c => c.FetchAndLock(fetchAndLockRequest))
+            };
+
+            var extendLockRequest = new ExtendLockRequest("testWorker", 10_000);
+            yield return new object[]
+            {
+                new Func<IExternalTaskCamundaClient, Task>(c => c.ExtendLock("taskId", extendLockRequest))
             };
 
             var completeRequest = new CompleteRequest("testWorker");
