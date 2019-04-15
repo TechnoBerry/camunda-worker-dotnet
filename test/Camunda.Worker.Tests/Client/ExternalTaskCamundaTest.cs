@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Camunda.Worker.Client
 {
-    public class ExternalTaskCamundaClientTest
+    public class ExternalTaskCamundaTest
     {
         private readonly MockHttpMessageHandler _handlerMock = new MockHttpMessageHandler();
 
@@ -147,7 +147,7 @@ namespace Camunda.Worker.Client
 
         [Theory]
         [MemberData(nameof(GetApiActions))]
-        public async Task TestThrowsHttpRequestException(Func<IExternalTaskCamundaClient, Task> action)
+        public async Task TestThrowsHttpRequestException(Func<IExternalTaskClient, Task> action)
         {
             using (var client = MakeClient())
             {
@@ -168,7 +168,7 @@ namespace Camunda.Worker.Client
 
         [Theory]
         [MemberData(nameof(GetApiActions))]
-        public async Task TestThrowsClientException(Func<IExternalTaskCamundaClient, Task> action)
+        public async Task TestThrowsClientException(Func<IExternalTaskClient, Task> action)
         {
             using (var client = MakeClient())
             {
@@ -202,37 +202,37 @@ namespace Camunda.Worker.Client
             var fetchAndLockRequest = new FetchAndLockRequest("testWorker", 10);
             yield return new object[]
             {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.FetchAndLock(fetchAndLockRequest))
+                new Func<IExternalTaskClient, Task>(c => c.FetchAndLock(fetchAndLockRequest))
             };
 
             var extendLockRequest = new ExtendLockRequest("testWorker", 10_000);
             yield return new object[]
             {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ExtendLock("taskId", extendLockRequest))
+                new Func<IExternalTaskClient, Task>(c => c.ExtendLock("taskId", extendLockRequest))
             };
 
             var completeRequest = new CompleteRequest("testWorker");
             yield return new object[]
             {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.Complete("taskId", completeRequest))
+                new Func<IExternalTaskClient, Task>(c => c.Complete("taskId", completeRequest))
             };
 
             var reportFailureRequest = new ReportFailureRequest("test");
             yield return new object[]
             {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportFailure("taskId", reportFailureRequest))
+                new Func<IExternalTaskClient, Task>(c => c.ReportFailure("taskId", reportFailureRequest))
             };
 
             var bpmnErrorRequest = new BpmnErrorRequest("test", "test");
             yield return new object[]
             {
-                new Func<IExternalTaskCamundaClient, Task>(c => c.ReportBpmnError("taskId", bpmnErrorRequest))
+                new Func<IExternalTaskClient, Task>(c => c.ReportBpmnError("taskId", bpmnErrorRequest))
             };
         }
 
-        private ExternalTaskCamundaClient MakeClient()
+        private ExternalTaskClient MakeClient()
         {
-            return new ExternalTaskCamundaClient(
+            return new ExternalTaskClient(
                 new HttpClient(_handlerMock)
                 {
                     BaseAddress = new Uri("http://test/api")

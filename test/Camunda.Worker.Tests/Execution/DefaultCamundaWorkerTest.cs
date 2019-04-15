@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
@@ -21,7 +20,7 @@ namespace Camunda.Worker.Execution
 {
     public class DefaultCamundaWorkerTest
     {
-        private readonly Mock<IExternalTaskCamundaClient> _apiClientMock = new Mock<IExternalTaskCamundaClient>();
+        private readonly Mock<IExternalTaskClient> _apiClientMock = new Mock<IExternalTaskClient>();
         private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
         private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
@@ -33,7 +32,7 @@ namespace Camunda.Worker.Execution
                 .Returns(Enumerable.Empty<FetchAndLockRequest.Topic>());
 
             var providerMock = new Mock<IServiceProvider>();
-            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskCamundaClient)))
+            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskClient)))
                 .Returns(_apiClientMock.Object);
 
             _scopeFactoryMock.Setup(factory => factory.CreateScope())

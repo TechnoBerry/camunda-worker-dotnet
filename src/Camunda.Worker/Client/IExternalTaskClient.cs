@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Camunda.Worker.Client
 {
-    public interface IExternalTaskCamundaClient
+    public interface IExternalTaskClient
     {
         Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
             CancellationToken cancellationToken = default);

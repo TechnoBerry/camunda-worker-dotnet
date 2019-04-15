@@ -20,13 +20,13 @@ namespace Camunda.Worker
 {
     public class ExternalTaskContextTest
     {
-        private readonly Mock<IExternalTaskCamundaClient> _clientMock = new Mock<IExternalTaskCamundaClient>();
+        private readonly Mock<IExternalTaskClient> _clientMock = new Mock<IExternalTaskClient>();
         private readonly Mock<IServiceScope> _scopeMock = new Mock<IServiceScope>();
 
         public ExternalTaskContextTest()
         {
             var providerMock = new Mock<IServiceProvider>();
-            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskCamundaClient)))
+            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskClient)))
                 .Returns(_clientMock.Object);
             _scopeMock.SetupGet(scope => scope.ServiceProvider)
                 .Returns(providerMock.Object);

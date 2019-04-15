@@ -18,13 +18,13 @@ namespace Camunda.Worker
     {
         private bool _disposed;
         private readonly IServiceScope _scope;
-        private readonly IExternalTaskCamundaClient _client;
+        private readonly IExternalTaskClient _client;
 
         public ExternalTaskContext(ExternalTask task, IServiceScope scope)
         {
             Task = Guard.NotNull(task, nameof(task));
             _scope = Guard.NotNull(scope, nameof(scope));
-            _client = _scope.ServiceProvider.GetRequiredService<IExternalTaskCamundaClient>();
+            _client = _scope.ServiceProvider.GetRequiredService<IExternalTaskClient>();
         }
 
         public ExternalTask Task { get; }

@@ -20,11 +20,11 @@ namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskSelector : IExternalTaskSelector
     {
-        private readonly IExternalTaskCamundaClient _client;
+        private readonly IExternalTaskClient _client;
         private readonly CamundaWorkerOptions _options;
         private readonly ILogger<ExternalTaskSelector> _logger;
 
-        public ExternalTaskSelector(IExternalTaskCamundaClient client, IOptions<CamundaWorkerOptions> options,
+        public ExternalTaskSelector(IExternalTaskClient client, IOptions<CamundaWorkerOptions> options,
             ILogger<ExternalTaskSelector> logger = default)
         {
             _client = Guard.NotNull(client, nameof(client));
