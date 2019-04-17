@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskContext : IExternalTaskContext, IDisposable
     {

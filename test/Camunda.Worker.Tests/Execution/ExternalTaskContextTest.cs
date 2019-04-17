@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public class ExternalTaskContextTest
     {
