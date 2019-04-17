@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker.Extensions

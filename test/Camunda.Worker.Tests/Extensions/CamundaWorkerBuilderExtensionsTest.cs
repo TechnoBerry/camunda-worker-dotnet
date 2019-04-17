@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;

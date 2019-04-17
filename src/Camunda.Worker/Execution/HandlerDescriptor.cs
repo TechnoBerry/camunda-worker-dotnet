@@ -4,10 +4,9 @@
 #endregion
 
 
-using System;
 using System.Collections.Generic;
 
-namespace Camunda.Worker
+namespace Camunda.Worker.Execution
 {
     public sealed class HandlerDescriptor
     {
