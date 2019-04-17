@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Camunda.Worker.Extensions
+namespace Camunda.Worker.Execution
 {
     internal class HandlerMetadata
     {
