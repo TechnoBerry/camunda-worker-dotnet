@@ -55,10 +55,8 @@ namespace Camunda.Worker.Extensions
 
             var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
 
-            return new HandlerMetadata
+            return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
             {
-                TopicNames = topicsAttribute.TopicNames,
-                LockDuration = topicsAttribute.LockDuration,
                 LocalVariables = variablesAttribute?.LocalVariables ?? false,
                 Variables = variablesAttribute?.Variables
             };
