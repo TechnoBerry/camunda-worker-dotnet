@@ -37,7 +37,8 @@ namespace Camunda.Worker.Extensions
                 {
                     LockDuration = metadata.LockDuration,
                     LocalVariables = metadata.LocalVariables,
-                    Variables = metadata.Variables
+                    Variables = metadata.Variables,
+                    Metadata = metadata
                 };
 
                 return descriptor;

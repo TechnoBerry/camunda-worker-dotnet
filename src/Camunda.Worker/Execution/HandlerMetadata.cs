@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Camunda.Worker.Execution
 {
-    internal class HandlerMetadata
+    public class HandlerMetadata
     {
         public HandlerMetadata(IReadOnlyList<string> topicNames, int lockDuration)
         {

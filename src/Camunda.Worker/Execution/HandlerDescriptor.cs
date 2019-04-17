@@ -31,5 +31,7 @@ namespace Camunda.Worker.Execution
             get => _lockDuration;
             set => _lockDuration = Guard.GreaterThanOrEqual(value, 5_000, nameof(LockDuration));
         }
+
+        internal HandlerMetadata Metadata { get; set; }
     }
 }
