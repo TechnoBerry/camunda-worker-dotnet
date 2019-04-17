@@ -32,9 +32,8 @@ namespace Camunda.Worker.Execution
         {
             Guard.NotNull(context, nameof(context));
 
+            var handler = MakeHandler(context);
             var externalTask = context.Task;
-            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(externalTask);
-            var handler = handlerFactory(context.ServiceProvider);
 
             _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
 
@@ -42,6 +41,14 @@ namespace Camunda.Worker.Execution
             await executionResult.ExecuteResultAsync(context);
 
             _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
+        }
+
+        private IExternalTaskHandler MakeHandler(IExternalTaskContext context)
+        {
+            var externalTask = context.Task;
+            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(externalTask);
+            var handler = handlerFactory(context.ServiceProvider);
+            return handler;
         }
 
         private async Task<IExecutionResult> ProcessSafe(IExternalTaskHandler handler, ExternalTask task)
