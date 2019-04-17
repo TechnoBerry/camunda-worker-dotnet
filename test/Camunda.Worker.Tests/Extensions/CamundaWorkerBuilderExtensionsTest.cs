@@ -37,12 +37,11 @@ namespace Camunda.Worker.Extensions
             _builderMock.Object.AddHandler<HandlerWithTopics>();
 
             _builderMock.Verify(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()),
-                Times.Exactly(2));
+                Times.Once());
             Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Scoped &&
                                             d.ServiceType == typeof(HandlerWithTopics));
 
-            Assert.Equal(2, savedDescriptors.Count);
-            Assert.Equal(savedDescriptors[0].Variables, savedDescriptors[1].Variables);
+            Assert.Equal(1, savedDescriptors.Count);
             Assert.NotNull(savedDescriptors[0].Variables);
             Assert.Single(savedDescriptors[0].Variables);
             Assert.Contains(savedDescriptors[0].Variables, v => v == "testVariable");

@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -10,22 +12,23 @@ using Camunda.Worker.Client;
 
 namespace Camunda.Worker.Execution
 {
-    public class StaticTopicsProvider : ITopicsProvider
+    public sealed class StaticTopicsProvider : ITopicsProvider
     {
         private readonly IReadOnlyList<FetchAndLockRequest.Topic> _topics;
 
         public StaticTopicsProvider(IEnumerable<HandlerDescriptor> handlerDescriptors)
         {
-            _topics = handlerDescriptors.Select(ConvertDescriptorToTopic).ToList();
+            _topics = handlerDescriptors.SelectMany(ConvertDescriptorToTopic).ToList();
         }
 
-        protected virtual FetchAndLockRequest.Topic ConvertDescriptorToTopic(HandlerDescriptor descriptor)
+        private static IEnumerable<FetchAndLockRequest.Topic> ConvertDescriptorToTopic(HandlerDescriptor descriptor)
         {
-            return new FetchAndLockRequest.Topic(descriptor.TopicName, descriptor.LockDuration)
-            {
-                LocalVariables = descriptor.LocalVariables,
-                Variables = descriptor.Variables
-            };
+            return descriptor.Metadata.TopicNames
+                .Select(topicName => new FetchAndLockRequest.Topic(topicName, descriptor.LockDuration)
+                {
+                    LocalVariables = descriptor.LocalVariables,
+                    Variables = descriptor.Variables
+                });
         }
 
         public IEnumerable<FetchAndLockRequest.Topic> GetTopics()

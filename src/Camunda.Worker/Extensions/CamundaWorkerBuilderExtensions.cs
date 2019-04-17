@@ -24,18 +24,9 @@ namespace Camunda.Worker.Extensions
             services.AddScoped<T>();
 
             var handlerMetadata = CollectMetadataFromAttributes(typeof(T));
-            var handlerDescriptors = MakeDescriptors(HandlerFactory<T>, handlerMetadata);
+            var handlerDescriptor = new HandlerDescriptor(HandlerFactory<T>, handlerMetadata);
 
-            return handlerDescriptors.Aggregate(builder, (acc, descriptor) => acc.AddHandlerDescriptor(descriptor));
-        }
-
-        private static IEnumerable<HandlerDescriptor> MakeDescriptors(HandlerFactory factory, HandlerMetadata metadata)
-        {
-            return metadata.TopicNames.Select(topicName =>
-            {
-                var descriptor = new HandlerDescriptor(topicName, factory, metadata);
-                return descriptor;
-            });
+            return builder.AddHandlerDescriptor(handlerDescriptor);
         }
 
         private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)

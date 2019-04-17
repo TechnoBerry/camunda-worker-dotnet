@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -12,12 +14,15 @@ namespace Camunda.Worker.Execution
 {
     public class TopicBasedFactoryProvider : IHandlerFactoryProvider
     {
-        private readonly IReadOnlyDictionary<string, HandlerDescriptor> _descriptors;
+        private readonly IReadOnlyDictionary<string, HandlerFactory> _factories;
 
         public TopicBasedFactoryProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
-            _descriptors = descriptors
-                .ToDictionary(descriptor => descriptor.TopicName);
+            _factories = descriptors
+                .SelectMany(descriptor => descriptor.Metadata.TopicNames
+                    .Select(topicName => (topicName, descriptor.Factory))
+                )
+                .ToDictionary(pair => pair.topicName, pair => pair.Factory);
         }
 
         public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
@@ -31,9 +36,9 @@ namespace Camunda.Worker.Execution
 
         protected virtual HandlerFactory GetHandlerFactoryByTopicName(string topicName)
         {
-            if (_descriptors.TryGetValue(topicName, out var descriptor))
+            if (_factories.TryGetValue(topicName, out var factory))
             {
-                return descriptor.Factory;
+                return factory;
             }
 
             throw new ArgumentException("Unknown topic name", nameof(topicName));

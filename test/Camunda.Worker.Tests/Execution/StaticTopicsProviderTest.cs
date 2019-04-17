@@ -26,10 +26,10 @@ namespace Camunda.Worker.Execution
 
             Assert.Equal(2, topics.Count);
 
-            Assert.Equal(descriptors[0].TopicName, topics[0].TopicName);
+            Assert.Equal(descriptors[0].Metadata.TopicNames[0], topics[0].TopicName);
             Assert.Null(topics[0].Variables);
 
-            Assert.Equal(descriptors[1].TopicName, topics[1].TopicName);
+            Assert.Equal(descriptors[1].Metadata.TopicNames[0], topics[1].TopicName);
             Assert.NotNull(topics[1].Variables);
             Assert.True(topics[1].LocalVariables);
             Assert.Equal(descriptors[1].LockDuration, topics[1].LockDuration);
@@ -40,8 +40,8 @@ namespace Camunda.Worker.Execution
             IExternalTaskHandler Factory(IServiceProvider provider) => null;
             var descriptors = new[]
             {
-                new HandlerDescriptor("test1", Factory, new HandlerMetadata(new[] {"topic1"})),
-                new HandlerDescriptor("test2", Factory, new HandlerMetadata(new[] {"test2"}, 10_000)
+                new HandlerDescriptor(Factory, new HandlerMetadata(new[] {"topic1"})),
+                new HandlerDescriptor(Factory, new HandlerMetadata(new[] {"test2"}, 10_000)
                 {
                     Variables = new[] {"X"},
                     LocalVariables = true

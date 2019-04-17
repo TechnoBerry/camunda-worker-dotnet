@@ -22,7 +22,7 @@ namespace Camunda.Worker.Execution
 
             var provider = new TopicBasedFactoryProvider(new[]
             {
-                new HandlerDescriptor("topic1", p => handlerMock.Object, new HandlerMetadata(new[] {"topic1"}))
+                new HandlerDescriptor(p => handlerMock.Object, new HandlerMetadata(new[] {"topic1"}))
             });
 
             var factory = provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"));
