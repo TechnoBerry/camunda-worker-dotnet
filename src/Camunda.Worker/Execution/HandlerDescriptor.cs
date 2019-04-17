@@ -10,28 +10,23 @@ namespace Camunda.Worker.Execution
 {
     public sealed class HandlerDescriptor
     {
-        private int _lockDuration = 5_000;
-
-        public HandlerDescriptor(string topicName, HandlerFactory factory)
+        public HandlerDescriptor(string topicName, HandlerFactory factory, HandlerMetadata metadata)
         {
             TopicName = Guard.NotNull(topicName, nameof(topicName));
             Factory = Guard.NotNull(factory, nameof(factory));
+            Metadata = Guard.NotNull(metadata, nameof(metadata));
         }
 
         public string TopicName { get; }
 
+        public HandlerMetadata Metadata { get; }
+
         public HandlerFactory Factory { get; }
 
-        public bool LocalVariables { get; set; }
+        public bool LocalVariables => Metadata.LocalVariables;
 
-        public IEnumerable<string> Variables { get; set; }
+        public IEnumerable<string> Variables => Metadata.Variables;
 
-        public int LockDuration
-        {
-            get => _lockDuration;
-            set => _lockDuration = Guard.GreaterThanOrEqual(value, 5_000, nameof(LockDuration));
-        }
-
-        internal HandlerMetadata Metadata { get; set; }
+        public int LockDuration => Metadata.LockDuration;
     }
 }

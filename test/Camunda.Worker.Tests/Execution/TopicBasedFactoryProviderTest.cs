@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -20,7 +22,7 @@ namespace Camunda.Worker.Execution
 
             var provider = new TopicBasedFactoryProvider(new[]
             {
-                new HandlerDescriptor("topic1", p => handlerMock.Object)
+                new HandlerDescriptor("topic1", p => handlerMock.Object, new HandlerMetadata(new[] {"topic1"}))
             });
 
             var factory = provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"));

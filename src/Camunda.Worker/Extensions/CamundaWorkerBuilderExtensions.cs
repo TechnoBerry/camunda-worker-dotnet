@@ -33,14 +33,7 @@ namespace Camunda.Worker.Extensions
         {
             return metadata.TopicNames.Select(topicName =>
             {
-                var descriptor = new HandlerDescriptor(topicName, factory)
-                {
-                    LockDuration = metadata.LockDuration,
-                    LocalVariables = metadata.LocalVariables,
-                    Variables = metadata.Variables,
-                    Metadata = metadata
-                };
-
+                var descriptor = new HandlerDescriptor(topicName, factory, metadata);
                 return descriptor;
             });
         }

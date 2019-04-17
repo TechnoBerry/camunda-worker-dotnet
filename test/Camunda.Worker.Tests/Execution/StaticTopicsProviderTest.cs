@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -38,13 +40,12 @@ namespace Camunda.Worker.Execution
             IExternalTaskHandler Factory(IServiceProvider provider) => null;
             var descriptors = new[]
             {
-                new HandlerDescriptor("test1", Factory),
-                new HandlerDescriptor("test2", Factory)
+                new HandlerDescriptor("test1", Factory, new HandlerMetadata(new[] {"topic1"})),
+                new HandlerDescriptor("test2", Factory, new HandlerMetadata(new[] {"test2"}, 10_000)
                 {
                     Variables = new[] {"X"},
-                    LockDuration = 10_000,
                     LocalVariables = true
-                }
+                })
             };
             return descriptors;
         }

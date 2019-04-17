@@ -1,6 +1,8 @@
 #region LICENSE
+
 // Copyright (c) Alexey Malinin. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 #endregion
 
 
@@ -24,7 +26,8 @@ namespace Camunda.Worker
 
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.AddHandlerDescriptor(new HandlerDescriptor("testTopic", provider => handlerMock.Object));
+            builder.AddHandlerDescriptor(new HandlerDescriptor("testTopic", provider => handlerMock.Object,
+                new HandlerMetadata(new[] {"testTopic"})));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ImplementationInstance != null);

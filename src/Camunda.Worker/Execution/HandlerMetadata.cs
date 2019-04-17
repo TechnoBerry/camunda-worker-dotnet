@@ -4,7 +4,7 @@ namespace Camunda.Worker.Execution
 {
     public class HandlerMetadata
     {
-        public HandlerMetadata(IReadOnlyList<string> topicNames, int lockDuration)
+        public HandlerMetadata(IReadOnlyList<string> topicNames, int lockDuration = 5_000)
         {
             TopicNames = Guard.NotNull(topicNames, nameof(topicNames));
             LockDuration = Guard.GreaterThanOrEqual(lockDuration, 5_000, nameof(lockDuration));
