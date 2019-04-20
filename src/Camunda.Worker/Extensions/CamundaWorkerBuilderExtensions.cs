@@ -20,13 +20,9 @@ namespace Camunda.Worker.Extensions
         {
             Guard.NotNull(builder, nameof(builder));
 
-            var services = builder.Services;
-            services.AddScoped<T>();
+            var metadata = CollectMetadataFromAttributes(typeof(T));
 
-            var handlerMetadata = CollectMetadataFromAttributes(typeof(T));
-            var handlerDescriptor = new HandlerDescriptor(HandlerFactory<T>, handlerMetadata);
-
-            return builder.AddHandlerDescriptor(handlerDescriptor);
+            return builder.AddHandler<T>(metadata);
         }
 
         private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)
@@ -47,10 +43,35 @@ namespace Camunda.Worker.Extensions
             };
         }
 
+        public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder, HandlerMetadata metadata)
+            where T : class, IExternalTaskHandler
+        {
+            Guard.NotNull(builder, nameof(builder));
+            Guard.NotNull(metadata, nameof(metadata));
+
+            var services = builder.Services;
+            services.AddScoped<T>();
+
+            return builder.AddHandler(HandlerFactory<T>, metadata);
+        }
+
         private static IExternalTaskHandler HandlerFactory<T>(IServiceProvider provider)
             where T : class, IExternalTaskHandler
         {
             return provider.GetRequiredService<T>();
+        }
+
+        public static ICamundaWorkerBuilder AddHandler(this ICamundaWorkerBuilder builder,
+            HandlerFactory factory,
+            HandlerMetadata metadata)
+        {
+            Guard.NotNull(builder, nameof(builder));
+            Guard.NotNull(factory, nameof(factory));
+            Guard.NotNull(metadata, nameof(metadata));
+
+            var handlerDescriptor = new HandlerDescriptor(factory, metadata);
+
+            return builder.AddHandlerDescriptor(handlerDescriptor);
         }
     }
 }
