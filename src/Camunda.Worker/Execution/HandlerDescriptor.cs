@@ -22,6 +22,8 @@ namespace Camunda.Worker.Execution
 
         public HandlerMetadata Metadata { get; }
 
+        public IEnumerable<string> TopicNames => Metadata.TopicNames;
+
         public bool LocalVariables => Metadata.LocalVariables;
 
         public IEnumerable<string> Variables => Metadata.Variables;

@@ -23,7 +23,7 @@ namespace Camunda.Worker.Execution
 
         private static IEnumerable<FetchAndLockRequest.Topic> ConvertDescriptorToTopic(HandlerDescriptor descriptor)
         {
-            return descriptor.Metadata.TopicNames
+            return descriptor.TopicNames
                 .Select(topicName => new FetchAndLockRequest.Topic(topicName, descriptor.LockDuration)
                 {
                     LocalVariables = descriptor.LocalVariables,

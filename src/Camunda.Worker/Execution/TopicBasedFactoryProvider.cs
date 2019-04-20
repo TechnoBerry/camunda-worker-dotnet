@@ -19,7 +19,7 @@ namespace Camunda.Worker.Execution
         public TopicBasedFactoryProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
             _factories = descriptors
-                .SelectMany(descriptor => descriptor.Metadata.TopicNames
+                .SelectMany(descriptor => descriptor.TopicNames
                     .Select(topicName => (topicName, descriptor.Factory))
                 )
                 .ToDictionary(pair => pair.topicName, pair => pair.Factory);
