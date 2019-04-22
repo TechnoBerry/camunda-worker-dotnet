@@ -23,13 +23,13 @@ namespace Camunda.Worker
         Task ExtendLockAsync(int newDuration);
 
         Task CompleteAsync(IDictionary<string, Variable> variables,
-            IDictionary<string, Variable> localVariables = null);
+            IDictionary<string, Variable> localVariables = default);
 
         Task ReportFailureAsync(string errorMessage, string errorDetails,
             int? retries = default,
             int? retryTimeout = default);
 
         Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable> variables = null);
+            IDictionary<string, Variable> variables = default);
     }
 }

@@ -29,7 +29,7 @@ namespace Camunda.Worker.Execution
             ITopicsProvider topicsProvider,
             IExternalTaskSelector selector,
             IServiceScopeFactory scopeFactory,
-            ILogger<DefaultCamundaWorker> logger = null)
+            ILogger<DefaultCamundaWorker> logger = default)
         {
             _router = Guard.NotNull(router, nameof(router));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));

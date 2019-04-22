@@ -21,7 +21,7 @@ namespace Camunda.Worker.Execution
 
         public ExternalTaskRouter(IHandlerFactoryProvider handlerFactoryProvider,
             IExceptionHandler exceptionHandler,
-            ILogger<ExternalTaskRouter> logger = null)
+            ILogger<ExternalTaskRouter> logger = default)
         {
             _handlerFactoryProvider = Guard.NotNull(handlerFactoryProvider, nameof(handlerFactoryProvider));
             _exceptionHandler = Guard.NotNull(exceptionHandler, nameof(exceptionHandler));

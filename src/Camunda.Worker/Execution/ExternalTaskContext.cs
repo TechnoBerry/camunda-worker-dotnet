@@ -45,7 +45,7 @@ namespace Camunda.Worker.Execution
         }
 
         public async Task CompleteAsync(IDictionary<string, Variable> variables,
-            IDictionary<string, Variable> localVariables = null)
+            IDictionary<string, Variable> localVariables = default)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
@@ -86,7 +86,7 @@ namespace Camunda.Worker.Execution
         }
 
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable> variables = null)
+            IDictionary<string, Variable> variables = default)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();

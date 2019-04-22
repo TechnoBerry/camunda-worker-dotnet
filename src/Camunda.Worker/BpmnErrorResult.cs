@@ -11,7 +11,7 @@ namespace Camunda.Worker
 {
     public sealed class BpmnErrorResult : IExecutionResult
     {
-        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable> variables = null)
+        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable> variables = default)
         {
             ErrorCode = Guard.NotNull(errorCode, nameof(errorCode));
             ErrorMessage = Guard.NotNull(errorMessage, nameof(errorMessage));

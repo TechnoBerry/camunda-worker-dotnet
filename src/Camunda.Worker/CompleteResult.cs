@@ -16,7 +16,7 @@ namespace Camunda.Worker
     public sealed class CompleteResult : IExecutionResult
     {
         public CompleteResult(IDictionary<string, Variable> variables,
-            IDictionary<string, Variable> localVariables = null)
+            IDictionary<string, Variable> localVariables = default)
         {
             Variables = variables ?? new Dictionary<string, Variable>();
             LocalVariables = localVariables ?? new Dictionary<string, Variable>();
