@@ -14,5 +14,7 @@ namespace Camunda.Worker.Execution
         public int LockDuration { get; }
         public bool LocalVariables { get; set; }
         public IReadOnlyList<string> Variables { get; set; }
+        public IReadOnlyList<string> ProcessDefinitionIds { get; set; }
+        public IReadOnlyList<string> ProcessDefinitionKeys { get; set; }
     }
 }
