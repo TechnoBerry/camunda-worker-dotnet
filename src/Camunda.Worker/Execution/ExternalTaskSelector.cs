@@ -18,7 +18,7 @@ using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution
 {
-    public sealed class ExternalTaskSelector : IExternalTaskSelector
+    public class ExternalTaskSelector : IExternalTaskSelector
     {
         private readonly IExternalTaskClient _client;
         private readonly CamundaWorkerOptions _options;
@@ -39,16 +39,9 @@ namespace Camunda.Worker.Execution
             {
                 _logger.LogDebug("Waiting for external task");
 
-                var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
-                {
-                    UsePriority = true,
-                    AsyncResponseTimeout = _options.AsyncResponseTimeout,
-                    Topics = topics
-                };
+                var fetchAndLockRequest = GetRequest(topics, _options);
 
-                var externalTasks = await _client.FetchAndLock(
-                    fetchAndLockRequest, cancellationToken
-                );
+                var externalTasks = await _client.FetchAndLock(fetchAndLockRequest, cancellationToken);
 
                 _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
 
@@ -64,6 +57,19 @@ namespace Camunda.Worker.Execution
                 await Task.Delay(10_000, cancellationToken);
                 return Enumerable.Empty<ExternalTask>();
             }
+        }
+
+        protected virtual FetchAndLockRequest GetRequest(IEnumerable<FetchAndLockRequest.Topic> topics,
+            CamundaWorkerOptions options)
+        {
+            var fetchAndLockRequest = new FetchAndLockRequest(options.WorkerId)
+            {
+                UsePriority = true,
+                AsyncResponseTimeout = options.AsyncResponseTimeout,
+                Topics = topics
+            };
+
+            return fetchAndLockRequest;
         }
     }
 }
