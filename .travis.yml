@@ -5,7 +5,7 @@ dotnet: 2.2
 dist: xenial
 
 script:
-  - dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Exclude="[xunit*]*"
+  - dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[Camunda.Worker]*"
 
 after_script:
   - bash <(curl -s https://codecov.io/bash) -f ./test/Camunda.Worker.Tests/coverage.opencover.xml
