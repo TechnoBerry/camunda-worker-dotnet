@@ -23,6 +23,7 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IExternalTaskClient> _apiClientMock = new Mock<IExternalTaskClient>();
         private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
+        private readonly Mock<IServiceProvider> _serviceProviderMock = new Mock<IServiceProvider>();
         private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
 
@@ -35,13 +36,14 @@ namespace Camunda.Worker.Execution
             providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskClient)))
                 .Returns(_apiClientMock.Object);
 
+            var scopeMock = new Mock<IServiceScope>();
+            scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(providerMock.Object);
+
             _scopeFactoryMock.Setup(factory => factory.CreateScope())
-                .Returns(() =>
-                {
-                    var scopeMock = new Mock<IServiceScope>();
-                    scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(providerMock.Object);
-                    return scopeMock.Object;
-                });
+                .Returns(scopeMock.Object);
+
+            _serviceProviderMock.Setup(provider => provider.GetService(typeof(IServiceScopeFactory)))
+                .Returns(_scopeFactoryMock.Object);
         }
 
         [Fact]
@@ -110,7 +112,7 @@ namespace Camunda.Worker.Execution
                 _routerMock.Object,
                 _topicsProviderMock.Object,
                 _selectorMock.Object,
-                _scopeFactoryMock.Object
+                _serviceProviderMock.Object
             );
         }
     }

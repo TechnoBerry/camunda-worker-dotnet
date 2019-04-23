@@ -21,20 +21,20 @@ namespace Camunda.Worker.Execution
     {
         private readonly IExternalTaskRouter _router;
         private readonly ITopicsProvider _topicsProvider;
-        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IExternalTaskSelector _selector;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskRouter router,
             ITopicsProvider topicsProvider,
             IExternalTaskSelector selector,
-            IServiceScopeFactory scopeFactory,
+            IServiceProvider serviceProvider,
             ILogger<DefaultCamundaWorker> logger = default)
         {
             _router = Guard.NotNull(router, nameof(router));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _selector = Guard.NotNull(selector, nameof(selector));
-            _scopeFactory = Guard.NotNull(scopeFactory, nameof(scopeFactory));
+            _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));
             _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
 
@@ -62,7 +62,7 @@ namespace Camunda.Worker.Execution
 
         private ExternalTaskContext CreateContext(ExternalTask externalTask)
         {
-            var scope = _scopeFactory.CreateScope();
+            var scope = _serviceProvider.CreateScope();
             var context = new ExternalTaskContext(externalTask, scope);
             return context;
         }
