@@ -4,13 +4,14 @@
 #endregion
 
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Camunda.Worker.Client
 {
-    public interface IExternalTaskClient
+    public interface IExternalTaskClient : IDisposable
     {
         Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
             CancellationToken cancellationToken = default);

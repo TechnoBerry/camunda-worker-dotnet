@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Camunda.Worker.Client
 {
-    public class ExternalTaskClient : IExternalTaskClient, IDisposable
+    public class ExternalTaskClient : IExternalTaskClient
     {
         private readonly HttpClient _httpClient;
 
