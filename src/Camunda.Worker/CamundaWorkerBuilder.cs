@@ -33,6 +33,13 @@ namespace Camunda.Worker
             return this;
         }
 
+        public ICamundaWorkerBuilder AddTaskSelector<TSelector>() where TSelector : class, IExternalTaskSelector
+        {
+            Services.AddTransient<IExternalTaskSelector, TSelector>();
+
+            return this;
+        }
+
         public ICamundaWorkerBuilder AddExceptionHandler<THandler>() where THandler : class, IExceptionHandler
         {
             Services.AddTransient<IExceptionHandler, THandler>();

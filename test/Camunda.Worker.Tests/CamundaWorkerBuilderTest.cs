@@ -8,6 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +71,19 @@ namespace Camunda.Worker
         }
 
         [Fact]
+        public void TestAddTaskSelector()
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            builder.AddTaskSelector<ExternalTaskSelector>();
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+                                           d.ServiceType == typeof(IExternalTaskSelector) &&
+                                           d.ImplementationType == typeof(ExternalTaskSelector));
+        }
+
+        [Fact]
         public void TestAddExceptionHandler()
         {
             var services = new ServiceCollection();
@@ -92,6 +107,15 @@ namespace Camunda.Worker
         private class TopicsProvider : ITopicsProvider
         {
             public IEnumerable<FetchAndLockRequest.Topic> GetTopics()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class ExternalTaskSelector : IExternalTaskSelector
+        {
+            public Task<IEnumerable<ExternalTask>> SelectAsync(IEnumerable<FetchAndLockRequest.Topic> topics,
+                CancellationToken cancellationToken = default)
             {
                 throw new NotImplementedException();
             }

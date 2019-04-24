@@ -17,6 +17,8 @@ namespace Camunda.Worker
 
         ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
 
+        ICamundaWorkerBuilder AddTaskSelector<TSelector>() where TSelector : class, IExternalTaskSelector;
+
         ICamundaWorkerBuilder AddExceptionHandler<THandler>() where THandler : class, IExceptionHandler;
 
         ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor);
