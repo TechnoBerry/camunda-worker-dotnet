@@ -12,10 +12,10 @@ namespace Camunda.Worker.Execution
 {
     public class HandlerMetadata
     {
-        public HandlerMetadata(IReadOnlyList<string> topicNames, int lockDuration = 5_000)
+        public HandlerMetadata(IReadOnlyList<string> topicNames, int lockDuration = Constants.MinimumLockDuration)
         {
             TopicNames = Guard.NotNull(topicNames, nameof(topicNames));
-            LockDuration = Guard.GreaterThanOrEqual(lockDuration, 5_000, nameof(lockDuration));
+            LockDuration = Guard.GreaterThanOrEqual(lockDuration, Constants.MinimumLockDuration, nameof(lockDuration));
         }
 
         public IReadOnlyList<string> TopicNames { get; }

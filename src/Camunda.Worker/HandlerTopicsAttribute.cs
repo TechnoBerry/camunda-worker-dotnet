@@ -15,7 +15,7 @@ namespace Camunda.Worker
     [AttributeUsage(AttributeTargets.Class)]
     public class HandlerTopicsAttribute : Attribute
     {
-        private int _lockDuration = 5_000;
+        private int _lockDuration = Constants.MinimumLockDuration;
 
         public HandlerTopicsAttribute(params string[] topicNames)
         {
@@ -29,7 +29,7 @@ namespace Camunda.Worker
         public int LockDuration
         {
             get => _lockDuration;
-            set => _lockDuration = Guard.GreaterThanOrEqual(value, 5_000, nameof(LockDuration));
+            set => _lockDuration = Guard.GreaterThanOrEqual(value, Constants.MinimumLockDuration, nameof(LockDuration));
         }
     }
 }
