@@ -12,56 +12,65 @@ namespace Camunda.Worker.Execution
 {
     public class ExternalTaskSelector : IExternalTaskSelector
     {
-        private readonly IExternalTaskClient _client;
-        private readonly CamundaWorkerOptions _options;
-        private readonly ILogger<ExternalTaskSelector> _logger;
-
         public ExternalTaskSelector(IExternalTaskClient client, IOptions<CamundaWorkerOptions> options,
             ILogger<ExternalTaskSelector> logger = default)
         {
-            _client = Guard.NotNull(client, nameof(client));
-            _options = Guard.NotNull(options, nameof(options)).Value;
-            _logger = logger ?? new NullLogger<ExternalTaskSelector>();
+            Client = Guard.NotNull(client, nameof(client));
+            Options = Guard.NotNull(options, nameof(options)).Value;
+            Logger = logger ?? new NullLogger<ExternalTaskSelector>();
         }
 
-        public async Task<IEnumerable<ExternalTask>> SelectAsync(IEnumerable<FetchAndLockRequest.Topic> topics,
-            CancellationToken cancellationToken = default)
+        protected IExternalTaskClient Client { get; }
+        protected CamundaWorkerOptions Options { get; }
+        protected ILogger<ExternalTaskSelector> Logger { get; }
+
+        public async Task<IEnumerable<ExternalTask>> SelectAsync(
+            IEnumerable<FetchAndLockRequest.Topic> topics,
+            CancellationToken cancellationToken = default
+        )
         {
             try
             {
-                _logger.LogDebug("Waiting for external task");
+                Logger.LogDebug("Waiting for external task");
 
-                var fetchAndLockRequest = GetRequest(topics, _options);
+                var fetchAndLockRequest = MakeRequestBody(topics);
+                var externalTasks = await PerformSelection(fetchAndLockRequest, cancellationToken);
+                var externalTaskList = externalTasks.ToList();
 
-                var externalTasks = await _client.FetchAndLock(fetchAndLockRequest, cancellationToken);
+                Logger.LogDebug("Locked {Count} external tasks", externalTaskList.Count);
 
-                _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
-
-                return externalTasks;
+                return externalTaskList;
             }
-            catch (OperationCanceledException)
+            catch (Exception e) when (!(e is OperationCanceledException))
             {
-                throw;
-            }
-            catch (Exception e)
-            {
-                _logger.LogWarning("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
-                await Task.Delay(10_000, cancellationToken);
+                Logger.LogWarning("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
+                await DelayOnFailure(cancellationToken);
                 return Enumerable.Empty<ExternalTask>();
             }
         }
 
-        protected virtual FetchAndLockRequest GetRequest(IEnumerable<FetchAndLockRequest.Topic> topics,
-            CamundaWorkerOptions options)
+        protected virtual FetchAndLockRequest MakeRequestBody(IEnumerable<FetchAndLockRequest.Topic> topics)
         {
-            var fetchAndLockRequest = new FetchAndLockRequest(options.WorkerId)
+            var fetchAndLockRequest = new FetchAndLockRequest(Options.WorkerId)
             {
                 UsePriority = true,
-                AsyncResponseTimeout = options.AsyncResponseTimeout,
+                AsyncResponseTimeout = Options.AsyncResponseTimeout,
                 Topics = topics
             };
 
             return fetchAndLockRequest;
         }
+
+        protected virtual async Task<IEnumerable<ExternalTask>> PerformSelection(
+            FetchAndLockRequest request,
+            CancellationToken cancellationToken
+        )
+        {
+            var externalTasks = await Client.FetchAndLock(request, cancellationToken);
+            return externalTasks;
+        }
+
+        protected virtual Task DelayOnFailure(CancellationToken cancellationToken) =>
+            Task.Delay(10_000, cancellationToken);
     }
 }
