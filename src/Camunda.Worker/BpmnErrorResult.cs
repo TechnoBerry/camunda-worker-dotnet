@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
+using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
@@ -16,9 +18,16 @@ namespace Camunda.Worker
         public string ErrorMessage { get; }
         public IDictionary<string, Variable> Variables { get; }
 
-        public Task ExecuteResultAsync(IExternalTaskContext context)
+        public async Task ExecuteResultAsync(IExternalTaskContext context)
         {
-            return context.ReportBpmnErrorAsync(ErrorCode, ErrorMessage, Variables);
+            try
+            {
+                await context.ReportBpmnErrorAsync(ErrorCode, ErrorMessage, Variables);
+            }
+            catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                await context.ReportFailureAsync(e.ErrorType, e.ErrorMessage);
+            }
         }
     }
 }
