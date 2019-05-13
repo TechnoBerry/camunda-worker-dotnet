@@ -115,6 +115,11 @@ namespace Camunda.Worker.Execution
 
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
             _scope?.Dispose();
             _disposed = true;
         }
