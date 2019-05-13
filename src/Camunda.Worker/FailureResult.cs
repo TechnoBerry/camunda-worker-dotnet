@@ -7,6 +7,8 @@ namespace Camunda.Worker
     {
         public string ErrorMessage { get; }
         public string ErrorDetails { get; }
+        public int? Retries { get; set; }
+        public int? RetryTimeout { get; set; }
 
         public FailureResult(Exception ex)
         {
@@ -22,7 +24,7 @@ namespace Camunda.Worker
 
         public Task ExecuteResultAsync(IExternalTaskContext context)
         {
-            return context.ReportFailureAsync(ErrorMessage, ErrorDetails);
+            return context.ReportFailureAsync(ErrorMessage, ErrorDetails, Retries, RetryTimeout);
         }
     }
 }
