@@ -10,16 +10,14 @@ namespace Camunda.Worker
         public int? Retries { get; set; }
         public int? RetryTimeout { get; set; }
 
-        public FailureResult(Exception ex)
+        public FailureResult(Exception ex) : this(ex.Message, ex.StackTrace)
         {
-            ErrorMessage = ex.Message;
-            ErrorDetails = ex.StackTrace;
         }
 
-        public FailureResult(string errorMessage, string errorDetails)
+        public FailureResult(string errorMessage, string errorDetails = null)
         {
             ErrorMessage = Guard.NotNull(errorMessage, nameof(errorMessage));
-            ErrorDetails = Guard.NotNull(errorDetails, nameof(errorDetails));
+            ErrorDetails = errorDetails;
         }
 
         public Task ExecuteResultAsync(IExternalTaskContext context)
