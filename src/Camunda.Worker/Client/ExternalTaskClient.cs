@@ -90,7 +90,7 @@ namespace Camunda.Worker.Client
             return response;
         }
 
-        private static async Task<HttpResponseMessage> EnsureSuccess(HttpResponseMessage response)
+        private static async Task EnsureSuccess(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode && (response.Content?.Headers?.IsJson() ?? false))
             {
@@ -99,7 +99,7 @@ namespace Camunda.Worker.Client
                 throw new ClientException(errorResponse, response.StatusCode);
             }
 
-            return response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
         }
     }
 }
