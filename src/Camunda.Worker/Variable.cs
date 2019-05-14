@@ -32,7 +32,7 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
-        public static Variable Int(int value) => new Variable(value, VariableType.Integer);
+        public static Variable Integer(int value) => new Variable(value, VariableType.Integer);
 
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
