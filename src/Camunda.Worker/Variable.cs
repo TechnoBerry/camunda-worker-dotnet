@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Camunda.Worker
 {
@@ -69,6 +70,16 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public static Variable Bytes(byte[] value) => new Variable(Convert.ToBase64String(value), VariableType.Bytes);
+
+        [ExcludeFromCodeCoverage]
+        public static Variable Json(JObject value) => new Variable(value.ToString(Formatting.None), VariableType.Json);
+
+        [ExcludeFromCodeCoverage]
+        public static Variable Json(object value) => new Variable(JsonConvert.SerializeObject(value), VariableType.Json);
+
+        [ExcludeFromCodeCoverage]
+        public static Variable Json(object value, JsonSerializerSettings settings) =>
+            new Variable(JsonConvert.SerializeObject(value, settings), VariableType.Json);
 
         [JsonConstructor]
         public Variable(object value, VariableType type)
