@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -47,9 +48,14 @@ namespace Camunda.Worker.Client
 
         internal static async Task<T> ReadAsObjectAsync<T>(this HttpContent content)
         {
-            var jsonResponse = await content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<T>(jsonResponse, SerializerSettings);
-            return result;
+            using (var stream = await content.ReadAsStreamAsync())
+            using (var streamReader = new StreamReader(stream))
+            using (var jsonReader = new JsonTextReader(streamReader))
+            {
+                var serializer = JsonSerializer.Create(SerializerSettings);
+                var result = serializer.Deserialize<T>(jsonReader);
+                return result;
+            }
         }
 
         internal static bool IsJson(this HttpContentHeaders headers) =>
