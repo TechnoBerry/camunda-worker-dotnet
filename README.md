@@ -19,7 +19,7 @@ public class SayHelloHandler : IExternalTaskHandler
 
         return new CompleteResult(new Dictionary<string, Variable>
         {
-            ["MESSAGE"] = new Variable($"Hello, {username}!")
+            ["MESSAGE"] = Variable.String($"Hello, {username}!")
         });
     }
 }

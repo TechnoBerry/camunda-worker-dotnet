@@ -11,7 +11,7 @@ namespace SampleCamundaWorker.Handlers
         {
             return Task.FromResult<IExecutionResult>(new CompleteResult(new Dictionary<string, Variable>
             {
-                ["MESSAGE"] = new Variable("Hello, Guest!")
+                ["MESSAGE"] = Variable.String("Hello, Guest!")
             }));
         }
     }
