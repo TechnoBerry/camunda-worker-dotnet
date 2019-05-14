@@ -7,7 +7,7 @@
     <Description>Ultimate solution to connect your ASP.NET Core application to Camunda</Description>
     <PackageTags>camunda;bpmn;worker</PackageTags>
     <PackageProjectUrl>https://github.com/AMalininHere/camunda-worker-dotnet</PackageProjectUrl>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
