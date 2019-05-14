@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker.Execution
 {
-    public sealed class ExternalTaskContext : IExternalTaskContext, IDisposable
+    public sealed class ExternalTaskContext : IExternalTaskContext
     {
         private bool _disposed;
         private readonly IServiceScope _scope;

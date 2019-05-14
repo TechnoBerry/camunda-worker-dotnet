@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Camunda.Worker
 {
-    public interface IExternalTaskContext
+    public interface IExternalTaskContext : IDisposable
     {
         ExternalTask Task { get; }
 

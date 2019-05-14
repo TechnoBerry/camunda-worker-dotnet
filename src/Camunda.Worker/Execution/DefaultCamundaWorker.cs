@@ -59,7 +59,7 @@ namespace Camunda.Worker.Execution
             return context;
         }
 
-        private async Task ExecuteInContext(ExternalTaskContext context)
+        private async Task ExecuteInContext(IExternalTaskContext context)
         {
             using (context)
             {
