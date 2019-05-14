@@ -13,20 +13,20 @@ namespace Camunda.Worker.Execution
     {
         private readonly IExternalTaskRouter _router;
         private readonly ITopicsProvider _topicsProvider;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IExternalTaskSelector _selector;
+        private readonly IContextFactory _contextFactory;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(IExternalTaskRouter router,
             ITopicsProvider topicsProvider,
             IExternalTaskSelector selector,
-            IServiceProvider serviceProvider,
+            IContextFactory contextFactory,
             ILogger<DefaultCamundaWorker> logger = default)
         {
             _router = Guard.NotNull(router, nameof(router));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _selector = Guard.NotNull(selector, nameof(selector));
-            _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));
+            _contextFactory = Guard.NotNull(contextFactory, nameof(contextFactory));
             _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
         }
 
@@ -37,7 +37,7 @@ namespace Camunda.Worker.Execution
                 var externalTasks = await SelectExternalTasks(cancellationToken);
 
                 var activeAsyncTasks = externalTasks
-                    .Select(CreateContext)
+                    .Select(_contextFactory.MakeContext)
                     .Select(ExecuteInContext)
                     .ToList();
 
@@ -50,13 +50,6 @@ namespace Camunda.Worker.Execution
             var topics = _topicsProvider.GetTopics();
             var selectedTasks = _selector.SelectAsync(topics, cancellationToken);
             return selectedTasks;
-        }
-
-        private ExternalTaskContext CreateContext(ExternalTask externalTask)
-        {
-            var scope = _serviceProvider.CreateScope();
-            var context = new ExternalTaskContext(externalTask, scope);
-            return context;
         }
 
         private async Task ExecuteInContext(IExternalTaskContext context)

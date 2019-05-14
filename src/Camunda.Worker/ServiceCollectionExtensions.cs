@@ -22,13 +22,14 @@ namespace Camunda.Worker
                 });
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
-            services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddTransient<IExternalTaskSelector, ExternalTaskSelector>();
-            services.AddHostedService<WorkerHostedService>();
-
+            services.TryAddTransient<IContextFactory, ContextFactory>();
+            services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddTransient<IExternalTaskRouter, ExternalTaskRouter>();
             services.TryAddTransient<IHandlerFactoryProvider, TopicBasedFactoryProvider>();
             services.TryAddTransient<IExceptionHandler, DefaultExceptionHandler>();
+            services.AddHostedService<WorkerHostedService>();
+
 
             return new CamundaWorkerBuilder(services);
         }

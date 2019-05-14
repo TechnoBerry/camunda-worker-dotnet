@@ -1,10 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -12,30 +10,19 @@ namespace Camunda.Worker.Execution
 {
     public class DefaultCamundaWorkerTest
     {
-        private readonly Mock<IExternalTaskClient> _apiClientMock = new Mock<IExternalTaskClient>();
         private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
-        private readonly Mock<IServiceProvider> _serviceProviderMock = new Mock<IServiceProvider>();
-        private readonly Mock<IServiceScopeFactory> _scopeFactoryMock = new Mock<IServiceScopeFactory>();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
+        private readonly Mock<IContextFactory> _contextFactoryMock = new Mock<IContextFactory>();
 
         public DefaultCamundaWorkerTest()
         {
             _topicsProviderMock.Setup(provider => provider.GetTopics())
                 .Returns(Enumerable.Empty<FetchAndLockRequest.Topic>());
 
-            var providerMock = new Mock<IServiceProvider>();
-            providerMock.Setup(provider => provider.GetService(typeof(IExternalTaskClient)))
-                .Returns(_apiClientMock.Object);
-
-            var scopeMock = new Mock<IServiceScope>();
-            scopeMock.SetupGet(scope => scope.ServiceProvider).Returns(providerMock.Object);
-
-            _scopeFactoryMock.Setup(factory => factory.CreateScope())
-                .Returns(scopeMock.Object);
-
-            _serviceProviderMock.Setup(provider => provider.GetService(typeof(IServiceScopeFactory)))
-                .Returns(_scopeFactoryMock.Object);
+            var contextMock = new Mock<IExternalTaskContext>();
+            _contextFactoryMock.Setup(factory => factory.MakeContext(It.IsAny<ExternalTask>()))
+                .Returns(contextMock.Object);
         }
 
         [Fact]
@@ -72,23 +59,15 @@ namespace Camunda.Worker.Execution
 
             await worker.Run(cts.Token);
 
-            _scopeFactoryMock.Verify(factory => factory.CreateScope(), Times.Once());
+            _contextFactoryMock.Verify(
+                factory => factory.MakeContext(It.IsAny<ExternalTask>()),
+                Times.Once()
+            );
             _selectorMock.VerifyAll();
         }
 
         private void ConfigureSelector(CancellationTokenSource cts, IList<ExternalTask> externalTasks)
         {
-            _apiClientMock
-                .Setup(client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
-                .Callback(() =>
-                {
-                    if (!externalTasks.Any())
-                    {
-                        cts.Cancel();
-                    }
-                })
-                .ReturnsAsync(externalTasks);
-
             _selectorMock
                 .Setup(selector => selector.SelectAsync(
                     It.IsAny<IEnumerable<FetchAndLockRequest.Topic>>(),
@@ -104,7 +83,7 @@ namespace Camunda.Worker.Execution
                 _routerMock.Object,
                 _topicsProviderMock.Object,
                 _selectorMock.Object,
-                _serviceProviderMock.Object
+                _contextFactoryMock.Object
             );
         }
     }
