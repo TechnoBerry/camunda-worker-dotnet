@@ -13,8 +13,6 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IHandlerFactoryProvider>
             _handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
 
-        private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new Mock<IExceptionHandler>();
-
         public ExternalTaskRouterTest()
         {
             _contextMock.SetupGet(context => context.ServiceProvider).Returns(_providerMock.Object);
@@ -55,8 +53,7 @@ namespace Camunda.Worker.Execution
         private IExternalTaskRouter MakeExecutor()
         {
             return new ExternalTaskRouter(
-                _handlerFactoryProviderMock.Object,
-                _exceptionHandlerMock.Object
+                _handlerFactoryProviderMock.Object
             );
         }
     }
