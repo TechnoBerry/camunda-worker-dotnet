@@ -29,8 +29,7 @@ namespace Camunda.Worker.Execution
 
             _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
 
-            var executionResult = await ProcessSafe(handler, externalTask);
-            await executionResult.ExecuteResultAsync(context);
+            await handler.HandleAsync(context);
 
             _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
         }
