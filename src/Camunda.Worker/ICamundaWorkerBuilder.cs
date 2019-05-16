@@ -13,8 +13,6 @@ namespace Camunda.Worker
 
         ICamundaWorkerBuilder AddTaskSelector<TSelector>() where TSelector : class, IExternalTaskSelector;
 
-        ICamundaWorkerBuilder AddExceptionHandler<THandler>() where THandler : class, IExceptionHandler;
-
         ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor);
     }
 }

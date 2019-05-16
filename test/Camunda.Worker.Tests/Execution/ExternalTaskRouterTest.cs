@@ -13,8 +13,6 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IHandlerFactoryProvider>
             _handlerFactoryProviderMock = new Mock<IHandlerFactoryProvider>();
 
-        private readonly Mock<IExceptionHandler> _exceptionHandlerMock = new Mock<IExceptionHandler>();
-
         public ExternalTaskRouterTest()
         {
             _contextMock.SetupGet(context => context.ServiceProvider).Returns(_providerMock.Object);
@@ -26,62 +24,14 @@ namespace Camunda.Worker.Execution
         {
             var handlerMock = MakeHandlerMock();
 
-            var resultMock = new Mock<IExecutionResult>();
-
-            handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
-                .ReturnsAsync(resultMock.Object);
+            handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<IExternalTaskContext>()))
+                .Returns(Task.CompletedTask);
 
             var executor = MakeExecutor();
 
             await executor.RouteAsync(_contextMock.Object);
 
-            resultMock.Verify(result => result.ExecuteResultAsync(It.IsAny<IExternalTaskContext>()), Times.Once());
-        }
-
-        [Fact]
-        public async Task TestExecuteWithTransformedException()
-        {
-            var handlerMock = MakeHandlerMock();
-
-            handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
-                .ThrowsAsync(new Exception("Test exception"));
-
-            var transformedResultMock = new Mock<IExecutionResult>();
-            var transformedResult = transformedResultMock.Object;
-            _exceptionHandlerMock
-                .Setup(handler => handler.TryTransformToResult(It.IsAny<Exception>(), out transformedResult))
-                .Returns(true);
-
-            var executor = MakeExecutor();
-
-            await executor.RouteAsync(_contextMock.Object);
-
-            handlerMock.VerifyAll();
-            _exceptionHandlerMock.VerifyAll();
-            transformedResultMock.Verify(
-                result => result.ExecuteResultAsync(It.IsAny<IExternalTaskContext>()),
-                Times.Once()
-            );
-        }
-
-        [Fact]
-        public async Task TestRouteAsyncWithUntransformedException()
-        {
-            var handlerMock = MakeHandlerMock();
-
-            handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
-                .ThrowsAsync(new Exception("Test exception"));
-            IExecutionResult failureResult = new FailureResult("TEST", "TEST");
-            _exceptionHandlerMock
-                .Setup(handler => handler.TryTransformToResult(It.IsAny<Exception>(), out failureResult))
-                .Returns(false);
-
-            var executor = MakeExecutor();
-
-            await Assert.ThrowsAsync<Exception>(async () => await executor.RouteAsync(_contextMock.Object));
-
-            handlerMock.VerifyAll();
-            _exceptionHandlerMock.VerifyAll();
+            handlerMock.Verify(handler => handler.HandleAsync(It.IsAny<IExternalTaskContext>()), Times.Once());
         }
 
         private Mock<IExternalTaskHandler> MakeHandlerMock()
@@ -103,8 +53,7 @@ namespace Camunda.Worker.Execution
         private IExternalTaskRouter MakeExecutor()
         {
             return new ExternalTaskRouter(
-                _handlerFactoryProviderMock.Object,
-                _exceptionHandlerMock.Object
+                _handlerFactoryProviderMock.Object
             );
         }
     }

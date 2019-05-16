@@ -75,19 +75,6 @@ namespace Camunda.Worker
                                            d.ImplementationType == typeof(ExternalTaskSelector));
         }
 
-        [Fact]
-        public void TestAddExceptionHandler()
-        {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
-
-            builder.AddExceptionHandler<ExceptionHandler>();
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(IExceptionHandler) &&
-                                           d.ImplementationType == typeof(ExceptionHandler));
-        }
-
         private class HandlerFactoryProvider : IHandlerFactoryProvider
         {
             public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
@@ -108,14 +95,6 @@ namespace Camunda.Worker
         {
             public Task<IEnumerable<ExternalTask>> SelectAsync(IEnumerable<FetchAndLockRequest.Topic> topics,
                 CancellationToken cancellationToken = default)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class ExceptionHandler : IExceptionHandler
-        {
-            public bool TryTransformToResult(Exception exception, out IExecutionResult executionResult)
             {
                 throw new NotImplementedException();
             }

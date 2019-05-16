@@ -54,17 +54,17 @@ namespace Camunda.Worker.Extensions
 
         [HandlerTopics("testTopic_1", "testTopic_1")]
         [HandlerVariables("testVariable", LocalVariables = true)]
-        private class HandlerWithTopics : IExternalTaskHandler
+        private class HandlerWithTopics : ExternalTaskHandler
         {
-            public Task<IExecutionResult> Process(ExternalTask externalTask)
+            public override Task<IExecutionResult> Process(ExternalTask externalTask)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
             }
         }
 
-        private class HandlerWithoutTopics : IExternalTaskHandler
+        private class HandlerWithoutTopics : ExternalTaskHandler
         {
-            public Task<IExecutionResult> Process(ExternalTask externalTask)
+            public override Task<IExecutionResult> Process(ExternalTask externalTask)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
             }

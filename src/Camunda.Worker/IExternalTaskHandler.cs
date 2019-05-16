@@ -4,6 +4,6 @@ namespace Camunda.Worker
 {
     public interface IExternalTaskHandler
     {
-        Task<IExecutionResult> Process(ExternalTask externalTask);
+        Task HandleAsync(IExternalTaskContext context);
     }
 }

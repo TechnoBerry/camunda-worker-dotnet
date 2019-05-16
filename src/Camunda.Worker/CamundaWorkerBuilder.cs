@@ -33,13 +33,6 @@ namespace Camunda.Worker
             return this;
         }
 
-        public ICamundaWorkerBuilder AddExceptionHandler<THandler>() where THandler : class, IExceptionHandler
-        {
-            Services.AddTransient<IExceptionHandler, THandler>();
-
-            return this;
-        }
-
         public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
         {
             Guard.NotNull(descriptor, nameof(descriptor));
