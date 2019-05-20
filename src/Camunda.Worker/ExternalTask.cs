@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -11,11 +12,13 @@ namespace Camunda.Worker
             Id = Guard.NotNull(id, nameof(id));
             WorkerId = Guard.NotNull(workerId, nameof(workerId));
             TopicName = Guard.NotNull(topicName, nameof(topicName));
+            CreationTime = DateTime.Now;
         }
 
         public string Id { get; }
         public string WorkerId { get; }
         public string TopicName { get; }
+        [JsonIgnore] public DateTime CreationTime { get; }
         public int Priority { get; set; }
         public string ExecutionId { get; set; }
         public string ActivityId { get; set; }
