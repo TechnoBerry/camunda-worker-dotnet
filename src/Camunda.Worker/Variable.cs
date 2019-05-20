@@ -16,6 +16,16 @@ namespace Camunda.Worker
         [ExcludeFromCodeCoverage]
         public static Variable Boolean(bool value) => new Variable(value, VariableType.Boolean);
 
+        public bool AsBoolean()
+        {
+            if (Type != VariableType.Boolean)
+            {
+                throw new InvalidCastException();
+            }
+
+            return Convert.ToBoolean(Value);
+        }
+
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
         public Variable(short value) : this(value, VariableType.Short)
@@ -24,6 +34,16 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public static Variable Short(short value) => new Variable(value, VariableType.Short);
+
+        public short AsShort()
+        {
+            if (Type != VariableType.Short)
+            {
+                throw new InvalidCastException();
+            }
+
+            return Convert.ToInt16(Value);
+        }
 
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
@@ -34,6 +54,16 @@ namespace Camunda.Worker
         [ExcludeFromCodeCoverage]
         public static Variable Integer(int value) => new Variable(value, VariableType.Integer);
 
+        public int AsInteger()
+        {
+            if (Type != VariableType.Integer)
+            {
+                throw new InvalidCastException();
+            }
+
+            return Convert.ToInt32(Value);
+        }
+
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
         public Variable(long value) : this(value, VariableType.Long)
@@ -42,6 +72,17 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public static Variable Long(long value) => new Variable(value, VariableType.Long);
+
+        [ExcludeFromCodeCoverage]
+        public long AsLong()
+        {
+            if (Type != VariableType.Long)
+            {
+                throw new InvalidCastException();
+            }
+
+            return Convert.ToInt64(Value);
+        }
 
 
         [Obsolete("Will be removed after `0.8.0` release")]
@@ -52,6 +93,16 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public static Variable Double(double value) => new Variable(value, VariableType.Double);
+
+        public double AsDouble()
+        {
+            if (Type != VariableType.Double)
+            {
+                throw new InvalidCastException();
+            }
+
+            return Convert.ToDouble(Value);
+        }
 
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
