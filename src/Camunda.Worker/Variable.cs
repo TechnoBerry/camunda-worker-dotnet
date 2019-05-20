@@ -14,7 +14,7 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
-        public static Variable Bool(bool value) => new Variable(value, VariableType.Boolean);
+        public static Variable Boolean(bool value) => new Variable(value, VariableType.Boolean);
 
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
