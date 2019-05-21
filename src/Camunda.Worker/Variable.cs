@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -18,11 +19,7 @@ namespace Camunda.Worker
 
         public bool AsBoolean()
         {
-            if (Type != VariableType.Boolean)
-            {
-                throw new InvalidCastException();
-            }
-
+            EnsureIsOfType(VariableType.Boolean);
             return Convert.ToBoolean(Value);
         }
 
@@ -37,11 +34,7 @@ namespace Camunda.Worker
 
         public short AsShort()
         {
-            if (Type != VariableType.Short)
-            {
-                throw new InvalidCastException();
-            }
-
+            EnsureIsOfType(VariableType.Short);
             return Convert.ToInt16(Value);
         }
 
@@ -56,11 +49,7 @@ namespace Camunda.Worker
 
         public int AsInteger()
         {
-            if (Type != VariableType.Integer)
-            {
-                throw new InvalidCastException();
-            }
-
+            EnsureIsOfType(VariableType.Integer);
             return Convert.ToInt32(Value);
         }
 
@@ -76,11 +65,7 @@ namespace Camunda.Worker
         [ExcludeFromCodeCoverage]
         public long AsLong()
         {
-            if (Type != VariableType.Long)
-            {
-                throw new InvalidCastException();
-            }
-
+            EnsureIsOfType(VariableType.Long);
             return Convert.ToInt64(Value);
         }
 
@@ -96,11 +81,7 @@ namespace Camunda.Worker
 
         public double AsDouble()
         {
-            if (Type != VariableType.Double)
-            {
-                throw new InvalidCastException();
-            }
-
+            EnsureIsOfType(VariableType.Double);
             return Convert.ToDouble(Value);
         }
 
@@ -131,6 +112,14 @@ namespace Camunda.Worker
         [ExcludeFromCodeCoverage]
         public static Variable Json(object value, JsonSerializerSettings settings) =>
             new Variable(JsonConvert.SerializeObject(value, settings), VariableType.Json);
+
+        [ExcludeFromCodeCoverage]
+        private void EnsureIsOfType(params VariableType[] types)
+        {
+            if (types.Any(type => type == Type)) return;
+
+            throw new InvalidCastException($"Type {Type} not in [{string.Join(", ", types)}]");
+        }
 
         [JsonConstructor]
         public Variable(object value, VariableType type)
