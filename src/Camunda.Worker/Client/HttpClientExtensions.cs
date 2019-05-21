@@ -10,7 +10,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Camunda.Worker.Client
 {
-    internal static class CamundaHttpClientExtensions
+    internal static class HttpClientExtensions
     {
         private const string JsonContentType = "application/json";
         private static readonly JsonSerializerSettings SerializerSettings = MakeSerializerSettings();
