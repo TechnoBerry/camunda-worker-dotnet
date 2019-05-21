@@ -1,3 +1,4 @@
+using System;
 using Xunit;
 
 namespace Camunda.Worker
@@ -55,6 +56,26 @@ namespace Camunda.Worker
             var variable = new Variable(value, VariableType.Double);
 
             Assert.Equal(value, variable.AsDouble());
+        }
+
+        [Fact]
+        public void TestAsString()
+        {
+            var value = "MyString";
+
+            var variable = new Variable(value, VariableType.String);
+
+            Assert.Equal(value, variable.AsString());
+        }
+
+        [Fact]
+        public void TestAsBytes()
+        {
+            var value = new byte[]{ 127 };
+
+            var variable = new Variable(Convert.ToBase64String(value), VariableType.Bytes);
+
+            Assert.Equal(value, variable.AsBytes());
         }
     }
 }

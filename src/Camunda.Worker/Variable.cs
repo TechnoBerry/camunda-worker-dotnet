@@ -91,6 +91,12 @@ namespace Camunda.Worker
         {
         }
 
+        public string AsString()
+        {
+            EnsureIsOfType(VariableType.String);
+            return Convert.ToString(Value);
+        }
+
         [ExcludeFromCodeCoverage]
         public static Variable String(string value) => new Variable(value, VariableType.String);
 
@@ -102,6 +108,13 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public static Variable Bytes(byte[] value) => new Variable(Convert.ToBase64String(value), VariableType.Bytes);
+
+        public byte[] AsBytes()
+        {
+            EnsureIsOfType(VariableType.Bytes);
+            var stringValue = Convert.ToString(Value);
+            return Convert.FromBase64String(stringValue);
+        }
 
         [ExcludeFromCodeCoverage]
         public static Variable Json(JObject value) => new Variable(value.ToString(Formatting.None), VariableType.Json);
