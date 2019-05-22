@@ -126,6 +126,13 @@ namespace Camunda.Worker
         public static Variable Json(object value, JsonSerializerSettings settings) =>
             new Variable(JsonConvert.SerializeObject(value, settings), VariableType.Json);
 
+        public T AsJson<T>(JsonSerializerSettings settings = null)
+        {
+            EnsureIsOfType(VariableType.Json);
+            var stringValue = Convert.ToString(Value);
+            return JsonConvert.DeserializeObject<T>(stringValue, settings);
+        }
+
         [ExcludeFromCodeCoverage]
         private void EnsureIsOfType(params VariableType[] types)
         {

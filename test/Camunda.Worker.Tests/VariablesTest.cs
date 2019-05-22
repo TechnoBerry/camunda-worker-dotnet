@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Camunda.Worker
@@ -76,6 +77,27 @@ namespace Camunda.Worker
             var variable = new Variable(Convert.ToBase64String(value), VariableType.Bytes);
 
             Assert.Equal(value, variable.AsBytes());
+        }
+
+        [Fact]
+        public void TestAsJsonWithType()
+        {
+            var value = "{ \"id\": 123, \"message\": \"Test\" }";
+
+            var variable = new Variable(value, VariableType.Json);
+
+            var result = variable.AsJson<Test>();
+            Assert.Equal(123L, result.Id);
+            Assert.Equal("Test", result.Message);
+        }
+
+        public class Test
+        {
+            [JsonProperty("id")]
+            public long Id { get; set; }
+
+            [JsonProperty("message")]
+            public string Message { get; set; }
         }
     }
 }
