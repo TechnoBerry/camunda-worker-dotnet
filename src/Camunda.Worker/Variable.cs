@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Camunda.Worker
 {
-    public class Variable
+    public class Variable : IEquatable<Variable>
     {
         [Obsolete("Will be removed after `0.8.0` release")]
         [ExcludeFromCodeCoverage]
@@ -120,7 +120,8 @@ namespace Camunda.Worker
         public static Variable Json(JObject value) => new Variable(value.ToString(Formatting.None), VariableType.Json);
 
         [ExcludeFromCodeCoverage]
-        public static Variable Json(object value) => new Variable(JsonConvert.SerializeObject(value), VariableType.Json);
+        public static Variable Json(object value) =>
+            new Variable(JsonConvert.SerializeObject(value), VariableType.Json);
 
         [ExcludeFromCodeCoverage]
         public static Variable Json(object value, JsonSerializerSettings settings) =>
@@ -153,5 +154,31 @@ namespace Camunda.Worker
 
         public object Value { get; }
         public VariableType Type { get; }
+
+        [ExcludeFromCodeCoverage]
+        public bool Equals(Variable other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(Value, other.Value) && Type == other.Type;
+        }
+
+        [ExcludeFromCodeCoverage]
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Variable) obj);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Value != null ? Value.GetHashCode() : 0) * 397) ^ (int) Type;
+            }
+        }
     }
 }
