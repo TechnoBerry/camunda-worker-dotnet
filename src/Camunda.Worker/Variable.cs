@@ -134,6 +134,9 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
+        public static Variable Null() => new Variable(null, VariableType.Null);
+
+        [ExcludeFromCodeCoverage]
         private void EnsureIsOfType(params VariableType[] types)
         {
             if (types.Any(type => type == Type)) return;
