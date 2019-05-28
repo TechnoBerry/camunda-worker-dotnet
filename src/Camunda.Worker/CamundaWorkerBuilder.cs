@@ -14,7 +14,7 @@ namespace Camunda.Worker
 
         public ICamundaWorkerBuilder AddFactoryProvider<TProvider>() where TProvider : class, IHandlerFactoryProvider
         {
-            Services.AddTransient<IHandlerFactoryProvider, TProvider>();
+            Services.AddSingleton<IHandlerFactoryProvider, TProvider>();
 
             return this;
         }

@@ -44,7 +44,7 @@ namespace Camunda.Worker
 
             builder.AddFactoryProvider<HandlerFactoryProvider>();
 
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IHandlerFactoryProvider) &&
                                            d.ImplementationType == typeof(HandlerFactoryProvider));
         }
