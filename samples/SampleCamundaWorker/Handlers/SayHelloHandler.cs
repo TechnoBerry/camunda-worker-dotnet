@@ -4,8 +4,8 @@ using Camunda.Worker;
 
 namespace SampleCamundaWorker.Handlers
 {
-    [HandlerTopics("sayHello", LockDuration = 10000)]
-    [HandlerVariables("USERNAME")]
+    [Topics("sayHello", LockDuration = 10000)]
+    [Variables("USERNAME")]
     public class SayHelloHandler : ExternalTaskHandler
     {
         public override async Task<IExecutionResult> Process(ExternalTask externalTask)

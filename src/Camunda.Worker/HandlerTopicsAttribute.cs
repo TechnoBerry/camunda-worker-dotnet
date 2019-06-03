@@ -1,27 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Camunda.Worker
 {
+    [Obsolete("Will be removed after `0.8.0` release use \"TopicsAttribute\" instead")]
     [AttributeUsage(AttributeTargets.Class)]
-    public class HandlerTopicsAttribute : Attribute
+    public class HandlerTopicsAttribute : TopicsAttribute
     {
-        private int _lockDuration = Constants.MinimumLockDuration;
-
-        public HandlerTopicsAttribute(params string[] topicNames)
+        public HandlerTopicsAttribute(params string[] topicNames) : base(topicNames)
         {
-            Guard.NotNull(topicNames, nameof(topicNames));
-
-            TopicNames = topicNames.ToList();
-        }
-
-        public IReadOnlyList<string> TopicNames { get; }
-
-        public int LockDuration
-        {
-            get => _lockDuration;
-            set => _lockDuration = Guard.GreaterThanOrEqual(value, Constants.MinimumLockDuration, nameof(LockDuration));
         }
     }
 }

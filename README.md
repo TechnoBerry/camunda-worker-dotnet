@@ -7,8 +7,8 @@
 ## Example
 
 ```csharp
-[HandlerTopics("sayHello", LockDuration = 10_000)]
-[HandlerVariables("USERNAME")]
+[Topics("sayHello", LockDuration = 10_000)]
+[Variables("USERNAME")]
 public class SayHelloHandler : IExternalTaskHandler
 {
     public async Task<IExecutionResult> Process(ExternalTask externalTask)

@@ -1,18 +1,13 @@
 using System;
-using System.Collections.Generic;
 
 namespace Camunda.Worker
 {
+    [Obsolete("Will be removed after `0.8.0` release use \"VariablesAttribute\" instead")]
     [AttributeUsage(AttributeTargets.Class)]
-    public class HandlerVariablesAttribute : Attribute
+    public class HandlerVariablesAttribute : VariablesAttribute
     {
-        public HandlerVariablesAttribute(params string[] variables)
+        public HandlerVariablesAttribute(params string[] variables) : base(variables)
         {
-            Variables = variables;
         }
-
-        public IReadOnlyList<string> Variables { get; }
-
-        public bool LocalVariables { get; set; }
     }
 }

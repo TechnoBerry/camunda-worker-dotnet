@@ -19,14 +19,14 @@ namespace Camunda.Worker.Extensions
 
         private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)
         {
-            var topicsAttribute = handlerType.GetCustomAttribute<HandlerTopicsAttribute>();
+            var topicsAttribute = handlerType.GetCustomAttribute<TopicsAttribute>();
 
             if (topicsAttribute == null)
             {
-                throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicsAttribute\"");
+                throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"TopicsAttribute\"");
             }
 
-            var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+            var variablesAttribute = handlerType.GetCustomAttribute<VariablesAttribute>();
 
             return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
             {

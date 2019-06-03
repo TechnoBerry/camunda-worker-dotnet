@@ -4,7 +4,7 @@ using Camunda.Worker;
 
 namespace SampleCamundaWorker.Handlers
 {
-    [HandlerTopics("sayHelloGuest")]
+    [Topics("sayHelloGuest")]
     public class SayHelloGuestHandler : ExternalTaskHandler
     {
         public override Task<IExecutionResult> Process(ExternalTask externalTask)
