@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SampleCamundaWorker.Handlers;
 
 namespace SampleCamundaWorker
@@ -28,7 +29,17 @@ namespace SampleCamundaWorker
                     options.BaseUri = new Uri("http://localhost:8080/engine-rest");
                 })
                 .AddHandler<SayHelloHandler>()
-                .AddHandler<SayHelloGuestHandler>();
+                .AddHandler<SayHelloGuestHandler>()
+                .ConfigurePipeline(pipeline =>
+                {
+                    pipeline.Use(next => async context =>
+                    {
+                        var logger = context.ServiceProvider.GetRequiredService<ILogger<Startup>>();
+                        logger.LogInformation("Started processing of task {Id}", context.Task.Id);
+                        await next(context);
+                        logger.LogInformation("Finished processing of task {Id}", context.Task.Id);
+                    });
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
