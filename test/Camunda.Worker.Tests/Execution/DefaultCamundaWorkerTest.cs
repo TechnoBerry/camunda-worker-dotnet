@@ -14,6 +14,7 @@ namespace Camunda.Worker.Execution
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
         private readonly Mock<IContextFactory> _contextFactoryMock = new Mock<IContextFactory>();
+        private readonly PipelineDescriptor _pipelineDescriptor;
 
         public DefaultCamundaWorkerTest()
         {
@@ -23,6 +24,8 @@ namespace Camunda.Worker.Execution
             var contextMock = new Mock<IExternalTaskContext>();
             _contextFactoryMock.Setup(factory => factory.MakeContext(It.IsAny<ExternalTask>()))
                 .Returns(contextMock.Object);
+
+            _pipelineDescriptor = new PipelineDescriptor(_routerMock.Object.RouteAsync);
         }
 
         [Fact]
@@ -64,6 +67,10 @@ namespace Camunda.Worker.Execution
                 Times.Once()
             );
             _selectorMock.VerifyAll();
+            _routerMock.Verify(
+                executor => executor.RouteAsync(It.IsAny<IExternalTaskContext>()),
+                Times.Once()
+            );
         }
 
         private void ConfigureSelector(CancellationTokenSource cts, IList<ExternalTask> externalTasks)
@@ -79,11 +86,10 @@ namespace Camunda.Worker.Execution
 
         private ICamundaWorker CreateWorker()
         {
-            return new DefaultCamundaWorker(
-                _routerMock.Object,
-                _topicsProviderMock.Object,
+            return new DefaultCamundaWorker(_topicsProviderMock.Object,
                 _selectorMock.Object,
-                _contextFactoryMock.Object
+                _contextFactoryMock.Object,
+                _pipelineDescriptor
             );
         }
     }

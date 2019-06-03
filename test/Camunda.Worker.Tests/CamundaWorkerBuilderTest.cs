@@ -44,7 +44,7 @@ namespace Camunda.Worker
 
             builder.AddFactoryProvider<HandlerFactoryProvider>();
 
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IHandlerFactoryProvider) &&
                                            d.ImplementationType == typeof(HandlerFactoryProvider));
         }
@@ -73,6 +73,18 @@ namespace Camunda.Worker
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(IExternalTaskSelector) &&
                                            d.ImplementationType == typeof(ExternalTaskSelector));
+        }
+
+        [Fact]
+        public void TestConfigurePipeline()
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            builder.ConfigurePipeline(pipeline => { });
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
+                                           d.ServiceType == typeof(PipelineDescriptor));
         }
 
         private class HandlerFactoryProvider : IHandlerFactoryProvider
