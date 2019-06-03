@@ -75,6 +75,18 @@ namespace Camunda.Worker
                                            d.ImplementationType == typeof(ExternalTaskSelector));
         }
 
+        [Fact]
+        public void TestConfigurePipeline()
+        {
+            var services = new ServiceCollection();
+            var builder = new CamundaWorkerBuilder(services);
+
+            builder.ConfigurePipeline(pipeline => { });
+
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
+                                           d.ServiceType == typeof(PipelineDescriptor));
+        }
+
         private class HandlerFactoryProvider : IHandlerFactoryProvider
         {
             public HandlerFactory GetHandlerFactory(ExternalTask externalTask)

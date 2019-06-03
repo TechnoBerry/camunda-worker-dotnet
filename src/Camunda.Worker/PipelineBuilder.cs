@@ -31,7 +31,7 @@ namespace Camunda.Worker
                 .Aggregate((ExternalTaskDelegate) RouteAsync, (current, middleware) => middleware(current));
         }
 
-        private static async Task RouteAsync(IExternalTaskContext context)
+        internal static async Task RouteAsync(IExternalTaskContext context)
         {
             var router = context.ServiceProvider.GetRequiredService<IExternalTaskRouter>();
             await router.RouteAsync(context);

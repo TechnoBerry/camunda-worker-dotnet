@@ -1,3 +1,4 @@
+using System;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,5 +15,7 @@ namespace Camunda.Worker
         ICamundaWorkerBuilder AddTaskSelector<TSelector>() where TSelector : class, IExternalTaskSelector;
 
         ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor);
+
+        ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
     }
 }
