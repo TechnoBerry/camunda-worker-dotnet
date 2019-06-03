@@ -29,11 +29,8 @@ namespace Camunda.Worker.Execution
         {
             ThrowIfDisposed();
 
-            var taskId = Task.Id;
-            var workerId = Task.WorkerId;
-            var request = new ExtendLockRequest(workerId, newDuration);
-
-            await _client.ExtendLock(taskId, request);
+            var request = new ExtendLockRequest(Task.WorkerId, newDuration);
+            await _client.ExtendLock(Task.Id, request);
         }
 
         public async Task CompleteAsync(IDictionary<string, Variable> variables,
@@ -42,15 +39,12 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            var taskId = Task.Id;
-            var workerId = Task.WorkerId;
-            var request = new CompleteRequest(workerId)
+            var request = new CompleteRequest(Task.WorkerId)
             {
                 Variables = variables,
                 LocalVariables = localVariables
             };
-
-            await _client.Complete(taskId, request);
+            await _client.Complete(Task.Id, request);
 
             Completed = true;
         }
@@ -62,17 +56,14 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            var taskId = Task.Id;
-            var workerId = Task.WorkerId;
-            var request = new ReportFailureRequest(workerId)
+            var request = new ReportFailureRequest(Task.WorkerId)
             {
                 ErrorMessage = errorMessage,
                 ErrorDetails = errorDetails,
                 Retries = retries,
                 RetryTimeout = retryTimeout
             };
-
-            await _client.ReportFailure(taskId, request);
+            await _client.ReportFailure(Task.Id, request);
 
             Completed = true;
         }
@@ -83,15 +74,12 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            var taskId = Task.Id;
-            var workerId = Task.WorkerId;
-            var request = new BpmnErrorRequest(workerId, errorCode)
+            var request = new BpmnErrorRequest(Task.WorkerId, errorCode)
             {
                 ErrorMessage = errorMessage,
                 Variables = variables
             };
-
-            await _client.ReportBpmnError(taskId, request);
+            await _client.ReportBpmnError(Task.Id, request);
 
             Completed = true;
         }
