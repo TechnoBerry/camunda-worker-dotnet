@@ -89,7 +89,7 @@ namespace Camunda.Worker
 
         private class HandlerDelegateProvider : IHandlerDelegateProvider
         {
-            public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
+            public ExternalTaskDelegate GetHandlerDelegate(ExternalTask externalTask)
             {
                 throw new NotImplementedException();
             }

@@ -20,22 +20,14 @@ namespace Camunda.Worker.Execution
         {
             Guard.NotNull(context, nameof(context));
 
-            var handler = MakeHandler(context);
+            var handlerDelegate = _handlerDelegateProvider.GetHandlerDelegate(context.Task);
             var externalTask = context.Task;
 
             _logger.LogInformation("Started processing of task {TaskId}", externalTask.Id);
 
-            await handler.HandleAsync(context);
+            await handlerDelegate(context);
 
             _logger.LogInformation("Finished processing of task {TaskId}", externalTask.Id);
-        }
-
-        private IExternalTaskHandler MakeHandler(IExternalTaskContext context)
-        {
-            var externalTask = context.Task;
-            var handlerFactory = _handlerDelegateProvider.GetHandlerFactory(externalTask);
-            var handler = handlerFactory(context.ServiceProvider);
-            return handler;
         }
     }
 }

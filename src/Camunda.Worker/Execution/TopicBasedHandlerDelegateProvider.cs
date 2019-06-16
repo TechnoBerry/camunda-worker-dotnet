@@ -17,7 +17,18 @@ namespace Camunda.Worker.Execution
                 .ToDictionary(pair => pair.topicName, pair => pair.Factory);
         }
 
-        public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
+        public ExternalTaskDelegate GetHandlerDelegate(ExternalTask externalTask)
+        {
+            var factory = GetHandlerFactory(externalTask);
+
+            return async context =>
+            {
+                var handler = factory(context.ServiceProvider);
+                await handler.HandleAsync(context);
+            };
+        }
+
+        private HandlerFactory GetHandlerFactory(ExternalTask externalTask)
         {
             Guard.NotNull(externalTask, nameof(externalTask));
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -22,32 +23,22 @@ namespace Camunda.Worker.Execution
         [Fact]
         public async Task TestRouteAsync()
         {
-            var handlerMock = MakeHandlerMock();
+            var calls = new List<IExternalTaskContext>();
 
-            handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<IExternalTaskContext>()))
-                .Returns(Task.CompletedTask);
+            Task ExternalTaskDelegate(IExternalTaskContext context)
+            {
+                calls.Add(context);
+                return Task.CompletedTask;
+            }
+
+            _handlerFactoryProviderMock.Setup(factory => factory.GetHandlerDelegate(It.IsAny<ExternalTask>()))
+                .Returns(ExternalTaskDelegate);
 
             var executor = MakeExecutor();
 
             await executor.RouteAsync(_contextMock.Object);
 
-            handlerMock.Verify(handler => handler.HandleAsync(It.IsAny<IExternalTaskContext>()), Times.Once());
-        }
-
-        private Mock<IExternalTaskHandler> MakeHandlerMock()
-        {
-            var handlerMock = new Mock<IExternalTaskHandler>();
-            _handlerFactoryProviderMock.Setup(factory => factory.GetHandlerFactory(It.IsAny<ExternalTask>()))
-                .Returns(provider => handlerMock.Object);
-            return handlerMock;
-        }
-
-        [Fact]
-        public async Task TestRouteAsyncWithNullArg()
-        {
-            var executor = MakeExecutor();
-
-            await Assert.ThrowsAsync<ArgumentNullException>(() => executor.RouteAsync(null));
+            Assert.Single(calls);
         }
 
         private IExternalTaskRouter MakeExecutor()

@@ -8,7 +8,7 @@ namespace Camunda.Worker.Execution
     public class TopicBasedHandlerDelegateProviderTest
     {
         [Fact]
-        public void TestGetKnownHandlerFactory()
+        public void TestGetKnownHandlerDelegate()
         {
             var handlerMock = new Mock<IExternalTaskHandler>();
 
@@ -17,16 +17,16 @@ namespace Camunda.Worker.Execution
                 new HandlerDescriptor(p => handlerMock.Object, new HandlerMetadata(new[] {"topic1"}))
             });
 
-            var factory = provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"));
-            Assert.NotNull(factory);
+            var handlerDelegate = provider.GetHandlerDelegate(new ExternalTask("test", "test", "topic1"));
+            Assert.NotNull(handlerDelegate);
         }
 
         [Fact]
-        public void TestGetUnknownHandlerFactory()
+        public void TestGetUnknownHandlerDelegate()
         {
             var provider = new TopicBasedHandlerDelegateProvider(Enumerable.Empty<HandlerDescriptor>());
             Assert.Throws<ArgumentException>(
-                () => provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"))
+                () => provider.GetHandlerDelegate(new ExternalTask("test", "test", "topic1"))
             );
         }
     }
