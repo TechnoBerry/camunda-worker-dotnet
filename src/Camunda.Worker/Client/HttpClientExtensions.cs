@@ -14,6 +14,7 @@ namespace Camunda.Worker.Client
     {
         private const string JsonContentType = "application/json";
         private static readonly JsonSerializerSettings SerializerSettings = MakeSerializerSettings();
+        private static readonly JsonSerializer Serializer = JsonSerializer.Create(SerializerSettings);
 
         private static JsonSerializerSettings MakeSerializerSettings()
         {
@@ -52,8 +53,7 @@ namespace Camunda.Worker.Client
             using (var streamReader = new StreamReader(stream))
             using (var jsonReader = new JsonTextReader(streamReader))
             {
-                var serializer = JsonSerializer.Create(SerializerSettings);
-                var result = serializer.Deserialize<T>(jsonReader);
+                var result = Serializer.Deserialize<T>(jsonReader);
                 return result;
             }
         }
