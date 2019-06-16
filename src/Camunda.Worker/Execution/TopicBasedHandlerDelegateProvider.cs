@@ -6,42 +6,30 @@ namespace Camunda.Worker.Execution
 {
     public class TopicBasedHandlerDelegateProvider : IHandlerDelegateProvider
     {
-        private readonly IReadOnlyDictionary<string, HandlerFactory> _factories;
+        private readonly IReadOnlyDictionary<string, ExternalTaskDelegate> _handlerDelegates;
 
         public TopicBasedHandlerDelegateProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
-            _factories = descriptors
+            _handlerDelegates = descriptors
                 .SelectMany(descriptor => descriptor.TopicNames
-                    .Select(topicName => (topicName, descriptor.Factory))
+                    .Select(topicName => (topicName, Factory: descriptor.HandlerDelegate))
                 )
                 .ToDictionary(pair => pair.topicName, pair => pair.Factory);
         }
 
         public ExternalTaskDelegate GetHandlerDelegate(ExternalTask externalTask)
         {
-            var factory = GetHandlerFactory(externalTask);
-
-            return async context =>
-            {
-                var handler = factory(context.ServiceProvider);
-                await handler.HandleAsync(context);
-            };
-        }
-
-        private HandlerFactory GetHandlerFactory(ExternalTask externalTask)
-        {
             Guard.NotNull(externalTask, nameof(externalTask));
 
-            var topicName = externalTask.TopicName;
-
-            return GetHandlerFactoryByTopicName(topicName);
+            var handlerDelegate = GetHandlerDelegateByTopicName(externalTask.TopicName);
+            return handlerDelegate;
         }
 
-        protected virtual HandlerFactory GetHandlerFactoryByTopicName(string topicName)
+        protected virtual ExternalTaskDelegate GetHandlerDelegateByTopicName(string topicName)
         {
-            if (_factories.TryGetValue(topicName, out var factory))
+            if (_handlerDelegates.TryGetValue(topicName, out var handlerDelegate))
             {
-                return factory;
+                return handlerDelegate;
             }
 
             throw new ArgumentException("Unknown topic name", nameof(topicName));

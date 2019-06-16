@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,24 +45,25 @@ namespace Camunda.Worker.Extensions
             var services = builder.Services;
             services.AddScoped<T>();
 
-            return builder.AddHandler(HandlerFactory<T>, metadata);
+            return builder.AddHandler(HandlerDelegate<T>, metadata);
         }
 
-        private static IExternalTaskHandler HandlerFactory<T>(IServiceProvider provider)
+        private static Task HandlerDelegate<T>(IExternalTaskContext context)
             where T : class, IExternalTaskHandler
         {
-            return provider.GetRequiredService<T>();
+            var handler = context.ServiceProvider.GetRequiredService<T>();
+            return handler.HandleAsync(context);
         }
 
         public static ICamundaWorkerBuilder AddHandler(this ICamundaWorkerBuilder builder,
-            HandlerFactory factory,
+            ExternalTaskDelegate handlerDelegate,
             HandlerMetadata metadata)
         {
             Guard.NotNull(builder, nameof(builder));
-            Guard.NotNull(factory, nameof(factory));
+            Guard.NotNull(handlerDelegate, nameof(handlerDelegate));
             Guard.NotNull(metadata, nameof(metadata));
 
-            var handlerDescriptor = new HandlerDescriptor(factory, metadata);
+            var handlerDescriptor = new HandlerDescriptor(handlerDelegate, metadata);
 
             return builder.AddHandlerDescriptor(handlerDescriptor);
         }

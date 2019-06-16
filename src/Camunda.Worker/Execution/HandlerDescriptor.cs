@@ -4,13 +4,13 @@ namespace Camunda.Worker.Execution
 {
     public sealed class HandlerDescriptor
     {
-        public HandlerDescriptor(HandlerFactory factory, HandlerMetadata metadata)
+        public HandlerDescriptor(ExternalTaskDelegate handlerDelegate, HandlerMetadata metadata)
         {
-            Factory = Guard.NotNull(factory, nameof(factory));
+            HandlerDelegate = Guard.NotNull(handlerDelegate, nameof(handlerDelegate));
             Metadata = Guard.NotNull(metadata, nameof(metadata));
         }
 
-        public HandlerFactory Factory { get; }
+        public ExternalTaskDelegate HandlerDelegate { get; }
 
         public HandlerMetadata Metadata { get; }
 

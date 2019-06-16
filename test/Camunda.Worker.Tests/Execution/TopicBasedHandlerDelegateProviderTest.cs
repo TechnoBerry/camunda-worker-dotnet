@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Moq;
 using Xunit;
 
@@ -10,11 +11,11 @@ namespace Camunda.Worker.Execution
         [Fact]
         public void TestGetKnownHandlerDelegate()
         {
-            var handlerMock = new Mock<IExternalTaskHandler>();
+            Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
             var provider = new TopicBasedHandlerDelegateProvider(new[]
             {
-                new HandlerDescriptor(p => handlerMock.Object, new HandlerMetadata(new[] {"topic1"}))
+                new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}))
             });
 
             var handlerDelegate = provider.GetHandlerDelegate(new ExternalTask("test", "test", "topic1"));

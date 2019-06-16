@@ -16,11 +16,11 @@ namespace Camunda.Worker
         public void TestAddDescriptor()
         {
             var services = new ServiceCollection();
-            var handlerMock = new Mock<IExternalTaskHandler>();
+            Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.AddHandlerDescriptor(new HandlerDescriptor(provider => handlerMock.Object,
+            builder.AddHandlerDescriptor(new HandlerDescriptor(FakeHandlerDelegate,
                 new HandlerMetadata(new[] {"testTopic"})));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
