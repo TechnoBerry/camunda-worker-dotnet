@@ -5,14 +5,14 @@ using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class TopicBasedFactoryProviderTest
+    public class TopicBasedHandlerDelegateProviderTest
     {
         [Fact]
         public void TestGetKnownHandlerFactory()
         {
             var handlerMock = new Mock<IExternalTaskHandler>();
 
-            var provider = new TopicBasedFactoryProvider(new[]
+            var provider = new TopicBasedHandlerDelegateProvider(new[]
             {
                 new HandlerDescriptor(p => handlerMock.Object, new HandlerMetadata(new[] {"topic1"}))
             });
@@ -24,7 +24,7 @@ namespace Camunda.Worker.Execution
         [Fact]
         public void TestGetUnknownHandlerFactory()
         {
-            var provider = new TopicBasedFactoryProvider(Enumerable.Empty<HandlerDescriptor>());
+            var provider = new TopicBasedHandlerDelegateProvider(Enumerable.Empty<HandlerDescriptor>());
             Assert.Throws<ArgumentException>(
                 () => provider.GetHandlerFactory(new ExternalTask("test", "test", "topic1"))
             );

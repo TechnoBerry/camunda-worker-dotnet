@@ -24,7 +24,7 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(IConfigureOptions<CamundaWorkerOptions>));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(IHandlerFactoryProvider));
+                                           d.ServiceType == typeof(IHandlerDelegateProvider));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(IExternalTaskRouter));

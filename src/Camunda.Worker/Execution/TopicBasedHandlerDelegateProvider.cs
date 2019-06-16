@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Camunda.Worker.Execution
 {
-    public class TopicBasedFactoryProvider : IHandlerFactoryProvider
+    public class TopicBasedHandlerDelegateProvider : IHandlerDelegateProvider
     {
         private readonly IReadOnlyDictionary<string, HandlerFactory> _factories;
 
-        public TopicBasedFactoryProvider(IEnumerable<HandlerDescriptor> descriptors)
+        public TopicBasedHandlerDelegateProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
             _factories = descriptors
                 .SelectMany(descriptor => descriptor.TopicNames

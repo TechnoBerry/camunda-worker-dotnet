@@ -6,13 +6,13 @@ namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskRouter : IExternalTaskRouter
     {
-        private readonly IHandlerFactoryProvider _handlerFactoryProvider;
+        private readonly IHandlerDelegateProvider _handlerDelegateProvider;
         private readonly ILogger<ExternalTaskRouter> _logger;
 
-        public ExternalTaskRouter(IHandlerFactoryProvider handlerFactoryProvider,
+        public ExternalTaskRouter(IHandlerDelegateProvider handlerDelegateProvider,
             ILogger<ExternalTaskRouter> logger = default)
         {
-            _handlerFactoryProvider = Guard.NotNull(handlerFactoryProvider, nameof(handlerFactoryProvider));
+            _handlerDelegateProvider = Guard.NotNull(handlerDelegateProvider, nameof(handlerDelegateProvider));
             _logger = logger ?? new NullLogger<ExternalTaskRouter>();
         }
 
@@ -33,7 +33,7 @@ namespace Camunda.Worker.Execution
         private IExternalTaskHandler MakeHandler(IExternalTaskContext context)
         {
             var externalTask = context.Task;
-            var handlerFactory = _handlerFactoryProvider.GetHandlerFactory(externalTask);
+            var handlerFactory = _handlerDelegateProvider.GetHandlerFactory(externalTask);
             var handler = handlerFactory(context.ServiceProvider);
             return handler;
         }

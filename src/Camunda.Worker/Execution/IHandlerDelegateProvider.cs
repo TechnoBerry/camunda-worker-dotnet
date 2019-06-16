@@ -1,6 +1,6 @@
 namespace Camunda.Worker.Execution
 {
-    public interface IHandlerFactoryProvider
+    public interface IHandlerDelegateProvider
     {
         HandlerFactory GetHandlerFactory(ExternalTask externalTask);
     }
