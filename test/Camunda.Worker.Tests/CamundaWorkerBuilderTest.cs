@@ -16,11 +16,11 @@ namespace Camunda.Worker
         public void TestAddDescriptor()
         {
             var services = new ServiceCollection();
-            var handlerMock = new Mock<IExternalTaskHandler>();
+            Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.AddHandlerDescriptor(new HandlerDescriptor(provider => handlerMock.Object,
+            builder.AddHandlerDescriptor(new HandlerDescriptor(FakeHandlerDelegate,
                 new HandlerMetadata(new[] {"testTopic"})));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
@@ -42,11 +42,11 @@ namespace Camunda.Worker
             var services = new ServiceCollection();
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.AddFactoryProvider<HandlerFactoryProvider>();
+            builder.AddFactoryProvider<HandlerDelegateProvider>();
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(IHandlerFactoryProvider) &&
-                                           d.ImplementationType == typeof(HandlerFactoryProvider));
+                                           d.ServiceType == typeof(IHandlerDelegateProvider) &&
+                                           d.ImplementationType == typeof(HandlerDelegateProvider));
         }
 
         [Fact]
@@ -87,9 +87,9 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(PipelineDescriptor));
         }
 
-        private class HandlerFactoryProvider : IHandlerFactoryProvider
+        private class HandlerDelegateProvider : IHandlerDelegateProvider
         {
-            public HandlerFactory GetHandlerFactory(ExternalTask externalTask)
+            public ExternalTaskDelegate GetHandlerDelegate(ExternalTask externalTask)
             {
                 throw new NotImplementedException();
             }

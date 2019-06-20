@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Camunda.Worker.Execution
@@ -29,11 +30,11 @@ namespace Camunda.Worker.Execution
 
         private static IEnumerable<HandlerDescriptor> GetDescriptors()
         {
-            IExternalTaskHandler Factory(IServiceProvider provider) => null;
+            Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
             var descriptors = new[]
             {
-                new HandlerDescriptor(Factory, new HandlerMetadata(new[] {"topic1"})),
-                new HandlerDescriptor(Factory, new HandlerMetadata(new[] {"test2"}, 10_000)
+                new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"})),
+                new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
                 {
                     Variables = new[] {"X"},
                     LocalVariables = true
