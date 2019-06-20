@@ -8,12 +8,6 @@ namespace Camunda.Worker
 {
     public class Variable : IEquatable<Variable>
     {
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(bool value) : this(value, VariableType.Boolean)
-        {
-        }
-
         [ExcludeFromCodeCoverage]
         public static Variable Boolean(bool value) => new Variable(value, VariableType.Boolean);
 
@@ -21,12 +15,6 @@ namespace Camunda.Worker
         {
             EnsureIsOfType(VariableType.Boolean);
             return Convert.ToBoolean(Value);
-        }
-
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(short value) : this(value, VariableType.Short)
-        {
         }
 
         [ExcludeFromCodeCoverage]
@@ -38,12 +26,6 @@ namespace Camunda.Worker
             return Convert.ToInt16(Value);
         }
 
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(int value) : this(value, VariableType.Integer)
-        {
-        }
-
         [ExcludeFromCodeCoverage]
         public static Variable Integer(int value) => new Variable(value, VariableType.Integer);
 
@@ -51,12 +33,6 @@ namespace Camunda.Worker
         {
             EnsureIsOfType(VariableType.Integer);
             return Convert.ToInt32(Value);
-        }
-
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(long value) : this(value, VariableType.Long)
-        {
         }
 
         [ExcludeFromCodeCoverage]
@@ -69,13 +45,6 @@ namespace Camunda.Worker
             return Convert.ToInt64(Value);
         }
 
-
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(double value) : this(value, VariableType.Double)
-        {
-        }
-
         [ExcludeFromCodeCoverage]
         public static Variable Double(double value) => new Variable(value, VariableType.Double);
 
@@ -83,12 +52,6 @@ namespace Camunda.Worker
         {
             EnsureIsOfType(VariableType.Double);
             return Convert.ToDouble(Value);
-        }
-
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(string value) : this(value, VariableType.String)
-        {
         }
 
         public string AsString()
@@ -99,12 +62,6 @@ namespace Camunda.Worker
 
         [ExcludeFromCodeCoverage]
         public static Variable String(string value) => new Variable(value, VariableType.String);
-
-        [Obsolete("Will be removed after `0.8.0` release")]
-        [ExcludeFromCodeCoverage]
-        public Variable(byte[] value) : this(Convert.ToBase64String(value), VariableType.Bytes)
-        {
-        }
 
         [ExcludeFromCodeCoverage]
         public static Variable Bytes(byte[] value) => new Variable(Convert.ToBase64String(value), VariableType.Bytes);

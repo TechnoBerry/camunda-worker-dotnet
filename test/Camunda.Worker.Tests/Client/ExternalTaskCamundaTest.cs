@@ -73,7 +73,7 @@ namespace Camunda.Worker.Client
                 {
                     Variables = new Dictionary<string, Variable>
                     {
-                        ["TEST"] = new Variable("testString")
+                        ["TEST"] = Variable.String("testString")
                     }
                 };
 
