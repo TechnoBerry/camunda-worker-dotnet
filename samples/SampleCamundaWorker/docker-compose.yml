@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: camunda
 
   camunda:
-    image: camunda/camunda-bpm-platform:latest
+    image: camunda/camunda-bpm-platform:7.11.0
     depends_on:
       - camunda-db
     ports:
