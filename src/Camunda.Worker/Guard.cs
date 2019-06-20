@@ -26,5 +26,16 @@ namespace Camunda.Worker
 
             return value;
         }
+
+        [ExcludeFromCodeCoverage]
+        internal static string NotEmptyAndNotNull(string value, string parameterName)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException($"Mustn't be null or empty string", parameterName);
+            }
+
+            return value;
+        }
     }
 }

@@ -111,9 +111,8 @@ namespace Camunda.Worker.Client
                 _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/bpmnError")
                     .Respond(HttpStatusCode.NoContent);
 
-                var request = new BpmnErrorRequest("testWorker", "testCode")
+                var request = new BpmnErrorRequest("testWorker", "testCode", "Error")
                 {
-                    ErrorMessage = "Error",
                     Variables = new Dictionary<string, Variable>()
                 };
 
@@ -217,7 +216,7 @@ namespace Camunda.Worker.Client
                 new Func<IExternalTaskClient, Task>(c => c.ReportFailure("taskId", reportFailureRequest))
             };
 
-            var bpmnErrorRequest = new BpmnErrorRequest("test", "test");
+            var bpmnErrorRequest = new BpmnErrorRequest("test", "test", "test");
             yield return new object[]
             {
                 new Func<IExternalTaskClient, Task>(c => c.ReportBpmnError("taskId", bpmnErrorRequest))

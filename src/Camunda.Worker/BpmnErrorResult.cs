@@ -7,10 +7,10 @@ namespace Camunda.Worker
 {
     public sealed class BpmnErrorResult : IExecutionResult
     {
-        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable> variables = default)
+        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable> variables = null)
         {
-            ErrorCode = Guard.NotNull(errorCode, nameof(errorCode));
-            ErrorMessage = Guard.NotNull(errorMessage, nameof(errorMessage));
+            ErrorCode = Guard.NotEmptyAndNotNull(errorCode, nameof(errorCode));
+            ErrorMessage = Guard.NotEmptyAndNotNull(errorMessage, nameof(errorMessage));
             Variables = variables ?? new Dictionary<string, Variable>();
         }
 

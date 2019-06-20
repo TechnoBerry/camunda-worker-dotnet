@@ -74,9 +74,8 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            var request = new BpmnErrorRequest(Task.WorkerId, errorCode)
+            var request = new BpmnErrorRequest(Task.WorkerId, errorCode, errorMessage)
             {
-                ErrorMessage = errorMessage,
                 Variables = variables
             };
             await _client.ReportBpmnError(Task.Id, request);
