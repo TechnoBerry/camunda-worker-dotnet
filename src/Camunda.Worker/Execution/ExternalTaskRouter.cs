@@ -10,10 +10,10 @@ namespace Camunda.Worker.Execution
         private readonly ILogger<ExternalTaskRouter> _logger;
 
         public ExternalTaskRouter(IHandlerDelegateProvider handlerDelegateProvider,
-            ILogger<ExternalTaskRouter> logger = default)
+            ILogger<ExternalTaskRouter> logger = null)
         {
             _handlerDelegateProvider = Guard.NotNull(handlerDelegateProvider, nameof(handlerDelegateProvider));
-            _logger = logger ?? new NullLogger<ExternalTaskRouter>();
+            _logger = logger ?? NullLogger<ExternalTaskRouter>.Instance;
         }
 
         public async Task RouteAsync(IExternalTaskContext context)

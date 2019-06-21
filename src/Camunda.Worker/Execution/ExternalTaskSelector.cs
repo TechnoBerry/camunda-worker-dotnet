@@ -13,11 +13,11 @@ namespace Camunda.Worker.Execution
     public class ExternalTaskSelector : IExternalTaskSelector
     {
         public ExternalTaskSelector(IExternalTaskClient client, IOptions<CamundaWorkerOptions> options,
-            ILogger<ExternalTaskSelector> logger = default)
+            ILogger<ExternalTaskSelector> logger = null)
         {
             Client = Guard.NotNull(client, nameof(client));
             Options = Guard.NotNull(options, nameof(options)).Value;
-            Logger = logger ?? new NullLogger<ExternalTaskSelector>();
+            Logger = logger ?? NullLogger<ExternalTaskSelector>.Instance;
         }
 
         protected IExternalTaskClient Client { get; }

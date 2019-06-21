@@ -20,13 +20,13 @@ namespace Camunda.Worker.Execution
             IExternalTaskSelector selector,
             IContextFactory contextFactory,
             PipelineDescriptor pipelineDescriptor,
-            ILogger<DefaultCamundaWorker> logger = default)
+            ILogger<DefaultCamundaWorker> logger = null)
         {
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _selector = Guard.NotNull(selector, nameof(selector));
             _contextFactory = Guard.NotNull(contextFactory, nameof(contextFactory));
             _pipelineDescriptor = Guard.NotNull(pipelineDescriptor, nameof(pipelineDescriptor));
-            _logger = logger ?? new NullLogger<DefaultCamundaWorker>();
+            _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
         }
 
         public async Task Run(CancellationToken cancellationToken)
