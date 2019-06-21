@@ -41,10 +41,24 @@ namespace Camunda.Worker.Client
             object requestBody,
             CancellationToken cancellationToken = default)
         {
-            var jsonRequestBody = JsonConvert.SerializeObject(requestBody, SerializerSettings);
-            var requestContent = new StringContent(jsonRequestBody, Encoding.UTF8, JsonContentType);
-            var response = await client.PostAsync(path, requestContent, cancellationToken);
-            return response;
+            using (var stream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(stream))
+            using (var jsonWriter = new JsonTextWriter(streamWriter))
+            {
+                Serializer.Serialize(jsonWriter, requestBody);
+                await jsonWriter.FlushAsync(cancellationToken);
+
+                stream.Position = 0;
+
+                var requestContent = new StreamContent(stream);
+                requestContent.Headers.ContentType = new MediaTypeHeaderValue(JsonContentType)
+                {
+                    CharSet = Encoding.UTF8.WebName
+                };
+
+                var response = await client.PostAsync(path, requestContent, cancellationToken);
+                return response;
+            }
         }
 
         internal static async Task<T> ReadAsObjectAsync<T>(this HttpContent content)
