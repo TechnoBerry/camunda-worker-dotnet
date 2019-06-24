@@ -28,6 +28,7 @@ namespace Camunda.Worker.Execution
         public async Task ExtendLockAsync(int newDuration)
         {
             ThrowIfDisposed();
+            ThrowIfCompleted();
 
             var request = new ExtendLockRequest(Task.WorkerId, newDuration);
             await _client.ExtendLock(Task.Id, request);
