@@ -61,7 +61,7 @@ namespace Camunda.Worker.Client
             }
         }
 
-        internal static async Task<T> ReadAsObjectAsync<T>(this HttpContent content)
+        internal static async Task<T> ReadJsonAsync<T>(this HttpContent content)
         {
             using (var stream = await content.ReadAsStreamAsync())
             using (var streamReader = new StreamReader(stream))

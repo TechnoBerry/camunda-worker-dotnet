@@ -28,7 +28,7 @@ namespace Camunda.Worker.Client
             {
                 await EnsureSuccess(response);
 
-                var externalTasks = await response.Content.ReadAsObjectAsync<IList<ExternalTask>>();
+                var externalTasks = await response.Content.ReadJsonAsync<IList<ExternalTask>>();
                 return externalTasks;
             }
         }
@@ -94,7 +94,7 @@ namespace Camunda.Worker.Client
         {
             if (!response.IsSuccessStatusCode && response.IsJson())
             {
-                var errorResponse = await response.Content.ReadAsObjectAsync<ErrorResponse>();
+                var errorResponse = await response.Content.ReadJsonAsync<ErrorResponse>();
                 response.Content.Dispose();
                 throw new ClientException(errorResponse, response.StatusCode);
             }
