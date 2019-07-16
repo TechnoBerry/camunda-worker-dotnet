@@ -42,11 +42,11 @@ namespace Camunda.Worker
             var services = new ServiceCollection();
             var builder = new CamundaWorkerBuilder(services);
 
-            builder.AddFactoryProvider<HandlerDelegateProvider>();
+            builder.AddEndpointProvider<EndpointProvider>();
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(IHandlerDelegateProvider) &&
-                                           d.ImplementationType == typeof(HandlerDelegateProvider));
+                                           d.ServiceType == typeof(IEndpointProvider) &&
+                                           d.ImplementationType == typeof(EndpointProvider));
         }
 
         [Fact]
@@ -87,9 +87,9 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(PipelineDescriptor));
         }
 
-        private class HandlerDelegateProvider : IHandlerDelegateProvider
+        private class EndpointProvider : IEndpointProvider
         {
-            public ExternalTaskDelegate GetHandlerDelegate(ExternalTask externalTask)
+            public ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask)
             {
                 throw new NotImplementedException();
             }

@@ -26,7 +26,7 @@ namespace Camunda.Worker
             services.TryAddTransient<IContextFactory, ContextFactory>();
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddTransient<IExternalTaskRouter, ExternalTaskRouter>();
-            services.TryAddSingleton<IHandlerDelegateProvider, TopicBasedHandlerDelegateProvider>();
+            services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
             services.TryAddSingleton(new PipelineDescriptor(PipelineBuilder.RouteAsync));
             services.AddHostedService<WorkerHostedService>();
 

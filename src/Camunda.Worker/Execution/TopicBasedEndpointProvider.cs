@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Camunda.Worker.Execution
 {
-    public class TopicBasedHandlerDelegateProvider : IHandlerDelegateProvider
+    public class TopicBasedEndpointProvider : IEndpointProvider
     {
         private readonly IReadOnlyDictionary<string, ExternalTaskDelegate> _handlerDelegates;
 
-        public TopicBasedHandlerDelegateProvider(IEnumerable<HandlerDescriptor> descriptors)
+        public TopicBasedEndpointProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
             _handlerDelegates = descriptors
                 .SelectMany(descriptor => descriptor.TopicNames
@@ -17,7 +17,7 @@ namespace Camunda.Worker.Execution
                 .ToDictionary(pair => pair.topicName, pair => pair.Factory);
         }
 
-        public ExternalTaskDelegate GetHandlerDelegate(ExternalTask externalTask)
+        public ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask)
         {
             Guard.NotNull(externalTask, nameof(externalTask));
 

@@ -10,7 +10,7 @@ namespace Camunda.Worker.Execution
     {
         private readonly Mock<IServiceProvider> _providerMock = new Mock<IServiceProvider>();
         private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
-        private readonly Mock<IHandlerDelegateProvider> _delegateProviderMock = new Mock<IHandlerDelegateProvider>();
+        private readonly Mock<IEndpointProvider> _endpointProviderMock = new Mock<IEndpointProvider>();
         private readonly ExternalTaskRouter _router;
 
         public ExternalTaskRouterTest()
@@ -18,7 +18,7 @@ namespace Camunda.Worker.Execution
             _contextMock.SetupGet(context => context.ServiceProvider).Returns(_providerMock.Object);
             _contextMock.SetupGet(context => context.Task).Returns(new ExternalTask("1", "testWorker", "testTopic"));
             _router = new ExternalTaskRouter(
-                _delegateProviderMock.Object
+                _endpointProviderMock.Object
             );
         }
 
@@ -33,7 +33,7 @@ namespace Camunda.Worker.Execution
                 return Task.CompletedTask;
             }
 
-            _delegateProviderMock.Setup(factory => factory.GetHandlerDelegate(It.IsAny<ExternalTask>()))
+            _endpointProviderMock.Setup(factory => factory.GetEndpointDelegate(It.IsAny<ExternalTask>()))
                 .Returns(ExternalTaskDelegate);
 
             await _router.RouteAsync(_contextMock.Object);

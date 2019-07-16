@@ -6,28 +6,28 @@ using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class TopicBasedHandlerDelegateProviderTest
+    public class TopicBasedEndpointProviderTest
     {
         [Fact]
-        public void TestGetKnownHandlerDelegate()
+        public void TestGetKnownEndpointDelegate()
         {
             Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
-            var provider = new TopicBasedHandlerDelegateProvider(new[]
+            var provider = new TopicBasedEndpointProvider(new[]
             {
                 new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}))
             });
 
-            var handlerDelegate = provider.GetHandlerDelegate(new ExternalTask("test", "test", "topic1"));
+            var handlerDelegate = provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"));
             Assert.NotNull(handlerDelegate);
         }
 
         [Fact]
-        public void TestGetUnknownHandlerDelegate()
+        public void TestGetUnknownEndpointDelegate()
         {
-            var provider = new TopicBasedHandlerDelegateProvider(Enumerable.Empty<HandlerDescriptor>());
+            var provider = new TopicBasedEndpointProvider(Enumerable.Empty<HandlerDescriptor>());
             Assert.Throws<ArgumentException>(
-                () => provider.GetHandlerDelegate(new ExternalTask("test", "test", "topic1"))
+                () => provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"))
             );
         }
     }
