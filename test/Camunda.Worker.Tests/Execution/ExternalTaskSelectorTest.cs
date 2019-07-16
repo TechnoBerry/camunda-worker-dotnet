@@ -20,6 +20,16 @@ namespace Camunda.Worker.Execution
             AsyncResponseTimeout = 5_000
         });
 
+        private readonly ExternalTaskSelector _selector;
+
+        public ExternalTaskSelectorTest()
+        {
+            _selector = new ExternalTaskSelector(
+                _clientMock.Object,
+                _options
+            );
+        }
+
         [Fact]
         public async Task TestSuccessfullySelection()
         {
@@ -27,18 +37,10 @@ namespace Camunda.Worker.Execution
                 .Setup(client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<ExternalTask>());
 
-            var selector = MakeSelector();
-
-            var result = await selector.SelectAsync(new FetchAndLockRequest.Topic[0]);
+            var result = await _selector.SelectAsync(new FetchAndLockRequest.Topic[0]);
 
             Assert.Empty(result);
             _clientMock.VerifyAll();
         }
-
-        private IExternalTaskSelector MakeSelector() =>
-            new ExternalTaskSelector(
-                _clientMock.Object,
-                _options
-            );
     }
 }

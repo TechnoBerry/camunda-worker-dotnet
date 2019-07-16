@@ -10,17 +10,32 @@ using Xunit;
 
 namespace Camunda.Worker.Client
 {
-    public class ExternalTaskCamundaTest
+    public class ExternalTaskCamundaTest : IDisposable
     {
         private readonly MockHttpMessageHandler _handlerMock = new MockHttpMessageHandler();
+        private readonly ExternalTaskClient _client;
+
+        public ExternalTaskCamundaTest()
+        {
+            _client = new ExternalTaskClient(
+                new HttpClient(_handlerMock)
+                {
+                    BaseAddress = new Uri("http://test/api")
+                }
+            );
+        }
+
+        public void Dispose()
+        {
+            _handlerMock?.Dispose();
+            _client?.Dispose();
+        }
 
         [Fact]
         public async Task TestFetchAndLock()
         {
-            using (var client = MakeClient())
-            {
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
-                    .Respond("application/json", @"[
+            _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
+                .Respond("application/json", @"[
                         {
                             ""id"": ""testTask"",
                             ""workerId"": ""testWorker"",
@@ -44,150 +59,131 @@ namespace Camunda.Worker.Client
                         }
                     ]");
 
-                var request = new FetchAndLockRequest("testWorker", 10)
+            var request = new FetchAndLockRequest("testWorker", 10)
+            {
+                AsyncResponseTimeout = 10_000,
+                Topics = new[]
                 {
-                    AsyncResponseTimeout = 10_000,
-                    Topics = new[]
-                    {
-                        new FetchAndLockRequest.Topic("testTopic", 10_000)
-                    }
-                };
+                    new FetchAndLockRequest.Topic("testTopic", 10_000)
+                }
+            };
 
-                var externalTasks = await client.FetchAndLock(request, CancellationToken.None);
+            var externalTasks = await _client.FetchAndLock(request, CancellationToken.None);
 
-                _handlerMock.VerifyNoOutstandingExpectation();
-                var firstTask = Assert.Single(externalTasks);
-                Assert.NotNull(firstTask);
-            }
+            _handlerMock.VerifyNoOutstandingExpectation();
+            var firstTask = Assert.Single(externalTasks);
+            Assert.NotNull(firstTask);
         }
 
         [Fact]
         public async Task TestComplete()
         {
-            using (var client = MakeClient())
+            _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/complete")
+                .Respond(HttpStatusCode.NoContent);
+
+            var request = new CompleteRequest("testWorker")
             {
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/complete")
-                    .Respond(HttpStatusCode.NoContent);
-
-                var request = new CompleteRequest("testWorker")
+                Variables = new Dictionary<string, Variable>
                 {
-                    Variables = new Dictionary<string, Variable>
-                    {
-                        ["TEST"] = Variable.String("testString")
-                    }
-                };
+                    ["TEST"] = Variable.String("testString")
+                }
+            };
 
-                await client.Complete("testTask", request, CancellationToken.None);
+            await _client.Complete("testTask", request, CancellationToken.None);
 
-                _handlerMock.VerifyNoOutstandingExpectation();
-            }
+            _handlerMock.VerifyNoOutstandingExpectation();
         }
 
         [Fact]
         public async Task TestReportFailure()
         {
-            using (var client = MakeClient())
+            _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/failure")
+                .Respond(HttpStatusCode.NoContent);
+
+            var request = new ReportFailureRequest("testWorker")
             {
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/failure")
-                    .Respond(HttpStatusCode.NoContent);
+                ErrorMessage = "Error",
+                ErrorDetails = "Details"
+            };
 
-                var request = new ReportFailureRequest("testWorker")
-                {
-                    ErrorMessage = "Error",
-                    ErrorDetails = "Details"
-                };
+            await _client.ReportFailure("testTask", request, CancellationToken.None);
 
-                await client.ReportFailure("testTask", request, CancellationToken.None);
-
-                _handlerMock.VerifyNoOutstandingExpectation();
-            }
+            _handlerMock.VerifyNoOutstandingExpectation();
         }
 
         [Fact]
         public async Task TestReportBpmnError()
         {
-            using (var client = MakeClient())
+            _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/bpmnError")
+                .Respond(HttpStatusCode.NoContent);
+
+            var request = new BpmnErrorRequest("testWorker", "testCode", "Error")
             {
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/bpmnError")
-                    .Respond(HttpStatusCode.NoContent);
+                Variables = new Dictionary<string, Variable>()
+            };
 
-                var request = new BpmnErrorRequest("testWorker", "testCode", "Error")
-                {
-                    Variables = new Dictionary<string, Variable>()
-                };
+            await _client.ReportBpmnError("testTask", request, CancellationToken.None);
 
-                await client.ReportBpmnError("testTask", request, CancellationToken.None);
-
-                _handlerMock.VerifyNoOutstandingExpectation();
-            }
+            _handlerMock.VerifyNoOutstandingExpectation();
         }
 
         [Fact]
         public async Task TestExtendLock()
         {
-            using (var client = MakeClient())
-            {
-                _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/extendLock")
-                    .Respond(HttpStatusCode.NoContent);
+            _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/extendLock")
+                .Respond(HttpStatusCode.NoContent);
 
-                var request = new ExtendLockRequest("testWorker", 10_000);
+            var request = new ExtendLockRequest("testWorker", 10_000);
 
-                await client.ExtendLock("testTask", request, CancellationToken.None);
+            await _client.ExtendLock("testTask", request, CancellationToken.None);
 
-                _handlerMock.VerifyNoOutstandingExpectation();
-            }
+            _handlerMock.VerifyNoOutstandingExpectation();
         }
 
         [Theory]
         [MemberData(nameof(GetApiActions))]
         public async Task TestThrowsHttpRequestException(Func<IExternalTaskClient, Task> action)
         {
-            using (var client = MakeClient())
-            {
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
-                    .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
-                    .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
-                    .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
-                    .Respond(HttpStatusCode.InternalServerError);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
-                    .Respond(HttpStatusCode.InternalServerError);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
+                .Respond(HttpStatusCode.InternalServerError);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
+                .Respond(HttpStatusCode.InternalServerError);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
+                .Respond(HttpStatusCode.InternalServerError);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
+                .Respond(HttpStatusCode.InternalServerError);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
+                .Respond(HttpStatusCode.InternalServerError);
 
-                await Assert.ThrowsAsync<HttpRequestException>(() => action(client));
-            }
+            await Assert.ThrowsAsync<HttpRequestException>(() => action(_client));
         }
 
         [Theory]
         [MemberData(nameof(GetApiActions))]
         public async Task TestThrowsClientException(Func<IExternalTaskClient, Task> action)
         {
-            using (var client = MakeClient())
-            {
-                var errorContent = new StringContent(@"
-                    {
-                        ""type"": ""An error type"",
-                        ""message"": ""An error message""
-                    }
-                ", Encoding.UTF8, "application/json");
+            var errorContent = new StringContent(@"
+                {
+                    ""type"": ""An error type"",
+                    ""message"": ""An error message""
+                }
+            ", Encoding.UTF8, "application/json");
 
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
-                    .Respond(HttpStatusCode.InternalServerError, errorContent);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
-                    .Respond(HttpStatusCode.InternalServerError, errorContent);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
-                    .Respond(HttpStatusCode.InternalServerError, errorContent);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
-                    .Respond(HttpStatusCode.InternalServerError, errorContent);
-                _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
-                    .Respond(HttpStatusCode.InternalServerError, errorContent);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
+                .Respond(HttpStatusCode.InternalServerError, errorContent);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
+                .Respond(HttpStatusCode.InternalServerError, errorContent);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
+                .Respond(HttpStatusCode.InternalServerError, errorContent);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
+                .Respond(HttpStatusCode.InternalServerError, errorContent);
+            _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
+                .Respond(HttpStatusCode.InternalServerError, errorContent);
 
-                var clientException = await Assert.ThrowsAsync<ClientException>(() => action(client));
-                Assert.Equal(HttpStatusCode.InternalServerError, clientException.StatusCode);
-                Assert.Equal("An error type", clientException.ErrorType);
-                Assert.Equal("An error message", clientException.ErrorMessage);
-            }
+            var clientException = await Assert.ThrowsAsync<ClientException>(() => action(_client));
+            Assert.Equal(HttpStatusCode.InternalServerError, clientException.StatusCode);
+            Assert.Equal("An error type", clientException.ErrorType);
+            Assert.Equal("An error message", clientException.ErrorMessage);
         }
 
         public static IEnumerable<object[]> GetApiActions()

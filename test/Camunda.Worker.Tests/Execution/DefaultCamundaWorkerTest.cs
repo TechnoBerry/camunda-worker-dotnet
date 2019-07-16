@@ -14,7 +14,7 @@ namespace Camunda.Worker.Execution
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
         private readonly Mock<IContextFactory> _contextFactoryMock = new Mock<IContextFactory>();
-        private readonly PipelineDescriptor _pipelineDescriptor;
+        private readonly DefaultCamundaWorker _worker;
 
         public DefaultCamundaWorkerTest()
         {
@@ -25,7 +25,12 @@ namespace Camunda.Worker.Execution
             _contextFactoryMock.Setup(factory => factory.MakeContext(It.IsAny<ExternalTask>()))
                 .Returns(contextMock.Object);
 
-            _pipelineDescriptor = new PipelineDescriptor(_routerMock.Object.RouteAsync);
+            _worker = new DefaultCamundaWorker(
+                _topicsProviderMock.Object,
+                _selectorMock.Object,
+                _contextFactoryMock.Object,
+                new PipelineDescriptor(_routerMock.Object.RouteAsync)
+            );
         }
 
         [Fact]
@@ -35,9 +40,7 @@ namespace Camunda.Worker.Execution
 
             ConfigureSelector(cts, new List<ExternalTask>());
 
-            var worker = CreateWorker();
-
-            await worker.Run(cts.Token);
+            await _worker.Run(cts.Token);
 
             _routerMock.VerifyNoOtherCalls();
             _selectorMock.VerifyAll();
@@ -58,9 +61,7 @@ namespace Camunda.Worker.Execution
                 .Callback(cts.Cancel)
                 .Returns(Task.CompletedTask);
 
-            var worker = CreateWorker();
-
-            await worker.Run(cts.Token);
+            await _worker.Run(cts.Token);
 
             _contextFactoryMock.Verify(
                 factory => factory.MakeContext(It.IsAny<ExternalTask>()),
@@ -82,15 +83,6 @@ namespace Camunda.Worker.Execution
                 ))
                 .Callback(cts.Cancel)
                 .ReturnsAsync(externalTasks);
-        }
-
-        private ICamundaWorker CreateWorker()
-        {
-            return new DefaultCamundaWorker(_topicsProviderMock.Object,
-                _selectorMock.Object,
-                _contextFactoryMock.Object,
-                _pipelineDescriptor
-            );
         }
     }
 }
