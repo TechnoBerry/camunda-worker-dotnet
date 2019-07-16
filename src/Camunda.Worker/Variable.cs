@@ -54,6 +54,13 @@ namespace Camunda.Worker
             return Convert.ToDouble(Value);
         }
 
+        [ExcludeFromCodeCoverage]
+        public static Variable String(string value)
+        {
+            Guard.NotNull(value, nameof(value));
+            return new Variable(value, VariableType.String);
+        }
+
         public string AsString()
         {
             EnsureIsOfType(VariableType.String);
@@ -61,10 +68,11 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
-        public static Variable String(string value) => new Variable(value, VariableType.String);
-
-        [ExcludeFromCodeCoverage]
-        public static Variable Bytes(byte[] value) => new Variable(Convert.ToBase64String(value), VariableType.Bytes);
+        public static Variable Bytes(byte[] value)
+        {
+            Guard.NotNull(value, nameof(value));
+            return new Variable(Convert.ToBase64String(value), VariableType.Bytes);
+        }
 
         public byte[] AsBytes()
         {
@@ -74,15 +82,25 @@ namespace Camunda.Worker
         }
 
         [ExcludeFromCodeCoverage]
-        public static Variable Json(JObject value) => new Variable(value.ToString(Formatting.None), VariableType.Json);
+        public static Variable Json(JObject value)
+        {
+            Guard.NotNull(value, nameof(value));
+            return new Variable(value.ToString(Formatting.None), VariableType.Json);
+        }
 
         [ExcludeFromCodeCoverage]
-        public static Variable Json(object value) =>
-            new Variable(JsonConvert.SerializeObject(value), VariableType.Json);
+        public static Variable Json(object value)
+        {
+            Guard.NotNull(value, nameof(value));
+            return new Variable(JsonConvert.SerializeObject(value), VariableType.Json);
+        }
 
         [ExcludeFromCodeCoverage]
-        public static Variable Json(object value, JsonSerializerSettings settings) =>
-            new Variable(JsonConvert.SerializeObject(value, settings), VariableType.Json);
+        public static Variable Json(object value, JsonSerializerSettings settings)
+        {
+            Guard.NotNull(value, nameof(value));
+            return new Variable(JsonConvert.SerializeObject(value, settings), VariableType.Json);
+        }
 
         public T AsJson<T>(JsonSerializerSettings settings = null)
         {
