@@ -92,7 +92,7 @@ namespace Camunda.Worker.Client
 
         private static async Task EnsureSuccess(HttpResponseMessage response)
         {
-            if (!response.IsSuccessStatusCode && (response.Content?.Headers?.IsJson() ?? false))
+            if (!response.IsSuccessStatusCode && response.IsJson())
             {
                 var errorResponse = await response.Content.ReadAsObjectAsync<ErrorResponse>();
                 response.Content.Dispose();

@@ -74,5 +74,8 @@ namespace Camunda.Worker.Client
 
         internal static bool IsJson(this HttpContentHeaders headers) =>
             headers.ContentType.MediaType == JsonContentType;
+
+        internal static bool IsJson(this HttpResponseMessage message) =>
+            message.Content?.Headers?.IsJson() ?? false;
     }
 }
