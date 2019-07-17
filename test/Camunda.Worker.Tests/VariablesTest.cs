@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -89,6 +90,18 @@ namespace Camunda.Worker
             var result = variable.AsJson<Test>();
             Assert.Equal(123L, result.Id);
             Assert.Equal("Test", result.Message);
+        }
+
+        [Fact]
+        public void TestAsXElement()
+        {
+            var value = "<test>testData</test>";
+
+            var variable = new Variable(value, VariableType.Xml);
+
+            var result = variable.AsXElement();
+
+            Assert.Equal("test", result.Name.LocalName);
         }
 
         public class Test

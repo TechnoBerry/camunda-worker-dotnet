@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -107,6 +108,20 @@ namespace Camunda.Worker
             EnsureIsOfType(VariableType.Json);
             var stringValue = Convert.ToString(Value);
             return JsonConvert.DeserializeObject<T>(stringValue, settings);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public static Variable Xml(XElement value)
+        {
+            Guard.NotNull(value, nameof(value));
+            return new Variable(value.ToString(SaveOptions.DisableFormatting), VariableType.Xml);
+        }
+
+        public XElement AsXElement()
+        {
+            EnsureIsOfType(VariableType.Xml);
+            var stringValue = Convert.ToString(Value);
+            return XElement.Parse(stringValue);
         }
 
         [ExcludeFromCodeCoverage]
