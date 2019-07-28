@@ -25,7 +25,7 @@ namespace SampleCamundaWorker
             services.AddCamundaWorker(options =>
                 {
                     options.WorkerId = "sampleWorker";
-                    options.WorkerCount = 4;
+                    options.WorkerCount = 1;
                     options.BaseUri = new Uri("http://localhost:8080/engine-rest");
                 })
                 .AddHandler<SayHelloHandler>()
