@@ -24,7 +24,7 @@ namespace Camunda.Worker.Execution
             Assert.Equal(descriptors[1].Metadata.TopicNames[0], topics[1].TopicName);
             Assert.NotNull(topics[1].Variables);
             Assert.True(topics[1].LocalVariables);
-            Assert.Equal(descriptors[1].LockDuration, topics[1].LockDuration);
+            Assert.Equal(descriptors[1].Metadata.LockDuration, topics[1].LockDuration);
         }
 
         private static IEnumerable<HandlerDescriptor> GetDescriptors()

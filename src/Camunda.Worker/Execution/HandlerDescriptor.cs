@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Camunda.Worker.Execution
 {
     public sealed class HandlerDescriptor
@@ -13,13 +11,5 @@ namespace Camunda.Worker.Execution
         public ExternalTaskDelegate HandlerDelegate { get; }
 
         public HandlerMetadata Metadata { get; }
-
-        public IEnumerable<string> TopicNames => Metadata.TopicNames;
-
-        public bool LocalVariables => Metadata.LocalVariables;
-
-        public IEnumerable<string> Variables => Metadata.Variables;
-
-        public int LockDuration => Metadata.LockDuration;
     }
 }

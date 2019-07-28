@@ -15,11 +15,11 @@ namespace Camunda.Worker.Execution
 
         private static IEnumerable<FetchAndLockRequest.Topic> ConvertDescriptorToTopic(HandlerDescriptor descriptor)
         {
-            return descriptor.TopicNames
-                .Select(topicName => new FetchAndLockRequest.Topic(topicName, descriptor.LockDuration)
+            return descriptor.Metadata.TopicNames
+                .Select(topicName => new FetchAndLockRequest.Topic(topicName, descriptor.Metadata.LockDuration)
                 {
-                    LocalVariables = descriptor.LocalVariables,
-                    Variables = descriptor.Variables
+                    LocalVariables = descriptor.Metadata.LocalVariables,
+                    Variables = descriptor.Metadata.Variables
                 });
         }
 

@@ -37,9 +37,9 @@ namespace Camunda.Worker.Extensions
 
             var handlerDescriptor = Assert.Single(savedDescriptors);
             Assert.NotNull(handlerDescriptor);
-            Assert.NotNull(handlerDescriptor.Variables);
-            Assert.Single(handlerDescriptor.Variables);
-            Assert.Contains(handlerDescriptor.Variables, v => v == "testVariable");
+            Assert.NotNull(handlerDescriptor.Metadata.Variables);
+            var variableName = Assert.Single(handlerDescriptor.Metadata.Variables);
+            Assert.Equal("testVariable", variableName);
         }
 
         [Fact]

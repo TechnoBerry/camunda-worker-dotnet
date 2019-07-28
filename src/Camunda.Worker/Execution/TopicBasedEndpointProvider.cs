@@ -11,10 +11,10 @@ namespace Camunda.Worker.Execution
         public TopicBasedEndpointProvider(IEnumerable<HandlerDescriptor> descriptors)
         {
             _handlerDelegates = descriptors
-                .SelectMany(descriptor => descriptor.TopicNames
-                    .Select(topicName => (topicName, Factory: descriptor.HandlerDelegate))
+                .SelectMany(descriptor => descriptor.Metadata.TopicNames
+                    .Select(topicName => (topicName, handlerDelegate: descriptor.HandlerDelegate))
                 )
-                .ToDictionary(pair => pair.topicName, pair => pair.Factory);
+                .ToDictionary(pair => pair.topicName, pair => pair.handlerDelegate);
         }
 
         public ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask)
