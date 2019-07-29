@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Camunda.Worker.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Camunda.Worker
 {
@@ -28,6 +31,10 @@ namespace Camunda.Worker
             }
             catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
             {
+                context.LogWarning<CompleteResult>(
+                    "Failed completion of task {TaskId}. Reason: {Reason}",
+                    context.Task.Id, e.Message
+                );
                 await context.ReportFailureAsync(e.ErrorType, e.ErrorMessage);
             }
         }

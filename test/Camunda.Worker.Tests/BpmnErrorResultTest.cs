@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -12,6 +13,12 @@ namespace Camunda.Worker
     public class BpmnErrorResultTest
     {
         private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
+
+        public BpmnErrorResultTest()
+        {
+            _contextMock.SetupGet(c => c.Task).Returns(new ExternalTask("", "", ""));
+            _contextMock.SetupGet(c => c.ServiceProvider).Returns(new ServiceCollection().BuildServiceProvider());
+        }
 
         [Fact]
         public async Task TestExecuteResultAsync()
@@ -70,6 +77,8 @@ namespace Camunda.Worker
                 Times.Once()
             );
             _contextMock.Verify(failureExpression, Times.Once());
+            _contextMock.VerifyGet(c => c.Task, Times.Once());
+            _contextMock.VerifyGet(c => c.ServiceProvider, Times.Once());
             _contextMock.VerifyNoOtherCalls();
         }
     }
