@@ -3,8 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Camunda.Worker.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Camunda.Worker
 {
@@ -15,8 +13,8 @@ namespace Camunda.Worker
             IDictionary<string, Variable> localVariables = null
         )
         {
-            Variables = variables ?? new Dictionary<string, Variable>();
-            LocalVariables = localVariables ?? new Dictionary<string, Variable>();
+            Variables = variables;
+            LocalVariables = localVariables;
         }
 
         public IDictionary<string, Variable> Variables { get; }

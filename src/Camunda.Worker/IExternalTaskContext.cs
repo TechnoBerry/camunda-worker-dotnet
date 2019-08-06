@@ -14,8 +14,8 @@ namespace Camunda.Worker
 
         Task ExtendLockAsync(int newDuration);
 
-        Task CompleteAsync(IDictionary<string, Variable> variables,
-            IDictionary<string, Variable> localVariables = default);
+        Task CompleteAsync(IDictionary<string, Variable> variables = null,
+            IDictionary<string, Variable> localVariables = null);
 
         Task ReportFailureAsync(string errorMessage, string errorDetails,
             int? retries = default,

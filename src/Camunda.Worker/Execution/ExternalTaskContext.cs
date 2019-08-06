@@ -34,8 +34,8 @@ namespace Camunda.Worker.Execution
             await _client.ExtendLock(Task.Id, request);
         }
 
-        public async Task CompleteAsync(IDictionary<string, Variable> variables,
-            IDictionary<string, Variable> localVariables = default)
+        public async Task CompleteAsync(IDictionary<string, Variable> variables = null,
+            IDictionary<string, Variable> localVariables = null)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
