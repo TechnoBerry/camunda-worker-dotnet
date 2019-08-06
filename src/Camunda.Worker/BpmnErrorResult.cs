@@ -12,7 +12,7 @@ namespace Camunda.Worker
         {
             ErrorCode = Guard.NotEmptyAndNotNull(errorCode, nameof(errorCode));
             ErrorMessage = Guard.NotEmptyAndNotNull(errorMessage, nameof(errorMessage));
-            Variables = variables ?? new Dictionary<string, Variable>();
+            Variables = variables;
         }
 
         public string ErrorCode { get; }

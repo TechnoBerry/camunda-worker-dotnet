@@ -70,7 +70,7 @@ namespace Camunda.Worker.Execution
         }
 
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable> variables = default)
+            IDictionary<string, Variable> variables = null)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();

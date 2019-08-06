@@ -22,6 +22,6 @@ namespace Camunda.Worker
             int? retryTimeout = default);
 
         Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable> variables = default);
+            IDictionary<string, Variable> variables = null);
     }
 }
