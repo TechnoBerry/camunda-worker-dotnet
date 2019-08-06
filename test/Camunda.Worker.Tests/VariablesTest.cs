@@ -93,6 +93,19 @@ namespace Camunda.Worker
         }
 
         [Fact]
+        public void TestAsJObject()
+        {
+            var value = "{ \"id\": 123, \"message\": \"Test\" }";
+
+            var variable = new Variable(value, VariableType.Json);
+
+            var result = variable.AsJObject();
+            Assert.Equal(2, result.Count);
+            Assert.Equal(123, result.Value<int>("id"));
+            Assert.Equal("Test", result.Value<string>("message"));
+        }
+
+        [Fact]
         public void TestAsXElement()
         {
             var value = "<test>testData</test>";

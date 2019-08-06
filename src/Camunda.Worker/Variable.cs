@@ -110,6 +110,13 @@ namespace Camunda.Worker
             return JsonConvert.DeserializeObject<T>(stringValue, settings);
         }
 
+        public JObject AsJObject()
+        {
+            EnsureIsOfType(VariableType.Json);
+            var stringValue = Convert.ToString(Value);
+            return JObject.Parse(stringValue);
+        }
+
         [ExcludeFromCodeCoverage]
         public static Variable Xml(XElement value)
         {
