@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
@@ -12,7 +11,6 @@ namespace Camunda.Worker
             Id = Guard.NotNull(id, nameof(id));
             WorkerId = Guard.NotNull(workerId, nameof(workerId));
             TopicName = Guard.NotNull(topicName, nameof(topicName));
-            CreationTime = DateTime.Now;
         }
 
         /// <summary>
@@ -29,8 +27,6 @@ namespace Camunda.Worker
         /// The topic name of the external task.
         /// </summary>
         public string TopicName { get; }
-
-        [JsonIgnore] public DateTime CreationTime { get; }
 
         /// <summary>
         /// The priority of the external task
