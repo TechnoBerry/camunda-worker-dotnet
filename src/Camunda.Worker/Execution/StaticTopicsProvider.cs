@@ -19,7 +19,10 @@ namespace Camunda.Worker.Execution
                 .Select(topicName => new FetchAndLockRequest.Topic(topicName, descriptor.Metadata.LockDuration)
                 {
                     LocalVariables = descriptor.Metadata.LocalVariables,
-                    Variables = descriptor.Metadata.Variables
+                    Variables = descriptor.Metadata.Variables,
+                    ProcessDefinitionIdIn = descriptor.Metadata.ProcessDefinitionIds,
+                    ProcessDefinitionKeyIn = descriptor.Metadata.ProcessDefinitionKeys,
+                    TenantIdIn = descriptor.Metadata.TenantIds
                 });
         }
 

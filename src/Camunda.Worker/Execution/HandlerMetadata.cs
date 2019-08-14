@@ -16,5 +16,6 @@ namespace Camunda.Worker.Execution
         public IReadOnlyList<string> Variables { get; set; }
         public IReadOnlyList<string> ProcessDefinitionIds { get; set; }
         public IReadOnlyList<string> ProcessDefinitionKeys { get; set; }
+        public IReadOnlyList<string> TenantIds { get; set; }
     }
 }
