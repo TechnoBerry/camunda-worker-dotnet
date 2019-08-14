@@ -43,7 +43,7 @@ namespace Camunda.Worker
         {
             var builder = new PipelineBuilder(Services);
             configureAction(builder);
-            var externalTaskDelegate = builder.Build();
+            var externalTaskDelegate = builder.Build(PipelineBuilder.RouteAsync);
             Services.AddSingleton(new PipelineDescriptor(externalTaskDelegate));
             return this;
         }

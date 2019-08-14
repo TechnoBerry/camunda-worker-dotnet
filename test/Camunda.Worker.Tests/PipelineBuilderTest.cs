@@ -12,12 +12,10 @@ namespace Camunda.Worker
     public class PipelineBuilderTest
     {
         private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
-        private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
         private readonly IServiceCollection _services = new ServiceCollection();
 
         public PipelineBuilderTest()
         {
-            _services.AddTransient(_ => _routerMock.Object);
             _contextMock.SetupGet(ctx => ctx.ServiceProvider)
                 .Returns(_services.BuildServiceProvider());
         }
@@ -28,6 +26,11 @@ namespace Camunda.Worker
         public async Task TestBuildPipeline(int calls)
         {
             IPipelineBuilder builder = new PipelineBuilder(_services);
+
+            Task LastDelegate(IExternalTaskContext context)
+            {
+                return Task.CompletedTask;
+            }
 
             var numsIn = new List<int>(calls);
             var numsOut = new List<int>(calls);
@@ -43,10 +46,9 @@ namespace Camunda.Worker
                 }))
                 .Aggregate(builder, (b, func) => b.Use(func));
 
-            var result = builder.Build();
+            var result = builder.Build(LastDelegate);
             await result(_contextMock.Object);
 
-            _routerMock.Verify(router => router.RouteAsync(It.IsAny<IExternalTaskContext>()), Times.Once());
             Assert.Equal(calls, numsIn.Count);
             Assert.Equal(calls, numsOut.Count);
 

@@ -27,8 +27,15 @@ namespace Camunda.Worker
 
         public ExternalTaskDelegate Build()
         {
+            return Build(RouteAsync);
+        }
+
+        public ExternalTaskDelegate Build(ExternalTaskDelegate lastDelegate)
+        {
+            Guard.NotNull(lastDelegate, nameof(lastDelegate));
+
             return _middlewareList.Reverse()
-                .Aggregate((ExternalTaskDelegate) RouteAsync, (current, middleware) => middleware(current));
+                .Aggregate(lastDelegate, (current, middleware) => middleware(current));
         }
 
         internal static async Task RouteAsync(IExternalTaskContext context)
