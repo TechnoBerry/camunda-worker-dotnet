@@ -16,15 +16,18 @@ namespace Camunda.Worker.Execution
         private static IEnumerable<FetchAndLockRequest.Topic> ConvertDescriptorToTopic(HandlerDescriptor descriptor)
         {
             return descriptor.Metadata.TopicNames
-                .Select(topicName => new FetchAndLockRequest.Topic(topicName, descriptor.Metadata.LockDuration)
-                {
-                    LocalVariables = descriptor.Metadata.LocalVariables,
-                    Variables = descriptor.Metadata.Variables,
-                    ProcessDefinitionIdIn = descriptor.Metadata.ProcessDefinitionIds,
-                    ProcessDefinitionKeyIn = descriptor.Metadata.ProcessDefinitionKeys,
-                    TenantIdIn = descriptor.Metadata.TenantIds
-                });
+                .Select(topicName => MakeTopicRequest(descriptor.Metadata, topicName));
         }
+
+        private static FetchAndLockRequest.Topic MakeTopicRequest(HandlerMetadata metadata, string topicName) =>
+            new FetchAndLockRequest.Topic(topicName, metadata.LockDuration)
+            {
+                LocalVariables = metadata.LocalVariables,
+                Variables = metadata.Variables,
+                ProcessDefinitionIdIn = metadata.ProcessDefinitionIds,
+                ProcessDefinitionKeyIn = metadata.ProcessDefinitionKeys,
+                TenantIdIn = metadata.TenantIds
+            };
 
         public IEnumerable<FetchAndLockRequest.Topic> GetTopics()
         {
