@@ -7,19 +7,19 @@ namespace Camunda.Worker.Client
 {
     public interface IExternalTaskClient : IDisposable
     {
-        Task<IList<ExternalTask>> FetchAndLock(FetchAndLockRequest request,
+        Task<IList<ExternalTask>> FetchAndLockAsync(FetchAndLockRequest request,
             CancellationToken cancellationToken = default);
 
-        Task Complete(string taskId, CompleteRequest request,
+        Task CompleteAsync(string taskId, CompleteRequest request,
             CancellationToken cancellationToken = default);
 
-        Task ReportFailure(string taskId, ReportFailureRequest request,
+        Task ReportFailureAsync(string taskId, ReportFailureRequest request,
             CancellationToken cancellationToken = default);
 
-        Task ReportBpmnError(string taskId, BpmnErrorRequest request,
+        Task ReportBpmnErrorAsync(string taskId, BpmnErrorRequest request,
             CancellationToken cancellationToken = default);
 
-        Task ExtendLock(string taskId, ExtendLockRequest request,
+        Task ExtendLockAsync(string taskId, ExtendLockRequest request,
             CancellationToken cancellationToken = default);
     }
 }

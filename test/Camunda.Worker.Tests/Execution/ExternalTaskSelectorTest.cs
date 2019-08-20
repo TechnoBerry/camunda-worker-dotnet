@@ -34,7 +34,7 @@ namespace Camunda.Worker.Execution
         public async Task TestSuccessfullySelection()
         {
             _clientMock
-                .Setup(client => client.FetchAndLock(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(client => client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<ExternalTask>());
 
             var result = await _selector.SelectAsync(new FetchAndLockRequest.Topic[0]);

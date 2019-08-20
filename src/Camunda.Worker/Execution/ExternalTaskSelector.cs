@@ -66,7 +66,7 @@ namespace Camunda.Worker.Execution
             CancellationToken cancellationToken
         )
         {
-            var externalTasks = await Client.FetchAndLock(request, cancellationToken);
+            var externalTasks = await Client.FetchAndLockAsync(request, cancellationToken);
             return externalTasks;
         }
 

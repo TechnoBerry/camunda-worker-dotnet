@@ -68,7 +68,7 @@ namespace Camunda.Worker.Client
                 }
             };
 
-            var externalTasks = await _client.FetchAndLock(request, CancellationToken.None);
+            var externalTasks = await _client.FetchAndLockAsync(request, CancellationToken.None);
 
             _handlerMock.VerifyNoOutstandingExpectation();
             var firstTask = Assert.Single(externalTasks);
@@ -89,7 +89,7 @@ namespace Camunda.Worker.Client
                 }
             };
 
-            await _client.Complete("testTask", request, CancellationToken.None);
+            await _client.CompleteAsync("testTask", request, CancellationToken.None);
 
             _handlerMock.VerifyNoOutstandingExpectation();
         }
@@ -106,7 +106,7 @@ namespace Camunda.Worker.Client
                 ErrorDetails = "Details"
             };
 
-            await _client.ReportFailure("testTask", request, CancellationToken.None);
+            await _client.ReportFailureAsync("testTask", request, CancellationToken.None);
 
             _handlerMock.VerifyNoOutstandingExpectation();
         }
@@ -122,7 +122,7 @@ namespace Camunda.Worker.Client
                 Variables = new Dictionary<string, Variable>()
             };
 
-            await _client.ReportBpmnError("testTask", request, CancellationToken.None);
+            await _client.ReportBpmnErrorAsync("testTask", request, CancellationToken.None);
 
             _handlerMock.VerifyNoOutstandingExpectation();
         }
@@ -135,7 +135,7 @@ namespace Camunda.Worker.Client
 
             var request = new ExtendLockRequest("testWorker", 10_000);
 
-            await _client.ExtendLock("testTask", request, CancellationToken.None);
+            await _client.ExtendLockAsync("testTask", request, CancellationToken.None);
 
             _handlerMock.VerifyNoOutstandingExpectation();
         }
@@ -191,31 +191,31 @@ namespace Camunda.Worker.Client
             var fetchAndLockRequest = new FetchAndLockRequest("testWorker", 10);
             yield return new object[]
             {
-                new Func<IExternalTaskClient, Task>(c => c.FetchAndLock(fetchAndLockRequest))
+                new Func<IExternalTaskClient, Task>(c => c.FetchAndLockAsync(fetchAndLockRequest))
             };
 
             var extendLockRequest = new ExtendLockRequest("testWorker", 10_000);
             yield return new object[]
             {
-                new Func<IExternalTaskClient, Task>(c => c.ExtendLock("taskId", extendLockRequest))
+                new Func<IExternalTaskClient, Task>(c => c.ExtendLockAsync("taskId", extendLockRequest))
             };
 
             var completeRequest = new CompleteRequest("testWorker");
             yield return new object[]
             {
-                new Func<IExternalTaskClient, Task>(c => c.Complete("taskId", completeRequest))
+                new Func<IExternalTaskClient, Task>(c => c.CompleteAsync("taskId", completeRequest))
             };
 
             var reportFailureRequest = new ReportFailureRequest("test");
             yield return new object[]
             {
-                new Func<IExternalTaskClient, Task>(c => c.ReportFailure("taskId", reportFailureRequest))
+                new Func<IExternalTaskClient, Task>(c => c.ReportFailureAsync("taskId", reportFailureRequest))
             };
 
             var bpmnErrorRequest = new BpmnErrorRequest("test", "test", "test");
             yield return new object[]
             {
-                new Func<IExternalTaskClient, Task>(c => c.ReportBpmnError("taskId", bpmnErrorRequest))
+                new Func<IExternalTaskClient, Task>(c => c.ReportBpmnErrorAsync("taskId", bpmnErrorRequest))
             };
         }
 

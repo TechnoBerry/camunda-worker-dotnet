@@ -31,7 +31,7 @@ namespace Camunda.Worker.Execution
             var externalTask = CreateTask(taskId);
 
             _clientMock.Setup(client =>
-                client.ExtendLock(It.IsAny<string>(), It.IsNotNull<ExtendLockRequest>(), CancellationToken.None)
+                client.ExtendLockAsync(It.IsAny<string>(), It.IsNotNull<ExtendLockRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             var context = CreateContext(externalTask);
@@ -49,7 +49,7 @@ namespace Camunda.Worker.Execution
             var externalTask = CreateTask(taskId);
 
             _clientMock.Setup(client =>
-                client.Complete(It.IsAny<string>(), It.IsNotNull<CompleteRequest>(), CancellationToken.None)
+                client.CompleteAsync(It.IsAny<string>(), It.IsNotNull<CompleteRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             var context = CreateContext(externalTask);
@@ -66,7 +66,7 @@ namespace Camunda.Worker.Execution
             var externalTask = CreateTask(taskId);
 
             _clientMock.Setup(client =>
-                client.ReportFailure(It.IsAny<string>(), It.IsNotNull<ReportFailureRequest>(), CancellationToken.None)
+                client.ReportFailureAsync(It.IsAny<string>(), It.IsNotNull<ReportFailureRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             var context = CreateContext(externalTask);
@@ -84,7 +84,7 @@ namespace Camunda.Worker.Execution
             var externalTask = CreateTask(taskId);
 
             _clientMock.Setup(client =>
-                client.ReportBpmnError(It.IsAny<string>(), It.IsNotNull<BpmnErrorRequest>(), CancellationToken.None)
+                client.ReportBpmnErrorAsync(It.IsAny<string>(), It.IsNotNull<BpmnErrorRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             var context = CreateContext(externalTask);
@@ -104,15 +104,15 @@ namespace Camunda.Worker.Execution
             var externalTask = CreateTask(taskId);
 
             _clientMock.Setup(client =>
-                client.Complete(It.IsAny<string>(), It.IsNotNull<CompleteRequest>(), CancellationToken.None)
+                client.CompleteAsync(It.IsAny<string>(), It.IsNotNull<CompleteRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             _clientMock.Setup(client =>
-                client.ReportFailure(It.IsAny<string>(), It.IsNotNull<ReportFailureRequest>(), CancellationToken.None)
+                client.ReportFailureAsync(It.IsAny<string>(), It.IsNotNull<ReportFailureRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             _clientMock.Setup(client =>
-                client.ReportBpmnError(It.IsAny<string>(), It.IsNotNull<BpmnErrorRequest>(), CancellationToken.None)
+                client.ReportBpmnErrorAsync(It.IsAny<string>(), It.IsNotNull<BpmnErrorRequest>(), CancellationToken.None)
             ).Returns(Task.CompletedTask);
 
             var context = CreateContext(externalTask);

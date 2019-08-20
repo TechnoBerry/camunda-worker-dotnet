@@ -31,7 +31,7 @@ namespace Camunda.Worker.Execution
             using (var client = ServiceProvider.GetRequiredService<IExternalTaskClient>())
             {
                 var request = new ExtendLockRequest(Task.WorkerId, newDuration);
-                await client.ExtendLock(Task.Id, request);
+                await client.ExtendLockAsync(Task.Id, request);
             }
         }
 
@@ -48,7 +48,7 @@ namespace Camunda.Worker.Execution
                     Variables = variables,
                     LocalVariables = localVariables
                 };
-                await client.Complete(Task.Id, request);
+                await client.CompleteAsync(Task.Id, request);
 
                 Completed = true;
             }
@@ -70,7 +70,7 @@ namespace Camunda.Worker.Execution
                     Retries = retries,
                     RetryTimeout = retryTimeout
                 };
-                await client.ReportFailure(Task.Id, request);
+                await client.ReportFailureAsync(Task.Id, request);
 
                 Completed = true;
             }
@@ -88,7 +88,7 @@ namespace Camunda.Worker.Execution
                 {
                     Variables = variables
                 };
-                await client.ReportBpmnError(Task.Id, request);
+                await client.ReportBpmnErrorAsync(Task.Id, request);
 
                 Completed = true;
             }
