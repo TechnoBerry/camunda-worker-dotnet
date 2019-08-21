@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -24,8 +25,9 @@ namespace Camunda.Worker.Execution
 
         public ExternalTaskSelectorTest()
         {
+            var provider = new ServiceCollection().AddSingleton(_clientMock.Object).BuildServiceProvider();
             _selector = new ExternalTaskSelector(
-                _clientMock.Object,
+                provider,
                 _options
             );
         }
@@ -34,7 +36,8 @@ namespace Camunda.Worker.Execution
         public async Task TestSuccessfullySelection()
         {
             _clientMock
-                .Setup(client => client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(client =>
+                    client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<ExternalTask>());
 
             var result = await _selector.SelectAsync(new FetchAndLockRequest.Topic[0]);
