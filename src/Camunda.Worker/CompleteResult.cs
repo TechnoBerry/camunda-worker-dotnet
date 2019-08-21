@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -8,6 +9,11 @@ namespace Camunda.Worker
 {
     public sealed class CompleteResult : IExecutionResult
     {
+        public CompleteResult()
+        {
+        }
+
+        [Obsolete("Use constructor without arguments instead")]
         public CompleteResult(
             IDictionary<string, Variable> variables = null,
             IDictionary<string, Variable> localVariables = null
@@ -17,9 +23,9 @@ namespace Camunda.Worker
             LocalVariables = localVariables;
         }
 
-        public IDictionary<string, Variable> Variables { get; }
+        public IDictionary<string, Variable> Variables { get; set; }
 
-        public IDictionary<string, Variable> LocalVariables { get; }
+        public IDictionary<string, Variable> LocalVariables { get; set; }
 
         public async Task ExecuteResultAsync(IExternalTaskContext context)
         {

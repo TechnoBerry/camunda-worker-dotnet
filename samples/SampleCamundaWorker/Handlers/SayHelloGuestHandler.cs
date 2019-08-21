@@ -9,10 +9,13 @@ namespace SampleCamundaWorker.Handlers
     {
         public override Task<IExecutionResult> Process(ExternalTask externalTask)
         {
-            return Task.FromResult<IExecutionResult>(new CompleteResult(new Dictionary<string, Variable>
+            return Task.FromResult<IExecutionResult>(new CompleteResult
             {
-                ["MESSAGE"] = Variable.String("Hello, Guest!")
-            }));
+                Variables = new Dictionary<string, Variable>
+                {
+                    ["MESSAGE"] = Variable.String("Hello, Guest!")
+                }
+            });
         }
     }
 }

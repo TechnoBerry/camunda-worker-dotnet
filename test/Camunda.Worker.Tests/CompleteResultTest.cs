@@ -30,7 +30,10 @@ namespace Camunda.Worker
                 ))
                 .Returns(Task.CompletedTask);
 
-            var result = new CompleteResult(new Dictionary<string, Variable>());
+            var result = new CompleteResult
+            {
+                Variables = new Dictionary<string, Variable>()
+            };
 
             await result.ExecuteResultAsync(_contextMock.Object);
 
@@ -69,7 +72,10 @@ namespace Camunda.Worker
                 .Setup(failureExpression)
                 .Returns(Task.CompletedTask);
 
-            var result = new CompleteResult(new Dictionary<string, Variable>());
+            var result = new CompleteResult
+            {
+                Variables = new Dictionary<string, Variable>()
+            };
 
             await result.ExecuteResultAsync(_contextMock.Object);
 
