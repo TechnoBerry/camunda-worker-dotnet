@@ -46,7 +46,7 @@ namespace Camunda.Worker.Execution
             }
             catch (Exception e) when (!(e is OperationCanceledException))
             {
-                _logger.LogWarning("Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
+                _logger.LogWarning(e,"Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await DelayOnFailure(cancellationToken);
                 return Enumerable.Empty<ExternalTask>();
             }
