@@ -58,7 +58,10 @@ namespace Camunda.Worker.Extensions
         {
             public override Task<IExecutionResult> Process(ExternalTask externalTask)
             {
-                return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
+                return Task.FromResult<IExecutionResult>(new CompleteResult
+                {
+                    Variables = externalTask.Variables
+                });
             }
         }
 
@@ -66,7 +69,10 @@ namespace Camunda.Worker.Extensions
         {
             public override Task<IExecutionResult> Process(ExternalTask externalTask)
             {
-                return Task.FromResult<IExecutionResult>(new CompleteResult(externalTask.Variables));
+                return Task.FromResult<IExecutionResult>(new CompleteResult
+                {
+                    Variables = externalTask.Variables
+                });
             }
         }
     }
