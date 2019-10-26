@@ -5,7 +5,7 @@ namespace Camunda.Worker
 {
     public abstract class ExternalTaskHandler : IExternalTaskHandler
     {
-        public virtual async Task HandleAsync(IExternalTaskContext context)
+        public async Task HandleAsync(IExternalTaskContext context)
         {
             IExecutionResult executionResult;
             try
