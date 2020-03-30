@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -15,17 +17,17 @@ namespace Camunda.Worker
 
         [Obsolete("Use constructor without arguments instead")]
         public CompleteResult(
-            IDictionary<string, Variable> variables = null,
-            IDictionary<string, Variable> localVariables = null
+            IDictionary<string, Variable>? variables = null,
+            IDictionary<string, Variable>? localVariables = null
         )
         {
             Variables = variables;
             LocalVariables = localVariables;
         }
 
-        public IDictionary<string, Variable> Variables { get; set; }
+        public IDictionary<string, Variable>? Variables { get; set; }
 
-        public IDictionary<string, Variable> LocalVariables { get; set; }
+        public IDictionary<string, Variable>? LocalVariables { get; set; }
 
         public async Task ExecuteResultAsync(IExternalTaskContext context)
         {
