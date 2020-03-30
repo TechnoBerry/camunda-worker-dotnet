@@ -53,16 +53,17 @@ namespace Camunda.Worker.Execution
 
         private async Task ExecuteInContext(IExternalTaskContext context)
         {
-            using (context)
+            try
             {
-                try
-                {
-                    await _pipelineDescriptor.ExternalTaskDelegate(context);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogWarning(e, "Failed execution of task {Id}", context.Task.Id);
-                }
+                await _pipelineDescriptor.ExternalTaskDelegate(context);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning(e, "Failed execution of task {Id}", context.Task.Id);
+            }
+            finally
+            {
+                context?.Dispose();
             }
         }
     }
