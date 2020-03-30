@@ -33,8 +33,8 @@ namespace Camunda.Worker.Execution
             await client.ExtendLockAsync(Task.Id, request);
         }
 
-        public async Task CompleteAsync(IDictionary<string, Variable> variables = null,
-            IDictionary<string, Variable> localVariables = null)
+        public async Task CompleteAsync(IDictionary<string, Variable>? variables = null,
+            IDictionary<string, Variable>? localVariables = null)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
@@ -50,7 +50,7 @@ namespace Camunda.Worker.Execution
             Completed = true;
         }
 
-        public async Task ReportFailureAsync(string errorMessage, string errorDetails,
+        public async Task ReportFailureAsync(string? errorMessage, string? errorDetails,
             int? retries = default,
             int? retryTimeout = default)
         {
@@ -71,7 +71,7 @@ namespace Camunda.Worker.Execution
         }
 
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable> variables = null)
+            IDictionary<string, Variable>? variables = null)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();

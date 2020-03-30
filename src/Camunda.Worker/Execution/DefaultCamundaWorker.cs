@@ -20,7 +20,7 @@ namespace Camunda.Worker.Execution
             IExternalTaskSelector selector,
             IContextFactory contextFactory,
             PipelineDescriptor pipelineDescriptor,
-            ILogger<DefaultCamundaWorker> logger = null)
+            ILogger<DefaultCamundaWorker>? logger = null)
         {
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _selector = Guard.NotNull(selector, nameof(selector));

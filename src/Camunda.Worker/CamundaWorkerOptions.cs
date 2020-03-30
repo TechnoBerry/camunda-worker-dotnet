@@ -20,7 +20,7 @@ namespace Camunda.Worker
             set => _workerCount = Guard.GreaterThanOrEqual(value, Constants.MinimumWorkerCount, nameof(WorkerCount));
         }
 
-        public Uri BaseUri { get; set; }
+        public Uri? BaseUri { get; set; }
 
         public int AsyncResponseTimeout
         {

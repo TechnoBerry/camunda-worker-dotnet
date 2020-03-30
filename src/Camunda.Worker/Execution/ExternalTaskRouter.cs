@@ -10,7 +10,7 @@ namespace Camunda.Worker.Execution
         private readonly ILogger<ExternalTaskRouter> _logger;
 
         public ExternalTaskRouter(IEndpointProvider endpointProvider,
-            ILogger<ExternalTaskRouter> logger = null)
+            ILogger<ExternalTaskRouter>? logger = null)
         {
             _endpointProvider = Guard.NotNull(endpointProvider, nameof(endpointProvider));
             _logger = logger ?? NullLogger<ExternalTaskRouter>.Instance;

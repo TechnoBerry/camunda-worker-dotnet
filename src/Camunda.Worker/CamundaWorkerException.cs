@@ -11,11 +11,11 @@ namespace Camunda.Worker
         {
         }
 
-        public CamundaWorkerException(string message) : base(message)
+        public CamundaWorkerException(string? message) : base(message)
         {
         }
 
-        public CamundaWorkerException(string message, Exception innerException) : base(message, innerException)
+        public CamundaWorkerException(string? message, Exception? innerException) : base(message, innerException)
         {
         }
     }
