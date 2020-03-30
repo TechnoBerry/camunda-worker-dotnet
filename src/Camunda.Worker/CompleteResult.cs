@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -13,6 +14,7 @@ namespace Camunda.Worker
         {
         }
 
+        [ExcludeFromCodeCoverage]
         [Obsolete("Use constructor without arguments instead")]
         public CompleteResult(
             IDictionary<string, Variable>? variables = null,
