@@ -40,9 +40,8 @@ namespace Camunda.Worker.Execution
                 _logger.LogDebug("Waiting for external task");
                 var fetchAndLockRequest = MakeRequestBody(topics);
                 var externalTasks = await PerformSelection(client, fetchAndLockRequest, cancellationToken);
-                var externalTaskList = externalTasks.ToList();
-                _logger.LogDebug("Locked {Count} external tasks", externalTaskList.Count);
-                return externalTaskList;
+                _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
+                return externalTasks;
             }
             catch (Exception e) when (!(e is OperationCanceledException))
             {
@@ -68,7 +67,7 @@ namespace Camunda.Worker.Execution
             return fetchAndLockRequest;
         }
 
-        private async Task<IEnumerable<ExternalTask>> PerformSelection(
+        private async Task<List<ExternalTask>> PerformSelection(
             IExternalTaskClient client,
             FetchAndLockRequest request,
             CancellationToken cancellationToken

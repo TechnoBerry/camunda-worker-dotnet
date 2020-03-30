@@ -7,7 +7,7 @@ namespace Camunda.Worker.Client
 {
     public interface IExternalTaskClient : IDisposable
     {
-        Task<IList<ExternalTask>> FetchAndLockAsync(
+        Task<List<ExternalTask>> FetchAndLockAsync(
             FetchAndLockRequest request,
             CancellationToken cancellationToken = default
         );

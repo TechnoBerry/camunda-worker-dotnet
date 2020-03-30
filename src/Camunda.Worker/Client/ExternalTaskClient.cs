@@ -19,7 +19,7 @@ namespace Camunda.Worker.Client
             _httpClient?.Dispose();
         }
 
-        public async Task<IList<ExternalTask>> FetchAndLockAsync(
+        public async Task<List<ExternalTask>> FetchAndLockAsync(
             FetchAndLockRequest request,
             CancellationToken cancellationToken = default
         )
@@ -29,7 +29,7 @@ namespace Camunda.Worker.Client
             using var response = await SendRequest("fetchAndLock", request, cancellationToken);
             await EnsureSuccess(response);
 
-            var externalTasks = await response.ReadJsonAsync<IList<ExternalTask>>();
+            var externalTasks = await response.ReadJsonAsync<List<ExternalTask>>();
             return externalTasks;
         }
 
