@@ -25,11 +25,6 @@ namespace Camunda.Worker
             return this;
         }
 
-        public ExternalTaskDelegate Build()
-        {
-            return Build(RouteAsync);
-        }
-
         public ExternalTaskDelegate Build(ExternalTaskDelegate lastDelegate)
         {
             Guard.NotNull(lastDelegate, nameof(lastDelegate));

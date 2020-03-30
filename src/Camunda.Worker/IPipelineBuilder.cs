@@ -9,9 +9,6 @@ namespace Camunda.Worker
 
         IPipelineBuilder Use(Func<ExternalTaskDelegate, ExternalTaskDelegate> middleware);
 
-        [Obsolete]
-        ExternalTaskDelegate Build();
-
         ExternalTaskDelegate Build(ExternalTaskDelegate lastDelegate);
     }
 }
