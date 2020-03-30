@@ -8,7 +8,7 @@ namespace Camunda.Worker
 {
     public sealed class BpmnErrorResult : IExecutionResult
     {
-        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable> variables = null)
+        public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable>? variables = null)
         {
             ErrorCode = Guard.NotEmptyAndNotNull(errorCode, nameof(errorCode));
             ErrorMessage = Guard.NotEmptyAndNotNull(errorMessage, nameof(errorMessage));
@@ -17,7 +17,7 @@ namespace Camunda.Worker
 
         public string ErrorCode { get; }
         public string ErrorMessage { get; }
-        public IDictionary<string, Variable> Variables { get; }
+        public IDictionary<string, Variable>? Variables { get; }
 
         public async Task ExecuteResultAsync(IExternalTaskContext context)
         {

@@ -103,7 +103,7 @@ namespace Camunda.Worker
             return new Variable(JsonConvert.SerializeObject(value, settings), VariableType.Json);
         }
 
-        public T AsJson<T>(JsonSerializerSettings settings = null)
+        public T AsJson<T>(JsonSerializerSettings? settings = null)
         {
             EnsureIsOfType(VariableType.Json);
             var stringValue = Convert.ToString(Value);
@@ -143,13 +143,13 @@ namespace Camunda.Worker
         }
 
         [JsonConstructor]
-        public Variable(object value, VariableType type)
+        public Variable(object? value, VariableType type)
         {
             Value = value;
             Type = type;
         }
 
-        public object Value { get; }
+        public object? Value { get; }
         public VariableType Type { get; }
 
         [ExcludeFromCodeCoverage]

@@ -36,42 +36,42 @@ namespace Camunda.Worker
         /// <summary>
         /// The id of the execution that the external task belongs to
         /// </summary>
-        public string ExecutionId { get; set; }
+        public string? ExecutionId { get; set; }
 
         /// <summary>
         /// The id of the activity that this external task belongs to
         /// </summary>
-        public string ActivityId { get; set; }
+        public string? ActivityId { get; set; }
 
         /// <summary>
         /// The id of the activity instance that the external task belongs to
         /// </summary>
-        public string ActivityInstanceId { get; set; }
+        public string? ActivityInstanceId { get; set; }
 
         /// <summary>
         /// The id of the tenant the external task belongs to
         /// </summary>
-        public string TenantId { get; set; }
+        public string? TenantId { get; set; }
 
         /// <summary>
         /// The id of the process definition the external task is defined in
         /// </summary>
-        public string ProcessDefinitionId { get; set; }
+        public string? ProcessDefinitionId { get; set; }
 
         /// <summary>
         /// The key of the process definition the external task is defined in
         /// </summary>
-        public string ProcessDefinitionKey { get; set; }
+        public string? ProcessDefinitionKey { get; set; }
 
         /// <summary>
         /// The id of the process instance the external task belongs to
         /// </summary>
-        public string ProcessInstanceId { get; set; }
+        public string? ProcessInstanceId { get; set; }
 
         /// <summary>
         /// The business key of the process instance the external task belongs to
         /// </summary>
-        public string BusinessKey { get; set; }
+        public string? BusinessKey { get; set; }
 
         /// <summary>
         /// The number of retries the task currently has left
@@ -81,13 +81,13 @@ namespace Camunda.Worker
         /// <summary>
         /// The full error message submitted with the latest reported failure executing this task
         /// </summary>
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         /// <summary>
         /// The error details submitted with the latest reported failure executing this task
         /// </summary>
-        public string ErrorDetails { get; set; }
+        public string? ErrorDetails { get; set; }
 
-        public IDictionary<string, Variable> Variables { get; set; }
+        public IDictionary<string, Variable>? Variables { get; set; }
     }
 }

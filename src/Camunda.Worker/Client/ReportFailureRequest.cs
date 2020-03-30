@@ -10,8 +10,8 @@ namespace Camunda.Worker.Client
         }
 
         public string WorkerId { get; }
-        public string ErrorMessage { get; set; }
-        public string ErrorDetails { get; set; }
+        public string? ErrorMessage { get; set; }
+        public string? ErrorDetails { get; set; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public int? Retries { get; set; }

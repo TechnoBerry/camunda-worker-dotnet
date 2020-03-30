@@ -6,7 +6,7 @@ namespace Camunda.Worker
     public sealed class FailureResult : IExecutionResult
     {
         public string ErrorMessage { get; }
-        public string ErrorDetails { get; }
+        public string? ErrorDetails { get; }
         public int? Retries { get; set; }
         public int? RetryTimeout { get; set; }
 
@@ -14,7 +14,7 @@ namespace Camunda.Worker
         {
         }
 
-        public FailureResult(string errorMessage, string errorDetails = null)
+        public FailureResult(string errorMessage, string? errorDetails = null)
         {
             ErrorMessage = Guard.NotNull(errorMessage, nameof(errorMessage));
             ErrorDetails = errorDetails;

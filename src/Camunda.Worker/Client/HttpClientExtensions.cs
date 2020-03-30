@@ -41,24 +41,23 @@ namespace Camunda.Worker.Client
             object requestBody,
             CancellationToken cancellationToken = default)
         {
-            using (var stream = new MemoryStream())
-            using (var streamWriter = new StreamWriter(stream))
-            using (var jsonWriter = new JsonTextWriter(streamWriter))
+            using var stream = new MemoryStream();
+            using var streamWriter = new StreamWriter(stream);
+            using var jsonWriter = new JsonTextWriter(streamWriter);
+
+            Serializer.Serialize(jsonWriter, requestBody);
+            await jsonWriter.FlushAsync(cancellationToken);
+
+            stream.Position = 0;
+
+            var requestContent = new StreamContent(stream);
+            requestContent.Headers.ContentType = new MediaTypeHeaderValue(JsonContentType)
             {
-                Serializer.Serialize(jsonWriter, requestBody);
-                await jsonWriter.FlushAsync(cancellationToken);
+                CharSet = Encoding.UTF8.WebName
+            };
 
-                stream.Position = 0;
-
-                var requestContent = new StreamContent(stream);
-                requestContent.Headers.ContentType = new MediaTypeHeaderValue(JsonContentType)
-                {
-                    CharSet = Encoding.UTF8.WebName
-                };
-
-                var response = await client.PostAsync(path, requestContent, cancellationToken);
-                return response;
-            }
+            var response = await client.PostAsync(path, requestContent, cancellationToken);
+            return response;
         }
 
         internal static Task<T> ReadJsonAsync<T>(this HttpResponseMessage responseMessage) =>
@@ -66,13 +65,12 @@ namespace Camunda.Worker.Client
 
         internal static async Task<T> ReadJsonAsync<T>(this HttpContent content)
         {
-            using (var stream = await content.ReadAsStreamAsync())
-            using (var streamReader = new StreamReader(stream))
-            using (var jsonReader = new JsonTextReader(streamReader))
-            {
-                var result = Serializer.Deserialize<T>(jsonReader);
-                return result;
-            }
+            using var stream = await content.ReadAsStreamAsync();
+            using var streamReader = new StreamReader(stream);
+            using var jsonReader = new JsonTextReader(streamReader);
+
+            var result = Serializer.Deserialize<T>(jsonReader);
+            return result;
         }
 
         internal static bool IsJson(this HttpContentHeaders headers) =>

@@ -12,8 +12,11 @@ namespace Camunda.Worker.Client
         }
 
         public string WorkerId { get; }
+
         public string ErrorCode { get; }
+
         public string ErrorMessage { get; }
-        public IDictionary<string, Variable> Variables { get; set; }
+
+        public IDictionary<string, Variable>? Variables { get; set; }
     }
 }

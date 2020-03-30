@@ -28,70 +28,62 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using (var client = ServiceProvider.GetRequiredService<IExternalTaskClient>())
-            {
-                var request = new ExtendLockRequest(Task.WorkerId, newDuration);
-                await client.ExtendLockAsync(Task.Id, request);
-            }
+            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var request = new ExtendLockRequest(Task.WorkerId, newDuration);
+            await client.ExtendLockAsync(Task.Id, request);
         }
 
-        public async Task CompleteAsync(IDictionary<string, Variable> variables = null,
-            IDictionary<string, Variable> localVariables = null)
+        public async Task CompleteAsync(IDictionary<string, Variable>? variables = null,
+            IDictionary<string, Variable>? localVariables = null)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using (var client = ServiceProvider.GetRequiredService<IExternalTaskClient>())
+            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var request = new CompleteRequest(Task.WorkerId)
             {
-                var request = new CompleteRequest(Task.WorkerId)
-                {
-                    Variables = variables,
-                    LocalVariables = localVariables
-                };
-                await client.CompleteAsync(Task.Id, request);
+                Variables = variables,
+                LocalVariables = localVariables
+            };
+            await client.CompleteAsync(Task.Id, request);
 
-                Completed = true;
-            }
+            Completed = true;
         }
 
-        public async Task ReportFailureAsync(string errorMessage, string errorDetails,
+        public async Task ReportFailureAsync(string? errorMessage, string? errorDetails,
             int? retries = default,
             int? retryTimeout = default)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using (var client = ServiceProvider.GetRequiredService<IExternalTaskClient>())
+            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var request = new ReportFailureRequest(Task.WorkerId)
             {
-                var request = new ReportFailureRequest(Task.WorkerId)
-                {
-                    ErrorMessage = errorMessage,
-                    ErrorDetails = errorDetails,
-                    Retries = retries,
-                    RetryTimeout = retryTimeout
-                };
-                await client.ReportFailureAsync(Task.Id, request);
+                ErrorMessage = errorMessage,
+                ErrorDetails = errorDetails,
+                Retries = retries,
+                RetryTimeout = retryTimeout
+            };
+            await client.ReportFailureAsync(Task.Id, request);
 
-                Completed = true;
-            }
+            Completed = true;
         }
 
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable> variables = null)
+            IDictionary<string, Variable>? variables = null)
         {
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using (var client = ServiceProvider.GetRequiredService<IExternalTaskClient>())
+            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var request = new BpmnErrorRequest(Task.WorkerId, errorCode, errorMessage)
             {
-                var request = new BpmnErrorRequest(Task.WorkerId, errorCode, errorMessage)
-                {
-                    Variables = variables
-                };
-                await client.ReportBpmnErrorAsync(Task.Id, request);
+                Variables = variables
+            };
+            await client.ReportBpmnErrorAsync(Task.Id, request);
 
-                Completed = true;
-            }
+            Completed = true;
         }
 
         private void ThrowIfDisposed()

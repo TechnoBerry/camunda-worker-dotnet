@@ -20,7 +20,7 @@ namespace Camunda.Worker.Execution
         public ExternalTaskSelector(
             IServiceProvider provider,
             IOptions<CamundaWorkerOptions> options,
-            ILogger<ExternalTaskSelector> logger = null
+            ILogger<ExternalTaskSelector>? logger = null
         )
         {
             _provider = Guard.NotNull(provider, nameof(provider));

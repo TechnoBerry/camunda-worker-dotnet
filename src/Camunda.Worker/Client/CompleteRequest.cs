@@ -10,7 +10,9 @@ namespace Camunda.Worker.Client
         }
 
         public string WorkerId { get; }
-        public IDictionary<string, Variable> Variables { get; set; }
-        public IDictionary<string, Variable> LocalVariables { get; set; }
+
+        public IDictionary<string, Variable>? Variables { get; set; }
+
+        public IDictionary<string, Variable>? LocalVariables { get; set; }
     }
 }
