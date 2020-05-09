@@ -10,7 +10,7 @@ namespace Camunda.Worker.Execution
         [Fact]
         public void TestGetTopics()
         {
-            var descriptors = GetDescriptors().ToList();
+            var descriptors = GetDescriptors();
 
             var topicsProvider = new StaticTopicsProvider(descriptors);
 
@@ -27,10 +27,10 @@ namespace Camunda.Worker.Execution
             Assert.Equal(descriptors[1].Metadata.LockDuration, topics[1].LockDuration);
         }
 
-        private static IEnumerable<HandlerDescriptor> GetDescriptors()
+        private static HandlerDescriptor[] GetDescriptors()
         {
             Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
-            var descriptors = new[]
+            return new[]
             {
                 new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"})),
                 new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
@@ -39,7 +39,6 @@ namespace Camunda.Worker.Execution
                     LocalVariables = true
                 })
             };
-            return descriptors;
         }
     }
 }
