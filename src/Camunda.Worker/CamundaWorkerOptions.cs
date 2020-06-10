@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+
 using System;
+using System.Collections.Generic;
 
 namespace Camunda.Worker
 {
@@ -7,6 +10,7 @@ namespace Camunda.Worker
         private string _workerId = "camunda-worker";
         private int _workerCount = Constants.MinimumWorkerCount;
         private int _asyncResponseTimeout = 10_000;
+        private Dictionary<string, string> _CustomHeaders;
 
         public string WorkerId
         {
@@ -26,6 +30,12 @@ namespace Camunda.Worker
         {
             get => _asyncResponseTimeout;
             set => _asyncResponseTimeout = Guard.GreaterThanOrEqual(value, 0, nameof(AsyncResponseTimeout));
+        }
+
+        public Dictionary<string, string> CustomHttpHeaders
+        {
+            get => _CustomHeaders;
+            set => _CustomHeaders = Guard.NotNull(value, nameof(WorkerId));
         }
     }
 }

@@ -19,6 +19,11 @@ namespace Camunda.Worker
                 {
                     var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;
                     client.BaseAddress = options.BaseUri;
+                    foreach (var header in options.CustomHttpHeaders.Keys)
+                    {
+                        client.DefaultRequestHeaders.Add(header, options.CustomHttpHeaders[header]);
+                    }
+
                 });
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
