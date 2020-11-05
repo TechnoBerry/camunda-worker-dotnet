@@ -20,9 +20,9 @@ jobs:
         with:
           dotnet-version: 3.1.x
       - name: Unit tests
-        run: dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[Camunda.Worker]*"
+        run: dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj --collect:"XPlat Code Coverage" --settings ./coverlet.runsettings -r ./coverage
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./test/Camunda.Worker.Tests/coverage.opencover.xml
+          directory: ./coverage
