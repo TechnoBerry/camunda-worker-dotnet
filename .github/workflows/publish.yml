@@ -1,0 +1,28 @@
+name: Publish
+
+on:
+  push:
+    tags: [ '*' ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.x
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+      - name: Create the package
+        run: dotnet pack -p:PackageVersion=${{ steps.get_version.outputs.VERSION }} -c Release ./src/Camunda.Worker/Camunda.Worker.csproj
+      - name: Publish the package
+        run: dotnet nuget push ./src/Camunda.Worker/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json -k $NUGET_AUTH_TOKEN
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_TOKEN}}
