@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Camunda.Worker.Extensions
+namespace Camunda.Worker
 {
     public static class CamundaWorkerBuilderExtensions
     {

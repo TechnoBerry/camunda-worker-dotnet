@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker.Extensions
+namespace Camunda.Worker
 {
     public class CamundaWorkerBuilderExtensionsTest
     {
