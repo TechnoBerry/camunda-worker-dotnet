@@ -208,3 +208,5 @@ tools/
 # Visual Studio Code workspace options
 .vscode
 
+# Coverage directory
+converage
