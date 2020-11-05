@@ -2,7 +2,7 @@ version: '3'
 
 services:
   camunda-db:
-    image: postgres:10
+    image: postgres:12
     ports:
       - '5432:5432'
     environment:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: camunda
 
   camunda:
-    image: camunda/camunda-bpm-platform:7.11.0
+    image: camunda/camunda-bpm-platform:7.14.0
     depends_on:
       - camunda-db
     ports:
