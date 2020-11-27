@@ -43,7 +43,7 @@ namespace Camunda.Worker.Execution
                 _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
                 return externalTasks;
             }
-            catch (Exception e) when (!(e is OperationCanceledException))
+            catch (Exception e) when (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogWarning(e,"Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await DelayOnFailure(cancellationToken);
