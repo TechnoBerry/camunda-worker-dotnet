@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Camunda.Worker.Client
 {
-    public interface IExternalTaskClient : IDisposable
+    public interface IExternalTaskClient
     {
         Task<List<ExternalTask>> FetchAndLockAsync(
             FetchAndLockRequest request,

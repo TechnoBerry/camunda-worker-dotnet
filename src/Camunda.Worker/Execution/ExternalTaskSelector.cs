@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -13,17 +12,17 @@ namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskSelector : IExternalTaskSelector
     {
-        private readonly IServiceProvider _provider;
+        private readonly IExternalTaskClient _client;
         private readonly CamundaWorkerOptions _options;
         private readonly ILogger<ExternalTaskSelector> _logger;
 
         public ExternalTaskSelector(
-            IServiceProvider provider,
+            IExternalTaskClient client,
             IOptions<CamundaWorkerOptions> options,
             ILogger<ExternalTaskSelector>? logger = null
         )
         {
-            _provider = Guard.NotNull(provider, nameof(provider));
+            _client = Guard.NotNull(client, nameof(client));
             _options = Guard.NotNull(options, nameof(options)).Value;
             _logger = logger ?? NullLogger<ExternalTaskSelector>.Instance;
         }
@@ -33,13 +32,11 @@ namespace Camunda.Worker.Execution
             CancellationToken cancellationToken = default
         )
         {
-            var client = _provider.GetRequiredService<IExternalTaskClient>();
-
             try
             {
                 _logger.LogDebug("Waiting for external task");
                 var fetchAndLockRequest = MakeRequestBody(topics);
-                var externalTasks = await PerformSelection(client, fetchAndLockRequest, cancellationToken);
+                var externalTasks = await PerformSelection(fetchAndLockRequest, cancellationToken);
                 _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
                 return externalTasks;
             }
@@ -48,10 +45,6 @@ namespace Camunda.Worker.Execution
                 _logger.LogWarning(e,"Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await DelayOnFailure(cancellationToken);
                 return Enumerable.Empty<ExternalTask>();
-            }
-            finally
-            {
-                client?.Dispose();
             }
         }
 
@@ -68,12 +61,11 @@ namespace Camunda.Worker.Execution
         }
 
         private async Task<List<ExternalTask>> PerformSelection(
-            IExternalTaskClient client,
             FetchAndLockRequest request,
             CancellationToken cancellationToken
         )
         {
-            var externalTasks = await client.FetchAndLockAsync(request, cancellationToken);
+            var externalTasks = await _client.FetchAndLockAsync(request, cancellationToken);
             return externalTasks;
         }
 

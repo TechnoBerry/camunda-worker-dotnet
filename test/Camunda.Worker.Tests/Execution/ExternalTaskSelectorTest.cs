@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -25,9 +24,8 @@ namespace Camunda.Worker.Execution
 
         public ExternalTaskSelectorTest()
         {
-            var provider = new ServiceCollection().AddSingleton(_clientMock.Object).BuildServiceProvider();
             _selector = new ExternalTaskSelector(
-                provider,
+                _clientMock.Object,
                 _options
             );
         }

@@ -28,7 +28,6 @@ namespace Camunda.Worker.Client
         public void Dispose()
         {
             _handlerMock?.Dispose();
-            _client?.Dispose();
         }
 
         [Fact]

@@ -14,11 +14,6 @@ namespace Camunda.Worker.Client
             _httpClient = Guard.NotNull(httpClient, nameof(httpClient));
         }
 
-        public void Dispose()
-        {
-            _httpClient?.Dispose();
-        }
-
         public async Task<List<ExternalTask>> FetchAndLockAsync(
             FetchAndLockRequest request,
             CancellationToken cancellationToken = default

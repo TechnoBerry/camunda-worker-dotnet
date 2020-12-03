@@ -28,7 +28,7 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new ExtendLockRequest(Task.WorkerId, newDuration);
             await client.ExtendLockAsync(Task.Id, request);
         }
@@ -39,7 +39,7 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new CompleteRequest(Task.WorkerId)
             {
                 Variables = variables,
@@ -57,7 +57,7 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new ReportFailureRequest(Task.WorkerId)
             {
                 ErrorMessage = errorMessage,
@@ -76,7 +76,7 @@ namespace Camunda.Worker.Execution
             ThrowIfDisposed();
             ThrowIfCompleted();
 
-            using var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
+            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new BpmnErrorRequest(Task.WorkerId, errorCode, errorMessage)
             {
                 Variables = variables
