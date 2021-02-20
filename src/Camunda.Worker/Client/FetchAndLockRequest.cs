@@ -30,7 +30,7 @@ namespace Camunda.Worker.Client
         /// </summary>
         public int AsyncResponseTimeout { get; set; }
 
-        public IEnumerable<Topic>? Topics { get; set; }
+        public IReadOnlyCollection<Topic>? Topics { get; set; }
 
         public class Topic
         {

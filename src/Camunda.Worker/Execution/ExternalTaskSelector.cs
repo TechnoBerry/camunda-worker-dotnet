@@ -27,7 +27,7 @@ namespace Camunda.Worker.Execution
         }
 
         public async Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
-            IEnumerable<FetchAndLockRequest.Topic> topics,
+            IReadOnlyCollection<FetchAndLockRequest.Topic> topics,
             CancellationToken cancellationToken = default
         )
         {
@@ -47,7 +47,7 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private FetchAndLockRequest MakeRequestBody(IEnumerable<FetchAndLockRequest.Topic> topics)
+        private FetchAndLockRequest MakeRequestBody(IReadOnlyCollection<FetchAndLockRequest.Topic> topics)
         {
             var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
             {

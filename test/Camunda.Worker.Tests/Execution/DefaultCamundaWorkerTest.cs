@@ -78,7 +78,7 @@ namespace Camunda.Worker.Execution
         {
             _selectorMock
                 .Setup(selector => selector.SelectAsync(
-                    It.IsAny<IEnumerable<FetchAndLockRequest.Topic>>(),
+                    It.IsAny<IReadOnlyCollection<FetchAndLockRequest.Topic>>(),
                     It.IsAny<CancellationToken>()
                 ))
                 .Callback(cts.Cancel)
