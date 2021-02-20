@@ -74,7 +74,7 @@ namespace Camunda.Worker.Execution
             );
         }
 
-        private void ConfigureSelector(CancellationTokenSource cts, IList<ExternalTask> externalTasks)
+        private void ConfigureSelector(CancellationTokenSource cts, IReadOnlyCollection<ExternalTask> externalTasks)
         {
             _selectorMock
                 .Setup(selector => selector.SelectAsync(

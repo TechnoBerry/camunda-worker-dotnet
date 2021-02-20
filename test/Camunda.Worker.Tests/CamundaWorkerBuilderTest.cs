@@ -105,7 +105,7 @@ namespace Camunda.Worker
 
         private class ExternalTaskSelector : IExternalTaskSelector
         {
-            public Task<IEnumerable<ExternalTask>> SelectAsync(IEnumerable<FetchAndLockRequest.Topic> topics,
+            public Task<IReadOnlyCollection<ExternalTask>> SelectAsync(IEnumerable<FetchAndLockRequest.Topic> topics,
                 CancellationToken cancellationToken = default)
             {
                 throw new NotImplementedException();
