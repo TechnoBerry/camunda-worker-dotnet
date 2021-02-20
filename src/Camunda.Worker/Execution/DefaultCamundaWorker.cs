@@ -35,12 +35,11 @@ namespace Camunda.Worker.Execution
             {
                 var externalTasks = await SelectExternalTasks(cancellationToken);
 
-                var activeAsyncTasks = externalTasks
-                    .Select(_contextFactory.MakeContext)
-                    .Select(ExecuteInContext)
+                var executableTasks = externalTasks
+                    .Select(ProcessExternalTask)
                     .ToList();
 
-                await Task.WhenAll(activeAsyncTasks);
+                await Task.WhenAll(executableTasks);
             }
         }
 
@@ -51,8 +50,10 @@ namespace Camunda.Worker.Execution
             return selectedTasks;
         }
 
-        private async Task ExecuteInContext(IExternalTaskContext context)
+        private async Task ProcessExternalTask(ExternalTask externalTask)
         {
+            using var context = _contextFactory.MakeContext(externalTask);
+
             try
             {
                 await _pipelineDescriptor.ExternalTaskDelegate(context);
@@ -60,10 +61,6 @@ namespace Camunda.Worker.Execution
             catch (Exception e)
             {
                 _logger.LogWarning(e, "Failed execution of task {Id}", context.Task.Id);
-            }
-            finally
-            {
-                context?.Dispose();
             }
         }
     }
