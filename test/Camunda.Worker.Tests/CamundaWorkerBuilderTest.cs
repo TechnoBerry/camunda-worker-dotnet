@@ -97,7 +97,7 @@ namespace Camunda.Worker
 
         private class TopicsProvider : ITopicsProvider
         {
-            public IEnumerable<FetchAndLockRequest.Topic> GetTopics()
+            public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
             {
                 throw new NotImplementedException();
             }

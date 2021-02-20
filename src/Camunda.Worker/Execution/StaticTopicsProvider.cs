@@ -29,7 +29,7 @@ namespace Camunda.Worker.Execution
                 TenantIdIn = metadata.TenantIds
             };
 
-        public IEnumerable<FetchAndLockRequest.Topic> GetTopics()
+        public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
         {
             return _topics;
         }
