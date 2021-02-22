@@ -7,8 +7,8 @@ namespace Camunda.Worker.Execution
 {
     public interface IExternalTaskSelector
     {
-        Task<IEnumerable<ExternalTask>> SelectAsync(
-            IEnumerable<FetchAndLockRequest.Topic> topics,
+        Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
+            IReadOnlyCollection<FetchAndLockRequest.Topic> topics,
             CancellationToken cancellationToken = default
         );
     }

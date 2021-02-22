@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using Xunit;
 
 namespace Camunda.Worker
@@ -97,7 +96,7 @@ namespace Camunda.Worker
 
         private class TopicsProvider : ITopicsProvider
         {
-            public IEnumerable<FetchAndLockRequest.Topic> GetTopics()
+            public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
             {
                 throw new NotImplementedException();
             }
@@ -105,8 +104,10 @@ namespace Camunda.Worker
 
         private class ExternalTaskSelector : IExternalTaskSelector
         {
-            public Task<IEnumerable<ExternalTask>> SelectAsync(IEnumerable<FetchAndLockRequest.Topic> topics,
-                CancellationToken cancellationToken = default)
+            public Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
+                IReadOnlyCollection<FetchAndLockRequest.Topic> topics,
+                CancellationToken cancellationToken = default
+            )
             {
                 throw new NotImplementedException();
             }

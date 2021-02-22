@@ -30,7 +30,7 @@ namespace Camunda.Worker.Client
         /// </summary>
         public int AsyncResponseTimeout { get; set; }
 
-        public IEnumerable<Topic>? Topics { get; set; }
+        public IReadOnlyCollection<Topic>? Topics { get; set; }
 
         public class Topic
         {
@@ -55,21 +55,21 @@ namespace Camunda.Worker.Client
             /// </summary>
             public bool LocalVariables { get; set; }
 
-            public IEnumerable<string>? Variables { get; set; }
+            public IReadOnlyCollection<string>? Variables { get; set; }
 
             public string? BusinessKey { get; set; }
 
             public string? ProcessDefinitionId { get; set; }
 
-            public IEnumerable<string>? ProcessDefinitionIdIn { get; set; }
+            public IReadOnlyCollection<string>? ProcessDefinitionIdIn { get; set; }
 
             public string? ProcessDefinitionKey { get; set; }
 
-            public IEnumerable<string>? ProcessDefinitionKeyIn { get; set; }
+            public IReadOnlyCollection<string>? ProcessDefinitionKeyIn { get; set; }
 
             public bool? WithoutTenantId { get; set; }
 
-            public IEnumerable<string>? TenantIdIn { get; set; }
+            public IReadOnlyCollection<string>? TenantIdIn { get; set; }
         }
     }
 }

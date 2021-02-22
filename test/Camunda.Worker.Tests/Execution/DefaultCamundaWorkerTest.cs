@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -19,7 +19,7 @@ namespace Camunda.Worker.Execution
         public DefaultCamundaWorkerTest()
         {
             _topicsProviderMock.Setup(provider => provider.GetTopics())
-                .Returns(Enumerable.Empty<FetchAndLockRequest.Topic>());
+                .Returns(Array.Empty<FetchAndLockRequest.Topic>());
 
             var contextMock = new Mock<IExternalTaskContext>();
             _contextFactoryMock.Setup(factory => factory.MakeContext(It.IsAny<ExternalTask>()))
@@ -74,11 +74,11 @@ namespace Camunda.Worker.Execution
             );
         }
 
-        private void ConfigureSelector(CancellationTokenSource cts, IList<ExternalTask> externalTasks)
+        private void ConfigureSelector(CancellationTokenSource cts, IReadOnlyCollection<ExternalTask> externalTasks)
         {
             _selectorMock
                 .Setup(selector => selector.SelectAsync(
-                    It.IsAny<IEnumerable<FetchAndLockRequest.Topic>>(),
+                    It.IsAny<IReadOnlyCollection<FetchAndLockRequest.Topic>>(),
                     It.IsAny<CancellationToken>()
                 ))
                 .Callback(cts.Cancel)

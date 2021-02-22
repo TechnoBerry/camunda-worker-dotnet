@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -27,8 +26,8 @@ namespace Camunda.Worker.Execution
             _logger = logger ?? NullLogger<ExternalTaskSelector>.Instance;
         }
 
-        public async Task<IEnumerable<ExternalTask>> SelectAsync(
-            IEnumerable<FetchAndLockRequest.Topic> topics,
+        public async Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
+            IReadOnlyCollection<FetchAndLockRequest.Topic> topics,
             CancellationToken cancellationToken = default
         )
         {
@@ -44,11 +43,11 @@ namespace Camunda.Worker.Execution
             {
                 _logger.LogWarning(e,"Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await DelayOnFailure(cancellationToken);
-                return Enumerable.Empty<ExternalTask>();
+                return Array.Empty<ExternalTask>();
             }
         }
 
-        private FetchAndLockRequest MakeRequestBody(IEnumerable<FetchAndLockRequest.Topic> topics)
+        private FetchAndLockRequest MakeRequestBody(IReadOnlyCollection<FetchAndLockRequest.Topic> topics)
         {
             var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
             {

@@ -5,6 +5,6 @@ namespace Camunda.Worker.Execution
 {
     public interface ITopicsProvider
     {
-        IEnumerable<FetchAndLockRequest.Topic> GetTopics();
+        IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics();
     }
 }

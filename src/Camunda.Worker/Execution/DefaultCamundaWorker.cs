@@ -43,7 +43,7 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private Task<IEnumerable<ExternalTask>> SelectExternalTasks(CancellationToken cancellationToken)
+        private Task<IReadOnlyCollection<ExternalTask>> SelectExternalTasks(CancellationToken cancellationToken)
         {
             var topics = _topicsProvider.GetTopics();
             var selectedTasks = _selector.SelectAsync(topics, cancellationToken);
