@@ -10,7 +10,7 @@ namespace Camunda.Worker
             IExecutionResult executionResult;
             try
             {
-                executionResult = await Process(context.Task);
+                executionResult = await HandleAsync(context.Task);
             }
             catch (Exception e)
             {
@@ -20,6 +20,6 @@ namespace Camunda.Worker
             await executionResult.ExecuteResultAsync(context);
         }
 
-        public abstract Task<IExecutionResult> Process(ExternalTask externalTask);
+        public abstract Task<IExecutionResult> HandleAsync(ExternalTask externalTask);
     }
 }

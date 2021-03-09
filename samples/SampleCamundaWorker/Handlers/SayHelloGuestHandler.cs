@@ -7,7 +7,7 @@ namespace SampleCamundaWorker.Handlers
     [HandlerTopics("sayHelloGuest")]
     public class SayHelloGuestHandler : ExternalTaskHandler
     {
-        public override Task<IExecutionResult> Process(ExternalTask externalTask)
+        public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
         {
             return Task.FromResult<IExecutionResult>(new CompleteResult
             {

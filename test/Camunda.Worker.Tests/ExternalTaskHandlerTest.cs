@@ -18,7 +18,7 @@ namespace Camunda.Worker
         public async Task TestSuccessfulProcess()
         {
             var resultMock = new Mock<IExecutionResult>();
-            _handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
+            _handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<ExternalTask>()))
                 .ReturnsAsync(resultMock.Object);
 
             await _handlerMock.Object.HandleAsync(_contextMock.Object);
@@ -32,7 +32,7 @@ namespace Camunda.Worker
         [Fact]
         public async Task TestFailedProcess()
         {
-            _handlerMock.Setup(handler => handler.Process(It.IsAny<ExternalTask>()))
+            _handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<ExternalTask>()))
                 .ThrowsAsync(new Exception("An exception"));
 
             await _handlerMock.Object.HandleAsync(_contextMock.Object);
@@ -47,7 +47,7 @@ namespace Camunda.Worker
 
         public class FakeHandler : ExternalTaskHandler
         {
-            public override Task<IExecutionResult> Process(ExternalTask externalTask)
+            public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
             {
                 throw new NotImplementedException();
             }

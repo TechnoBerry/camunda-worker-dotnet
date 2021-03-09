@@ -10,7 +10,7 @@
 [HandlerVariables("USERNAME")]
 public class SayHelloHandler : ExternalTaskHandler
 {
-    public override async Task<IExecutionResult> Process(ExternalTask externalTask)
+    public override async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
     {
         var username = externalTask.Variables["USERNAME"].Value;
 
