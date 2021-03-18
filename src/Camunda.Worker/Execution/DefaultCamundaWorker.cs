@@ -10,19 +10,18 @@ namespace Camunda.Worker.Execution
 {
     public sealed class DefaultCamundaWorker : ICamundaWorker
     {
-        private readonly ITopicsProvider _topicsProvider;
         private readonly IExternalTaskSelector _selector;
         private readonly IContextFactory _contextFactory;
         private readonly PipelineDescriptor _pipelineDescriptor;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
-        public DefaultCamundaWorker(ITopicsProvider topicsProvider,
+        public DefaultCamundaWorker(
             IExternalTaskSelector selector,
             IContextFactory contextFactory,
             PipelineDescriptor pipelineDescriptor,
-            ILogger<DefaultCamundaWorker>? logger = null)
+            ILogger<DefaultCamundaWorker>? logger = null
+        )
         {
-            _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _selector = Guard.NotNull(selector, nameof(selector));
             _contextFactory = Guard.NotNull(contextFactory, nameof(contextFactory));
             _pipelineDescriptor = Guard.NotNull(pipelineDescriptor, nameof(pipelineDescriptor));
@@ -33,7 +32,7 @@ namespace Camunda.Worker.Execution
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var externalTasks = await SelectExternalTasks(cancellationToken);
+                var externalTasks = await _selector.SelectAsync(cancellationToken);
 
                 var executableTasks = externalTasks
                     .Select(ProcessExternalTask)
@@ -41,13 +40,6 @@ namespace Camunda.Worker.Execution
 
                 await Task.WhenAll(executableTasks);
             }
-        }
-
-        private Task<IReadOnlyCollection<ExternalTask>> SelectExternalTasks(CancellationToken cancellationToken)
-        {
-            var topics = _topicsProvider.GetTopics();
-            var selectedTasks = _selector.SelectAsync(topics, cancellationToken);
-            return selectedTasks;
         }
 
         private async Task ProcessExternalTask(ExternalTask externalTask)

@@ -12,6 +12,7 @@ namespace Camunda.Worker.Execution
     public class ExternalTaskSelectorTest
     {
         private readonly Mock<IExternalTaskClient> _clientMock = new Mock<IExternalTaskClient>();
+        private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
 
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
@@ -24,8 +25,12 @@ namespace Camunda.Worker.Execution
 
         public ExternalTaskSelectorTest()
         {
+            _topicsProviderMock.Setup(provider => provider.GetTopics())
+                .Returns(Array.Empty<FetchAndLockRequest.Topic>());
+
             _selector = new ExternalTaskSelector(
                 _clientMock.Object,
+                _topicsProviderMock.Object,
                 _options
             );
         }
@@ -38,7 +43,7 @@ namespace Camunda.Worker.Execution
                     client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<ExternalTask>());
 
-            var result = await _selector.SelectAsync(new FetchAndLockRequest.Topic[0]);
+            var result = await _selector.SelectAsync();
 
             Assert.Empty(result);
             _clientMock.VerifyAll();

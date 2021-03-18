@@ -11,22 +11,17 @@ namespace Camunda.Worker.Execution
     public class DefaultCamundaWorkerTest
     {
         private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
-        private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
         private readonly Mock<IContextFactory> _contextFactoryMock = new Mock<IContextFactory>();
         private readonly DefaultCamundaWorker _worker;
 
         public DefaultCamundaWorkerTest()
         {
-            _topicsProviderMock.Setup(provider => provider.GetTopics())
-                .Returns(Array.Empty<FetchAndLockRequest.Topic>());
-
             var contextMock = new Mock<IExternalTaskContext>();
             _contextFactoryMock.Setup(factory => factory.MakeContext(It.IsAny<ExternalTask>()))
                 .Returns(contextMock.Object);
 
             _worker = new DefaultCamundaWorker(
-                _topicsProviderMock.Object,
                 _selectorMock.Object,
                 _contextFactoryMock.Object,
                 new PipelineDescriptor(_routerMock.Object.RouteAsync)
@@ -78,7 +73,6 @@ namespace Camunda.Worker.Execution
         {
             _selectorMock
                 .Setup(selector => selector.SelectAsync(
-                    It.IsAny<IReadOnlyCollection<FetchAndLockRequest.Topic>>(),
                     It.IsAny<CancellationToken>()
                 ))
                 .Callback(cts.Cancel)

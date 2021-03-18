@@ -12,16 +12,19 @@ namespace Camunda.Worker.Execution
     public sealed class ExternalTaskSelector : IExternalTaskSelector
     {
         private readonly IExternalTaskClient _client;
+        private readonly ITopicsProvider _topicsProvider;
         private readonly CamundaWorkerOptions _options;
         private readonly ILogger<ExternalTaskSelector> _logger;
 
         public ExternalTaskSelector(
             IExternalTaskClient client,
+            ITopicsProvider topicsProvider,
             IOptions<CamundaWorkerOptions> options,
             ILogger<ExternalTaskSelector>? logger = null
         )
         {
             _client = Guard.NotNull(client, nameof(client));
+            _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _options = Guard.NotNull(options, nameof(options)).Value;
             _logger = logger ?? NullLogger<ExternalTaskSelector>.Instance;
         }
@@ -31,24 +34,33 @@ namespace Camunda.Worker.Execution
             CancellationToken cancellationToken = default
         )
         {
+            return await SelectAsync(cancellationToken);
+        }
+
+        public async Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
+            CancellationToken cancellationToken = default
+        )
+        {
             try
             {
                 _logger.LogDebug("Waiting for external task");
-                var fetchAndLockRequest = MakeRequestBody(topics);
+                var fetchAndLockRequest = MakeRequestBody();
                 var externalTasks = await PerformSelection(fetchAndLockRequest, cancellationToken);
                 _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
                 return externalTasks;
             }
             catch (Exception e) when (!cancellationToken.IsCancellationRequested)
             {
-                _logger.LogWarning(e,"Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
+                _logger.LogWarning(e, "Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
                 await DelayOnFailure(cancellationToken);
                 return Array.Empty<ExternalTask>();
             }
         }
 
-        private FetchAndLockRequest MakeRequestBody(IReadOnlyCollection<FetchAndLockRequest.Topic> topics)
+        private FetchAndLockRequest MakeRequestBody()
         {
+            var topics = _topicsProvider.GetTopics();
+
             var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
             {
                 UsePriority = true,
