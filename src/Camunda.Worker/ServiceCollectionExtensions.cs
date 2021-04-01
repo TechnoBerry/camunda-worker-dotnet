@@ -1,4 +1,3 @@
-using System;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,11 +9,19 @@ namespace Camunda.Worker
     {
         public static ICamundaWorkerBuilder AddCamundaWorker(
             this IServiceCollection services,
-            Action<CamundaWorkerOptions> configureDelegate
+            string workerId,
+            int workerCount = Constants.MinimumWorkerCount
         )
         {
+            Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
+            Guard.GreaterThanOrEqual(workerCount, Constants.MinimumWorkerCount, nameof(workerCount));
+
             services.AddOptions<CamundaWorkerOptions>()
-                .Configure(configureDelegate);
+                .Configure(options =>
+                {
+                    options.WorkerId = workerId;
+                    options.WorkerCount = workerCount;
+                });
             services.AddExternalTaskClient();
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();

@@ -30,11 +30,7 @@ namespace SampleCamundaWorker
                     client.BaseAddress = new Uri("http://localhost:8080/engine-rest");
                 });
 
-            services.AddCamundaWorker(options =>
-                {
-                    options.WorkerId = "sampleWorker";
-                    options.WorkerCount = 1;
-                })
+            services.AddCamundaWorker("sampleWorker")
                 .AddHandler<SayHelloHandler>()
                 .AddHandler<SayHelloGuestHandler>()
                 .ConfigurePipeline(pipeline =>
