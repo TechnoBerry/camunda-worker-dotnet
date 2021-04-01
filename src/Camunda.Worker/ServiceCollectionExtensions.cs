@@ -10,17 +10,16 @@ namespace Camunda.Worker
         public static ICamundaWorkerBuilder AddCamundaWorker(
             this IServiceCollection services,
             string workerId,
-            int workerCount = Constants.MinimumWorkerCount
+            int numberOfWorkers = Constants.MinimumParallelExecutors
         )
         {
             Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
-            Guard.GreaterThanOrEqual(workerCount, Constants.MinimumWorkerCount, nameof(workerCount));
+            Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
             services.AddOptions<CamundaWorkerOptions>()
                 .Configure(options =>
                 {
                     options.WorkerId = workerId;
-                    options.WorkerCount = workerCount;
                 });
             services.AddExternalTaskClient();
 
@@ -31,8 +30,7 @@ namespace Camunda.Worker
             services.TryAddTransient<IExternalTaskRouter, ExternalTaskRouter>();
             services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
             services.TryAddSingleton(new PipelineDescriptor(PipelineBuilder.RouteAsync));
-            services.AddHostedService<WorkerHostedService>();
-
+            services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
             return new CamundaWorkerBuilder(services, workerId);
         }

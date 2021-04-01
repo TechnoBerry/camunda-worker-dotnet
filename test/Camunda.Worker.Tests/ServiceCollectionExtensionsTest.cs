@@ -20,7 +20,6 @@ namespace Camunda.Worker
             var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;
 
             Assert.Equal("testWorker", options.WorkerId);
-            Assert.Equal(100, options.WorkerCount);
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IEndpointProvider));
