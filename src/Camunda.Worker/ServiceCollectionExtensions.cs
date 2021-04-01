@@ -3,23 +3,19 @@ using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker
 {
     public static class CamundaWorkerServiceCollectionExtensions
     {
-        public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services,
-            Action<CamundaWorkerOptions> configureDelegate)
+        public static ICamundaWorkerBuilder AddCamundaWorker(
+            this IServiceCollection services,
+            Action<CamundaWorkerOptions> configureDelegate
+        )
         {
             services.AddOptions<CamundaWorkerOptions>()
                 .Configure(configureDelegate);
-            services.AddExternalTaskClient()
-                .ConfigureHttpClient((provider, client) =>
-                {
-                    var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;
-                    client.BaseAddress = options.BaseUri;
-                });
+            services.AddExternalTaskClient();
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
             services.TryAddTransient<IExternalTaskSelector, ExternalTaskSelector>();

@@ -17,7 +17,6 @@ namespace Camunda.Worker
             services.AddCamundaWorker(options =>
             {
                 options.WorkerId = "testWorker";
-                options.BaseUri = new Uri("http://test/engine-rest");
             });
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&

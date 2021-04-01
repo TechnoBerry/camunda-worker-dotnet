@@ -1,5 +1,3 @@
-using System;
-
 namespace Camunda.Worker
 {
     public class CamundaWorkerOptions
@@ -19,8 +17,6 @@ namespace Camunda.Worker
             get => _workerCount;
             set => _workerCount = Guard.GreaterThanOrEqual(value, Constants.MinimumWorkerCount, nameof(WorkerCount));
         }
-
-        public Uri? BaseUri { get; set; }
 
         public int AsyncResponseTimeout
         {
