@@ -30,14 +30,6 @@ namespace Camunda.Worker.Execution
         }
 
         public async Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
-            IReadOnlyCollection<FetchAndLockRequest.Topic> topics,
-            CancellationToken cancellationToken = default
-        )
-        {
-            return await SelectAsync(cancellationToken);
-        }
-
-        public async Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
             CancellationToken cancellationToken = default
         )
         {

@@ -62,7 +62,7 @@ namespace Camunda.Worker.Execution
                     client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
                 .Returns(tcs.Task);
 
-            var resultTask = _selector.SelectAsync(new FetchAndLockRequest.Topic[0], cts.Token);
+            var resultTask = _selector.SelectAsync(cts.Token);
 
             cts.Cancel();
 
