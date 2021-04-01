@@ -14,18 +14,21 @@ namespace Camunda.Worker.Execution
         private readonly IExternalTaskClient _client;
         private readonly ITopicsProvider _topicsProvider;
         private readonly CamundaWorkerOptions _options;
+        private readonly SelectorOptions _selectorOptions;
         private readonly ILogger<ExternalTaskSelector> _logger;
 
         public ExternalTaskSelector(
             IExternalTaskClient client,
             ITopicsProvider topicsProvider,
             IOptions<CamundaWorkerOptions> options,
+            IOptions<SelectorOptions> selectorOptions,
             ILogger<ExternalTaskSelector>? logger = null
         )
         {
             _client = Guard.NotNull(client, nameof(client));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _options = Guard.NotNull(options, nameof(options)).Value;
+            _selectorOptions = Guard.NotNull(selectorOptions, nameof(selectorOptions)).Value;
             _logger = logger ?? NullLogger<ExternalTaskSelector>.Instance;
         }
 
@@ -55,8 +58,8 @@ namespace Camunda.Worker.Execution
 
             var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId)
             {
-                UsePriority = true,
-                AsyncResponseTimeout = _options.AsyncResponseTimeout,
+                UsePriority = _selectorOptions.UsePriority,
+                AsyncResponseTimeout = _selectorOptions.AsyncResponseTimeout,
                 Topics = topics
             };
 

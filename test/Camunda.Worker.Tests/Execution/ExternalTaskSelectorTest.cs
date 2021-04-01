@@ -16,7 +16,11 @@ namespace Camunda.Worker.Execution
 
         private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
         {
-            WorkerId = "testWorker",
+            WorkerId = "testWorker"
+        });
+
+        private readonly IOptions<SelectorOptions> _selectorOptions = Options.Create(new SelectorOptions
+        {
             AsyncResponseTimeout = 5_000
         });
 
@@ -30,7 +34,8 @@ namespace Camunda.Worker.Execution
             _selector = new ExternalTaskSelector(
                 _clientMock.Object,
                 _topicsProviderMock.Object,
-                _options
+                _options,
+                _selectorOptions
             );
         }
 

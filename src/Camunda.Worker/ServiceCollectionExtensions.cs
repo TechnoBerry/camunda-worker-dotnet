@@ -21,6 +21,7 @@ namespace Camunda.Worker
                 {
                     options.WorkerId = workerId;
                 });
+            services.AddOptions<SelectorOptions>();
             services.AddExternalTaskClient();
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
