@@ -17,9 +17,9 @@ namespace Camunda.Worker
 
             using var provider = services.BuildServiceProvider();
 
-            var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;
+            var workerOptions = provider.GetRequiredService<CamundaWorkerOptions>();
 
-            Assert.Equal("testWorker", options.WorkerId);
+            Assert.Equal("testWorker", workerOptions.WorkerId);
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IEndpointProvider));

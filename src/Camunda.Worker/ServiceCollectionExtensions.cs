@@ -16,11 +16,7 @@ namespace Camunda.Worker
             Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
             Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
-            services.AddOptions<CamundaWorkerOptions>()
-                .Configure(options =>
-                {
-                    options.WorkerId = workerId;
-                });
+            services.AddSingleton(new CamundaWorkerOptions(workerId));
             services.AddOptions<SelectorOptions>();
             services.AddExternalTaskClient();
 
