@@ -6,12 +6,15 @@ namespace Camunda.Worker
 {
     public class CamundaWorkerBuilder : ICamundaWorkerBuilder
     {
-        public CamundaWorkerBuilder(IServiceCollection services)
+        public CamundaWorkerBuilder(IServiceCollection services, string workerId)
         {
             Services = services;
+            WorkerId = workerId;
         }
 
         public IServiceCollection Services { get; }
+
+        public string WorkerId { get; }
 
         public ICamundaWorkerBuilder AddEndpointProvider<TProvider>()
             where TProvider : class, IEndpointProvider

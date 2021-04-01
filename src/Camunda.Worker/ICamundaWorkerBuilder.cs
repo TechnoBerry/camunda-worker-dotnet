@@ -8,6 +8,8 @@ namespace Camunda.Worker
     {
         IServiceCollection Services { get; }
 
+        string WorkerId { get; }
+
         ICamundaWorkerBuilder AddEndpointProvider<TProvider>() where TProvider : class, IEndpointProvider;
 
         ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;

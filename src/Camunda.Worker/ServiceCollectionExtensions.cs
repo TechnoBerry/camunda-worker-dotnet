@@ -34,7 +34,7 @@ namespace Camunda.Worker
             services.AddHostedService<WorkerHostedService>();
 
 
-            return new CamundaWorkerBuilder(services);
+            return new CamundaWorkerBuilder(services, workerId);
         }
     }
 }
