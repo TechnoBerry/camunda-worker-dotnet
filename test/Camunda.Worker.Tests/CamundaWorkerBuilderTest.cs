@@ -27,15 +27,6 @@ namespace Camunda.Worker
         }
 
         [Fact]
-        public void TestAddNullDescriptor()
-        {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
-
-            Assert.Throws<ArgumentNullException>(() => builder.AddHandlerDescriptor(null));
-        }
-
-        [Fact]
         public void TestAddFactoryProvider()
         {
             var services = new ServiceCollection();
