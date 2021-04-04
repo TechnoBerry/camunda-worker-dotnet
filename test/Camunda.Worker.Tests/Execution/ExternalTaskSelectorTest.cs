@@ -11,10 +11,9 @@ namespace Camunda.Worker.Execution
 {
     public class ExternalTaskSelectorTest
     {
-        private readonly Mock<IExternalTaskClient> _clientMock = new Mock<IExternalTaskClient>();
-        private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
-
-        private readonly CamundaWorkerOptions _workerOptions = new CamundaWorkerOptions("testWorker");
+        private readonly Mock<IExternalTaskClient> _clientMock = new();
+        private readonly Mock<ITopicsProvider> _topicsProviderMock = new();
+        private readonly CamundaWorkerOptions _workerOptions = new("testWorker");
 
         private readonly IOptions<SelectorOptions> _selectorOptions = Options.Create(new SelectorOptions
         {

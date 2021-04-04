@@ -10,9 +10,9 @@ namespace Camunda.Worker.Execution
 {
     public class DefaultCamundaWorkerTest
     {
-        private readonly Mock<IExternalTaskRouter> _routerMock = new Mock<IExternalTaskRouter>();
-        private readonly Mock<IExternalTaskSelector> _selectorMock = new Mock<IExternalTaskSelector>();
-        private readonly Mock<IContextFactory> _contextFactoryMock = new Mock<IContextFactory>();
+        private readonly Mock<IExternalTaskRouter> _routerMock = new();
+        private readonly Mock<IExternalTaskSelector> _selectorMock = new();
+        private readonly Mock<IContextFactory> _contextFactoryMock = new();
         private readonly DefaultCamundaWorker _worker;
 
         public DefaultCamundaWorkerTest()

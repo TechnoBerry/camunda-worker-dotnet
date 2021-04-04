@@ -12,7 +12,7 @@ namespace Camunda.Worker
 {
     public class BpmnErrorResultTest
     {
-        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new();
 
         public BpmnErrorResultTest()
         {

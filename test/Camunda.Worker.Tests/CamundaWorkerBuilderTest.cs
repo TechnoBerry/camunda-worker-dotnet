@@ -11,39 +11,32 @@ namespace Camunda.Worker
 {
     public class CamundaWorkerBuilderTest
     {
-        [Fact]
-        public void TestAddDescriptor()
+        private readonly ServiceCollection _services = new();
+        private readonly CamundaWorkerBuilder _builder;
+
+        public CamundaWorkerBuilderTest()
         {
-            var services = new ServiceCollection();
-            Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
-
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
-
-            builder.AddHandlerDescriptor(new HandlerDescriptor(FakeHandlerDelegate,
-                new HandlerMetadata(new[] {"testTopic"})));
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ImplementationInstance != null);
+            _builder = new CamundaWorkerBuilder(_services, "testWorker");
         }
 
         [Fact]
-        public void TestAddNullDescriptor()
+        public void TestAddDescriptor()
         {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
+            Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
-            Assert.Throws<ArgumentNullException>(() => builder.AddHandlerDescriptor(null));
+            _builder.AddHandlerDescriptor(new HandlerDescriptor(FakeHandlerDelegate,
+                new HandlerMetadata(new[] {"testTopic"})));
+
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
+                                           d.ImplementationInstance != null);
         }
 
         [Fact]
         public void TestAddFactoryProvider()
         {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
+            _builder.AddEndpointProvider<EndpointProvider>();
 
-            builder.AddEndpointProvider<EndpointProvider>();
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IEndpointProvider) &&
                                            d.ImplementationType == typeof(EndpointProvider));
         }
@@ -51,12 +44,9 @@ namespace Camunda.Worker
         [Fact]
         public void TestAddTopicsProvider()
         {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
+            _builder.AddTopicsProvider<TopicsProvider>();
 
-            builder.AddTopicsProvider<TopicsProvider>();
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(ITopicsProvider) &&
                                            d.ImplementationType == typeof(TopicsProvider));
         }
@@ -64,12 +54,9 @@ namespace Camunda.Worker
         [Fact]
         public void TestAddTaskSelector()
         {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
+            _builder.AddTaskSelector<ExternalTaskSelector>();
 
-            builder.AddTaskSelector<ExternalTaskSelector>();
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(IExternalTaskSelector) &&
                                            d.ImplementationType == typeof(ExternalTaskSelector));
         }
@@ -77,12 +64,9 @@ namespace Camunda.Worker
         [Fact]
         public void TestConfigurePipeline()
         {
-            var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services, "testWorker");
+            _builder.ConfigurePipeline(pipeline => { });
 
-            builder.ConfigurePipeline(pipeline => { });
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(PipelineDescriptor));
         }
 

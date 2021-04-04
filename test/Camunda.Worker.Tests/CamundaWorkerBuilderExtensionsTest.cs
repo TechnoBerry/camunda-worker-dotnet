@@ -11,7 +11,7 @@ namespace Camunda.Worker
     public class CamundaWorkerBuilderExtensionsTest
     {
         private readonly IServiceCollection _services = new ServiceCollection();
-        private readonly Mock<ICamundaWorkerBuilder> _builderMock = new Mock<ICamundaWorkerBuilder>();
+        private readonly Mock<ICamundaWorkerBuilder> _builderMock = new();
 
         public CamundaWorkerBuilderExtensionsTest()
         {

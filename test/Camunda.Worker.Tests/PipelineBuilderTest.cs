@@ -11,7 +11,7 @@ namespace Camunda.Worker
 {
     public class PipelineBuilderTest
     {
-        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new();
         private readonly IServiceCollection _services = new ServiceCollection();
 
         public PipelineBuilderTest()

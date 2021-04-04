@@ -7,9 +7,9 @@ namespace Camunda.Worker
 {
     public class ExternalTaskHandlerTest
     {
-        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new();
 
-        private readonly Mock<FakeHandler> _handlerMock = new Mock<FakeHandler>
+        private readonly Mock<FakeHandler> _handlerMock = new()
         {
             CallBase = true
         };
