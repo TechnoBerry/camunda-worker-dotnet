@@ -8,9 +8,9 @@ namespace Camunda.Worker.Execution
 {
     public class ExternalTaskRouterTest
     {
-        private readonly Mock<IServiceProvider> _providerMock = new Mock<IServiceProvider>();
-        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
-        private readonly Mock<IEndpointProvider> _endpointProviderMock = new Mock<IEndpointProvider>();
+        private readonly Mock<IServiceProvider> _providerMock = new();
+        private readonly Mock<IExternalTaskContext> _contextMock = new();
+        private readonly Mock<IEndpointProvider> _endpointProviderMock = new();
         private readonly ExternalTaskRouter _router;
 
         public ExternalTaskRouterTest()

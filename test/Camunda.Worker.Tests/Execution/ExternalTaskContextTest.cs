@@ -12,8 +12,8 @@ namespace Camunda.Worker.Execution
 {
     public class ExternalTaskContextTest
     {
-        private readonly Mock<IExternalTaskClient> _clientMock = new Mock<IExternalTaskClient>();
-        private readonly Mock<IServiceScope> _scopeMock = new Mock<IServiceScope>();
+        private readonly Mock<IExternalTaskClient> _clientMock = new();
+        private readonly Mock<IServiceScope> _scopeMock = new();
 
         public ExternalTaskContextTest()
         {

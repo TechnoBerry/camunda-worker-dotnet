@@ -12,7 +12,7 @@ namespace Camunda.Worker.Client
 {
     public class ExternalTaskCamundaTest : IDisposable
     {
-        private readonly MockHttpMessageHandler _handlerMock = new MockHttpMessageHandler();
+        private readonly MockHttpMessageHandler _handlerMock = new();
         private readonly ExternalTaskClient _client;
 
         public ExternalTaskCamundaTest()
@@ -27,7 +27,7 @@ namespace Camunda.Worker.Client
 
         public void Dispose()
         {
-            _handlerMock?.Dispose();
+            _handlerMock.Dispose();
         }
 
         [Fact]

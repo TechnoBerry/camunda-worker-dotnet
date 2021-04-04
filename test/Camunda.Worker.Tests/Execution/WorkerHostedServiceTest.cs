@@ -9,8 +9,8 @@ namespace Camunda.Worker.Execution
 {
     public class WorkerHostedServiceTest
     {
-        private readonly Mock<ICamundaWorker> _workerMock = new Mock<ICamundaWorker>();
-        private readonly Mock<IServiceProvider> _providerMock = new Mock<IServiceProvider>();
+        private readonly Mock<ICamundaWorker> _workerMock = new();
+        private readonly Mock<IServiceProvider> _providerMock = new();
 
         [Theory]
         [InlineData(1)]

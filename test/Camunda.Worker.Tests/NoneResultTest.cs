@@ -6,7 +6,7 @@ namespace Camunda.Worker
 {
     public class NoneResultTest
     {
-        private readonly Mock<IExternalTaskContext> _contextMock = new Mock<IExternalTaskContext>();
+        private readonly Mock<IExternalTaskContext> _contextMock = new();
 
         [Fact]
         public async Task TestExecuteResultAsync()
