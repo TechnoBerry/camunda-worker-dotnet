@@ -15,29 +15,24 @@ namespace Camunda.Worker.Execution
         [Theory]
         [InlineData(1)]
         [InlineData(4)]
-        public async Task TestRunWorkerOnStart(int workerCount)
+        public async Task TestRunWorkerOnStart(int numberOfWorkers)
         {
             _providerMock.Setup(provider => provider.GetService(typeof(ICamundaWorker)))
                 .Returns(_workerMock.Object);
             _workerMock.Setup(w => w.Run(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
-            var options = Options.Create(new CamundaWorkerOptions
-            {
-                WorkerCount = workerCount
-            });
-
             using (var workerHostedService =
-                new WorkerHostedService(_providerMock.Object, options))
+                new WorkerHostedService(_providerMock.Object, numberOfWorkers))
             {
                 await workerHostedService.StartAsync(CancellationToken.None);
             }
 
             _providerMock.Verify(
                 provider => provider.GetService(typeof(ICamundaWorker)),
-                Times.Exactly(options.Value.WorkerCount)
+                Times.Exactly(numberOfWorkers)
             );
-            _workerMock.Verify(w => w.Run(It.IsAny<CancellationToken>()), Times.Exactly(options.Value.WorkerCount));
+            _workerMock.Verify(w => w.Run(It.IsAny<CancellationToken>()), Times.Exactly(numberOfWorkers));
         }
     }
 }

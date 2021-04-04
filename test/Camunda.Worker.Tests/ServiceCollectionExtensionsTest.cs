@@ -1,4 +1,3 @@
-using System;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,14 +13,13 @@ namespace Camunda.Worker
         {
             var services = new ServiceCollection();
 
-            services.AddCamundaWorker(options =>
-            {
-                options.WorkerId = "testWorker";
-                options.BaseUri = new Uri("http://test/engine-rest");
-            });
+            services.AddCamundaWorker("testWorker", 100);
 
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(IConfigureOptions<CamundaWorkerOptions>));
+            using var provider = services.BuildServiceProvider();
+
+            var workerOptions = provider.GetRequiredService<CamundaWorkerOptions>();
+
+            Assert.Equal("testWorker", workerOptions.WorkerId);
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IEndpointProvider));

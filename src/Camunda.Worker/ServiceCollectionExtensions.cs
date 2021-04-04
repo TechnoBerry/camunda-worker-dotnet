@@ -1,25 +1,24 @@
-using System;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker
 {
     public static class CamundaWorkerServiceCollectionExtensions
     {
-        public static ICamundaWorkerBuilder AddCamundaWorker(this IServiceCollection services,
-            Action<CamundaWorkerOptions> configureDelegate)
+        public static ICamundaWorkerBuilder AddCamundaWorker(
+            this IServiceCollection services,
+            string workerId,
+            int numberOfWorkers = Constants.MinimumParallelExecutors
+        )
         {
-            services.AddOptions<CamundaWorkerOptions>()
-                .Configure(configureDelegate);
-            services.AddExternalTaskClient()
-                .ConfigureHttpClient((provider, client) =>
-                {
-                    var options = provider.GetRequiredService<IOptions<CamundaWorkerOptions>>().Value;
-                    client.BaseAddress = options.BaseUri;
-                });
+            Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
+            Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
+
+            services.AddSingleton(new CamundaWorkerOptions(workerId));
+            services.AddOptions<SelectorOptions>();
+            services.AddExternalTaskClient();
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
             services.TryAddTransient<IExternalTaskSelector, ExternalTaskSelector>();
@@ -28,10 +27,9 @@ namespace Camunda.Worker
             services.TryAddTransient<IExternalTaskRouter, ExternalTaskRouter>();
             services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
             services.TryAddSingleton(new PipelineDescriptor(PipelineBuilder.RouteAsync));
-            services.AddHostedService<WorkerHostedService>();
+            services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
-
-            return new CamundaWorkerBuilder(services);
+            return new CamundaWorkerBuilder(services, workerId);
         }
     }
 }

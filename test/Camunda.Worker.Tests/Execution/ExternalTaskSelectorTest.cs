@@ -14,10 +14,10 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IExternalTaskClient> _clientMock = new Mock<IExternalTaskClient>();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new Mock<ITopicsProvider>();
 
-        private readonly IOptions<CamundaWorkerOptions> _options = Options.Create(new CamundaWorkerOptions
+        private readonly CamundaWorkerOptions _workerOptions = new CamundaWorkerOptions("testWorker");
+
+        private readonly IOptions<SelectorOptions> _selectorOptions = Options.Create(new SelectorOptions
         {
-            WorkerId = "testWorker",
-            BaseUri = new Uri("http://test"),
             AsyncResponseTimeout = 5_000
         });
 
@@ -31,7 +31,8 @@ namespace Camunda.Worker.Execution
             _selector = new ExternalTaskSelector(
                 _clientMock.Object,
                 _topicsProviderMock.Object,
-                _options
+                _workerOptions,
+                _selectorOptions
             );
         }
 

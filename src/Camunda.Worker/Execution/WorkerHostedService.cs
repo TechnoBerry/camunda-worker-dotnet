@@ -4,24 +4,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution
 {
     public sealed class WorkerHostedService : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly CamundaWorkerOptions _options;
+        private readonly int _numberOfWorkers;
 
-        public WorkerHostedService(IServiceProvider serviceProvider, IOptions<CamundaWorkerOptions> options)
+        public WorkerHostedService(IServiceProvider serviceProvider, int numberOfWorkers)
         {
             _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));
-            _options = Guard.NotNull(options, nameof(options)).Value;
+            _numberOfWorkers =
+                Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            var activeTasks = Enumerable.Range(0, _options.WorkerCount)
+            var activeTasks = Enumerable.Range(0, _numberOfWorkers)
                 .Select(_ => _serviceProvider.GetRequiredService<ICamundaWorker>())
                 .Select(worker => worker.Run(stoppingToken))
                 .ToList();

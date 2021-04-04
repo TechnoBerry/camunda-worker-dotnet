@@ -17,7 +17,7 @@ namespace Camunda.Worker
             var services = new ServiceCollection();
             Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
-            var builder = new CamundaWorkerBuilder(services);
+            var builder = new CamundaWorkerBuilder(services, "testWorker");
 
             builder.AddHandlerDescriptor(new HandlerDescriptor(FakeHandlerDelegate,
                 new HandlerMetadata(new[] {"testTopic"})));
@@ -30,7 +30,7 @@ namespace Camunda.Worker
         public void TestAddNullDescriptor()
         {
             var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
+            var builder = new CamundaWorkerBuilder(services, "testWorker");
 
             Assert.Throws<ArgumentNullException>(() => builder.AddHandlerDescriptor(null));
         }
@@ -39,7 +39,7 @@ namespace Camunda.Worker
         public void TestAddFactoryProvider()
         {
             var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
+            var builder = new CamundaWorkerBuilder(services, "testWorker");
 
             builder.AddEndpointProvider<EndpointProvider>();
 
@@ -52,7 +52,7 @@ namespace Camunda.Worker
         public void TestAddTopicsProvider()
         {
             var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
+            var builder = new CamundaWorkerBuilder(services, "testWorker");
 
             builder.AddTopicsProvider<TopicsProvider>();
 
@@ -65,7 +65,7 @@ namespace Camunda.Worker
         public void TestAddTaskSelector()
         {
             var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
+            var builder = new CamundaWorkerBuilder(services, "testWorker");
 
             builder.AddTaskSelector<ExternalTaskSelector>();
 
@@ -78,7 +78,7 @@ namespace Camunda.Worker
         public void TestConfigurePipeline()
         {
             var services = new ServiceCollection();
-            var builder = new CamundaWorkerBuilder(services);
+            var builder = new CamundaWorkerBuilder(services, "testWorker");
 
             builder.ConfigurePipeline(pipeline => { });
 

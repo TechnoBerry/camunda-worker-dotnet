@@ -1,5 +1,6 @@
 using System;
 using Camunda.Worker;
+using Camunda.Worker.Client;
 using Camunda.Worker.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SampleCamundaWorker.Handlers;
 
 namespace SampleCamundaWorker
@@ -22,12 +24,13 @@ namespace SampleCamundaWorker
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCamundaWorker(options =>
+            services.AddExternalTaskClient()
+                .ConfigureHttpClient((provider, client) =>
                 {
-                    options.WorkerId = "sampleWorker";
-                    options.WorkerCount = 1;
-                    options.BaseUri = new Uri("http://localhost:8080/engine-rest");
-                })
+                    client.BaseAddress = new Uri("http://localhost:8080/engine-rest");
+                });
+
+            services.AddCamundaWorker("sampleWorker")
                 .AddHandler<SayHelloHandler>()
                 .AddHandler<SayHelloGuestHandler>()
                 .ConfigurePipeline(pipeline =>
