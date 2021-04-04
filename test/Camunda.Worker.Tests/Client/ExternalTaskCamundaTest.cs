@@ -144,15 +144,15 @@ namespace Camunda.Worker.Client
         public async Task TestThrowsHttpRequestException(Func<IExternalTaskClient, Task> action)
         {
             _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/fetchAndLock")
-                .Respond(HttpStatusCode.InternalServerError);
+                .Respond(HttpStatusCode.InternalServerError, new StringContent(""));
             _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/extendLock")
-                .Respond(HttpStatusCode.InternalServerError);
+                .Respond(HttpStatusCode.InternalServerError, new StringContent(""));
             _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/complete")
-                .Respond(HttpStatusCode.InternalServerError);
+                .Respond(HttpStatusCode.InternalServerError, new StringContent(""));
             _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/failure")
-                .Respond(HttpStatusCode.InternalServerError);
+                .Respond(HttpStatusCode.InternalServerError, new StringContent(""));
             _handlerMock.When(HttpMethod.Post, "http://test/api/external-task/taskId/bpmnError")
-                .Respond(HttpStatusCode.InternalServerError);
+                .Respond(HttpStatusCode.InternalServerError, new StringContent(""));
 
             await Assert.ThrowsAsync<HttpRequestException>(() => action(_client));
         }
