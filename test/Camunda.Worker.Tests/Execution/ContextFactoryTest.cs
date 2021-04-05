@@ -1,4 +1,5 @@
 using System;
+using Bogus;
 using Moq;
 using Xunit;
 
@@ -16,12 +17,22 @@ namespace Camunda.Worker.Execution
         [Fact]
         public void TestCreate()
         {
-            var task = new ExternalTask("id", "worker", "topic");
+            // Arrange
+            var externalTask = new Faker<ExternalTask>()
+                .CustomInstantiator(faker => new ExternalTask(
+                    faker.Random.Guid().ToString(),
+                    faker.Random.Word(),
+                    faker.Random.Word())
+                )
+                .Generate();
+            var serviceProviderMock = new Mock<IServiceProvider>();
 
-            var result = _factory.Create(task, new Mock<IServiceProvider>().Object);
+            // Act
+            var result = _factory.Create(externalTask, serviceProviderMock.Object);
 
-            Assert.Same(task, result.Task);
-            Assert.NotNull(result.ServiceProvider);
+            // Assert
+            Assert.Same(externalTask, result.Task);
+            Assert.StrictEqual(serviceProviderMock.Object, result.ServiceProvider);
         }
     }
 }
