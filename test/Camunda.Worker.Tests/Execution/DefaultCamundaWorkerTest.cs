@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Bogus;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -37,55 +39,47 @@ namespace Camunda.Worker.Execution
             _serviceProvider.Dispose();
         }
 
-        [Fact]
-        public async Task TestRunWithoutTasks()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(10)]
+        public async Task TestRun(int numberOfExternalTasks)
         {
+            // Arrange
+            var externalTasks = new Faker<ExternalTask>()
+                .CustomInstantiator(faker => new ExternalTask(
+                    faker.Random.Guid().ToString(),
+                    faker.Random.Word(),
+                    faker.Random.Word())
+                )
+                .GenerateLazy(numberOfExternalTasks)
+                .ToList();
+
             var cts = new CancellationTokenSource();
 
-            ConfigureSelector(cts, new List<ExternalTask>());
-
-            await _worker.Run(cts.Token);
-
-            _routerMock.VerifyNoOtherCalls();
-            _selectorMock.VerifyAll();
-        }
-
-        [Fact]
-        public async Task TestRunWithTask()
-        {
-            var cts = new CancellationTokenSource();
-
-            ConfigureSelector(cts, new List<ExternalTask>
-            {
-                new ExternalTask("test", "test", "test")
-            });
+            _selectorMock
+                .Setup(selector => selector.SelectAsync(It.IsAny<CancellationToken>()))
+                .Callback(cts.Cancel)
+                .ReturnsAsync(externalTasks)
+                .Verifiable();
 
             _routerMock
                 .Setup(executor => executor.RouteAsync(It.IsAny<IExternalTaskContext>()))
-                .Callback(cts.Cancel)
                 .Returns(Task.CompletedTask);
 
+            // Act
             await _worker.Run(cts.Token);
 
+            // Assert
+            _selectorMock.VerifyAll();
             _contextFactoryMock.Verify(
                 factory => factory.Create(It.IsAny<ExternalTask>(), It.IsAny<IServiceProvider>()),
-                Times.Once()
+                Times.Exactly(numberOfExternalTasks)
             );
-            _selectorMock.VerifyAll();
             _routerMock.Verify(
                 executor => executor.RouteAsync(It.IsAny<IExternalTaskContext>()),
-                Times.Once()
+                Times.Exactly(numberOfExternalTasks)
             );
-        }
-
-        private void ConfigureSelector(CancellationTokenSource cts, IReadOnlyCollection<ExternalTask> externalTasks)
-        {
-            _selectorMock
-                .Setup(selector => selector.SelectAsync(
-                    It.IsAny<CancellationToken>()
-                ))
-                .Callback(cts.Cancel)
-                .ReturnsAsync(externalTasks);
         }
     }
 }
