@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Xunit;
 
 namespace Camunda.Worker.Execution
@@ -10,18 +10,15 @@ namespace Camunda.Worker.Execution
 
         public ContextFactoryTest()
         {
-            IServiceProvider provider = new ServiceCollection()
-                .BuildServiceProvider();
-
-            _factory = new ContextFactory(provider);
+            _factory = new ContextFactory();
         }
 
         [Fact]
-        public void TestMakeContext()
+        public void TestCreate()
         {
             var task = new ExternalTask("id", "worker", "topic");
 
-            var result = _factory.MakeContext(task);
+            var result = _factory.Create(task, new Mock<IServiceProvider>().Object);
 
             Assert.Same(task, result.Task);
             Assert.NotNull(result.ServiceProvider);

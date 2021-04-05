@@ -8,24 +8,20 @@ namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskContext : IExternalTaskContext
     {
-        private bool _disposed;
-        private readonly IServiceScope _scope;
-
-        public ExternalTaskContext(ExternalTask task, IServiceScope scope)
+        public ExternalTaskContext(ExternalTask task, IServiceProvider provider)
         {
             Task = Guard.NotNull(task, nameof(task));
-            _scope = Guard.NotNull(scope, nameof(scope));
+            ServiceProvider = Guard.NotNull(provider, nameof(provider));
         }
 
         public ExternalTask Task { get; }
 
-        public IServiceProvider ServiceProvider => _scope.ServiceProvider;
+        public IServiceProvider ServiceProvider { get; }
 
         public bool Completed { get; private set; }
 
         public async Task ExtendLockAsync(int newDuration)
         {
-            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
@@ -36,7 +32,6 @@ namespace Camunda.Worker.Execution
         public async Task CompleteAsync(IDictionary<string, Variable>? variables = null,
             IDictionary<string, Variable>? localVariables = null)
         {
-            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
@@ -54,7 +49,6 @@ namespace Camunda.Worker.Execution
             int? retries = default,
             int? retryTimeout = default)
         {
-            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
@@ -73,7 +67,6 @@ namespace Camunda.Worker.Execution
         public async Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
             IDictionary<string, Variable>? variables = null)
         {
-            ThrowIfDisposed();
             ThrowIfCompleted();
 
             var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
@@ -86,32 +79,12 @@ namespace Camunda.Worker.Execution
             Completed = true;
         }
 
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
-        }
-
         private void ThrowIfCompleted()
         {
             if (Completed)
             {
                 throw new CamundaWorkerException("Unable to complete already completed task");
             }
-        }
-
-
-        public void Dispose()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _scope?.Dispose();
-            _disposed = true;
         }
     }
 }

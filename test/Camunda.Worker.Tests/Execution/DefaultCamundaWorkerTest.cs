@@ -2,30 +2,39 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class DefaultCamundaWorkerTest
+    public class DefaultCamundaWorkerTest : IDisposable
     {
         private readonly Mock<IExternalTaskRouter> _routerMock = new();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new();
         private readonly Mock<IContextFactory> _contextFactoryMock = new();
+        private readonly ServiceProvider _serviceProvider;
         private readonly DefaultCamundaWorker _worker;
 
         public DefaultCamundaWorkerTest()
         {
+            _serviceProvider = new ServiceCollection().BuildServiceProvider();
+
             var contextMock = new Mock<IExternalTaskContext>();
-            _contextFactoryMock.Setup(factory => factory.MakeContext(It.IsAny<ExternalTask>()))
+            _contextFactoryMock.Setup(factory => factory.Create(It.IsAny<ExternalTask>(), It.IsAny<IServiceProvider>()))
                 .Returns(contextMock.Object);
 
             _worker = new DefaultCamundaWorker(
                 _selectorMock.Object,
                 _contextFactoryMock.Object,
+                _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
                 new PipelineDescriptor(_routerMock.Object.RouteAsync)
             );
+        }
+
+        public void Dispose()
+        {
+            _serviceProvider.Dispose();
         }
 
         [Fact]
@@ -59,7 +68,7 @@ namespace Camunda.Worker.Execution
             await _worker.Run(cts.Token);
 
             _contextFactoryMock.Verify(
-                factory => factory.MakeContext(It.IsAny<ExternalTask>()),
+                factory => factory.Create(It.IsAny<ExternalTask>(), It.IsAny<IServiceProvider>()),
                 Times.Once()
             );
             _selectorMock.VerifyAll();
