@@ -21,7 +21,7 @@ namespace Camunda.Worker
         {
             if (value < minValue)
             {
-                throw new ArgumentException($"'{parameterName}' must be greater than or equal to {minValue}");
+                throw new ArgumentException($"Must be greater than or equal to {minValue}", parameterName);
             }
 
             return value;
