@@ -1,7 +1,9 @@
+using System;
+
 namespace Camunda.Worker.Execution
 {
     public interface IContextFactory
     {
-        IExternalTaskContext MakeContext(ExternalTask externalTask);
+        IExternalTaskContext Create(ExternalTask externalTask, IServiceProvider serviceProvider);
     }
 }
