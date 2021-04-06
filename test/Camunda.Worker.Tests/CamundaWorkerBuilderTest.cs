@@ -20,15 +20,14 @@ namespace Camunda.Worker
         }
 
         [Fact]
-        public void TestAddDescriptor()
+        public void TestAddHandler()
         {
             Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
-            _builder.AddHandlerDescriptor(new HandlerDescriptor(FakeHandlerDelegate,
-                new HandlerMetadata(new[] {"testTopic"})));
+            _builder.AddHandler(FakeHandlerDelegate, new HandlerMetadata(new[] {"testTopic"}));
 
             Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ImplementationInstance != null);
+                                            d.ImplementationInstance != null);
         }
 
         [Fact]

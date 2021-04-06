@@ -35,9 +35,13 @@ namespace Camunda.Worker
             return this;
         }
 
-        public ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor)
+        public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
         {
-            Guard.NotNull(descriptor, nameof(descriptor));
+            Guard.NotNull(handler, nameof(handler));
+            Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
+
+            var descriptor = new HandlerDescriptor(handler, handlerMetadata);
+
             Services.AddSingleton(descriptor);
             return this;
         }

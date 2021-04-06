@@ -16,7 +16,7 @@ namespace Camunda.Worker
 
         ICamundaWorkerBuilder AddTaskSelector<TSelector>() where TSelector : class, IExternalTaskSelector;
 
-        ICamundaWorkerBuilder AddHandlerDescriptor(HandlerDescriptor descriptor);
+        ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
 
         ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
     }
