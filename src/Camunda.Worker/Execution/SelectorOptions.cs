@@ -2,7 +2,14 @@ namespace Camunda.Worker.Execution
 {
     public class SelectorOptions
     {
+        private int _maxTasks = 1;
         private int _asyncResponseTimeout = 10_000;
+
+        public int MaxTasks
+        {
+            get => _maxTasks;
+            set => _maxTasks = Guard.GreaterThanOrEqual(value, 1, nameof(MaxTasks));
+        }
 
         public int AsyncResponseTimeout
         {

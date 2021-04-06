@@ -56,7 +56,7 @@ namespace Camunda.Worker.Execution
         {
             var topics = _topicsProvider.GetTopics();
 
-            var fetchAndLockRequest = new FetchAndLockRequest(_workerOptions.WorkerId)
+            var fetchAndLockRequest = new FetchAndLockRequest(_workerOptions.WorkerId, _selectorOptions.MaxTasks)
             {
                 UsePriority = _selectorOptions.UsePriority,
                 AsyncResponseTimeout = _selectorOptions.AsyncResponseTimeout,
