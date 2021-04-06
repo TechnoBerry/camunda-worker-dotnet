@@ -43,7 +43,7 @@ namespace Camunda.Worker
             Guard.NotNull(metadata, nameof(metadata));
 
             var services = builder.Services;
-            services.AddScoped<T>();
+            services.AddTransient<T>();
 
             return builder.AddHandler(HandlerDelegate<T>, metadata);
         }

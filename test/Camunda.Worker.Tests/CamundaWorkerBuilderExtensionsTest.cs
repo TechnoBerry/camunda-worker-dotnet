@@ -36,7 +36,7 @@ namespace Camunda.Worker
             _builderMock.Verify(
                 builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()),
                 Times.Once());
-            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Scoped &&
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
                                             d.ServiceType == typeof(HandlerWithTopics));
 
             var metadata = Assert.Single(savedMetadata);
