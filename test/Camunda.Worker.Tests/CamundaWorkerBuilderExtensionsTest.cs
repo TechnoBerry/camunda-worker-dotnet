@@ -21,34 +21,39 @@ namespace Camunda.Worker
         [Fact]
         public void TestAddHandlerWithAttributes()
         {
-            var savedDescriptors = new List<HandlerDescriptor>();
+            // Arrange
+            var savedMetadata = new List<HandlerMetadata>();
 
             _builderMock
-                .Setup(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()))
-                .Callback((HandlerDescriptor descriptor) => savedDescriptors.Add(descriptor))
+                .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
+                .Callback((ExternalTaskDelegate _, HandlerMetadata metadata) => savedMetadata.Add(metadata))
                 .Returns(_builderMock.Object);
 
+            // Act
             _builderMock.Object.AddHandler<HandlerWithTopics>();
 
-            _builderMock.Verify(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()),
+            // Assert
+            _builderMock.Verify(
+                builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()),
                 Times.Once());
             Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Scoped &&
                                             d.ServiceType == typeof(HandlerWithTopics));
 
-            var handlerDescriptor = Assert.Single(savedDescriptors);
-            Assert.NotNull(handlerDescriptor);
-            Assert.NotNull(handlerDescriptor.Metadata.Variables);
-            var variableName = Assert.Single(handlerDescriptor.Metadata.Variables);
+            var metadata = Assert.Single(savedMetadata);
+            Assert.NotNull(metadata);
+            var variableName = Assert.Single(metadata.Variables);
             Assert.Equal("testVariable", variableName);
         }
 
         [Fact]
         public void TestAddHandlerWithoutTopic()
         {
+            // Arrange
             _builderMock
-                .Setup(builder => builder.AddHandlerDescriptor(It.IsAny<HandlerDescriptor>()))
+                .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
                 .Returns(_builderMock.Object);
 
+            // Act & Assert
             Assert.Throws<Exception>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
         }
 

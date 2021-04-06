@@ -54,18 +54,5 @@ namespace Camunda.Worker
             var handler = context.ServiceProvider.GetRequiredService<T>();
             return handler.HandleAsync(context);
         }
-
-        public static ICamundaWorkerBuilder AddHandler(this ICamundaWorkerBuilder builder,
-            ExternalTaskDelegate handlerDelegate,
-            HandlerMetadata metadata)
-        {
-            Guard.NotNull(builder, nameof(builder));
-            Guard.NotNull(handlerDelegate, nameof(handlerDelegate));
-            Guard.NotNull(metadata, nameof(metadata));
-
-            var handlerDescriptor = new HandlerDescriptor(handlerDelegate, metadata);
-
-            return builder.AddHandlerDescriptor(handlerDescriptor);
-        }
     }
 }
