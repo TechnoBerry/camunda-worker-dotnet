@@ -22,7 +22,7 @@ namespace Camunda.Worker.Execution
             // Arrange
             var resultMock = new Mock<IExecutionResult>();
 
-            _handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<ExternalTask>()))
+            _handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<ExternalTask>(), default))
                 .ReturnsAsync(resultMock.Object);
 
             // Act
@@ -36,7 +36,7 @@ namespace Camunda.Worker.Execution
         public async Task TestReportFailureIfHandlerFails()
         {
             // Arrange
-            _handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<ExternalTask>()))
+            _handlerMock.Setup(handler => handler.HandleAsync(It.IsAny<ExternalTask>(), default))
                 .ThrowsAsync(new Exception());
 
             // Act

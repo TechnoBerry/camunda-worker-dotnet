@@ -19,7 +19,7 @@ namespace Camunda.Worker.Execution
             IExecutionResult executionResult;
             try
             {
-                executionResult = await _handler.HandleAsync(_context.Task);
+                executionResult = await _handler.HandleAsync(_context.Task, default);
             }
             catch (Exception e)
             {

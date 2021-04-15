@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker;
 
@@ -8,7 +9,7 @@ namespace SampleCamundaWorker.Handlers
     [HandlerVariables("USERNAME")]
     public class SayHelloHandler : IExternalTaskHandler
     {
-        public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+        public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken)
         {
             if (!externalTask.Variables.TryGetValue("USERNAME", out var usernameVariable))
             {
