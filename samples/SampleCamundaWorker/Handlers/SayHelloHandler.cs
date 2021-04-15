@@ -6,9 +6,9 @@ namespace SampleCamundaWorker.Handlers
 {
     [HandlerTopics("sayHello", LockDuration = 10000)]
     [HandlerVariables("USERNAME")]
-    public class SayHelloHandler : ExternalTaskHandler
+    public class SayHelloHandler : IExternalTaskHandler
     {
-        public override async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+        public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
         {
             if (!externalTask.Variables.TryGetValue("USERNAME", out var usernameVariable))
             {

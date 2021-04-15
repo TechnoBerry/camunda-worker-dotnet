@@ -59,9 +59,9 @@ namespace Camunda.Worker
 
         [HandlerTopics("testTopic_1", "testTopic_1")]
         [HandlerVariables("testVariable", LocalVariables = true)]
-        private class HandlerWithTopics : ExternalTaskHandler
+        private class HandlerWithTopics : IExternalTaskHandler
         {
-            public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+            public Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult
                 {
@@ -70,9 +70,9 @@ namespace Camunda.Worker
             }
         }
 
-        private class HandlerWithoutTopics : ExternalTaskHandler
+        private class HandlerWithoutTopics : IExternalTaskHandler
         {
-            public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+            public Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult
                 {

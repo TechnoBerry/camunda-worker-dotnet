@@ -5,9 +5,9 @@ using Camunda.Worker;
 namespace SampleCamundaWorker.Handlers
 {
     [HandlerTopics("sayHelloGuest")]
-    public class SayHelloGuestHandler : ExternalTaskHandler
+    public class SayHelloGuestHandler : IExternalTaskHandler
     {
-        public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+        public Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
         {
             return Task.FromResult<IExecutionResult>(new CompleteResult
             {

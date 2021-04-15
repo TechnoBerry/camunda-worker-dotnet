@@ -8,9 +8,9 @@
 ```csharp
 [HandlerTopics("sayHello", LockDuration = 10_000)]
 [HandlerVariables("USERNAME")]
-public class SayHelloHandler : ExternalTaskHandler
+public class SayHelloHandler : IExternalTaskHandler
 {
-    public override async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+    public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
     {
         var username = externalTask.Variables["USERNAME"].Value;
 
