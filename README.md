@@ -10,7 +10,7 @@
 [HandlerVariables("USERNAME")]
 public class SayHelloHandler : IExternalTaskHandler
 {
-    public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+    public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken)
     {
         var username = externalTask.Variables["USERNAME"].Value;
 
