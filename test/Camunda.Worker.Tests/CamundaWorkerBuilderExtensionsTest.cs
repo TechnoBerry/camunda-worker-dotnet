@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,9 +60,9 @@ namespace Camunda.Worker
 
         [HandlerTopics("testTopic_1", "testTopic_1")]
         [HandlerVariables("testVariable", LocalVariables = true)]
-        private class HandlerWithTopics : ExternalTaskHandler
+        private class HandlerWithTopics : IExternalTaskHandler
         {
-            public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+            public Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult
                 {
@@ -70,9 +71,9 @@ namespace Camunda.Worker
             }
         }
 
-        private class HandlerWithoutTopics : ExternalTaskHandler
+        private class HandlerWithoutTopics : IExternalTaskHandler
         {
-            public override Task<IExecutionResult> HandleAsync(ExternalTask externalTask)
+            public Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken)
             {
                 return Task.FromResult<IExecutionResult>(new CompleteResult
                 {

@@ -52,7 +52,8 @@ namespace Camunda.Worker
             where T : class, IExternalTaskHandler
         {
             var handler = context.ServiceProvider.GetRequiredService<T>();
-            return handler.HandleAsync(context);
+            var invoker = new HandlerInvoker(handler, context);
+            return invoker.InvokeAsync();
         }
     }
 }
