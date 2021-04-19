@@ -87,7 +87,6 @@ namespace Camunda.Worker
                 Times.Once()
             );
             _contextMock.Verify(failureExpression, Times.Once());
-            _contextMock.VerifyGet(c => c.Task, Times.Once());
             _contextMock.VerifyGet(c => c.ServiceProvider, Times.Once());
             _contextMock.VerifyNoOtherCalls();
         }
