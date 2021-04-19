@@ -11,8 +11,13 @@ namespace Camunda.Worker
         [Fact]
         public async Task TestExecuteResultAsync()
         {
+            // Arrange
             var result = new NoneResult();
+
+            // Act
             await result.ExecuteResultAsync(_contextMock.Object);
+
+            // Assert
             _contextMock.VerifyNoOtherCalls();
         }
     }

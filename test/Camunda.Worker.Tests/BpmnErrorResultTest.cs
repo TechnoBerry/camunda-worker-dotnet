@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -23,28 +21,28 @@ namespace Camunda.Worker
         [Fact]
         public async Task TestExecuteResultAsync()
         {
+            // Arrange
             _contextMock
                 .Setup(context => context.ReportBpmnErrorAsync(
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
                 ))
-                .Returns(Task.CompletedTask);
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             var result = new BpmnErrorResult("TEST_CODE", "Test message");
 
+            // Act
             await result.ExecuteResultAsync(_contextMock.Object);
 
-            _contextMock.Verify(
-                context => context.ReportBpmnErrorAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
-                ),
-                Times.Once()
-            );
+            // Assert
+            _contextMock.Verify();
             _contextMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task TestExecuteResultWithFailedCompletion()
         {
+            // Arrange
             _contextMock
                 .Setup(context => context.ReportBpmnErrorAsync(
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
@@ -53,30 +51,26 @@ namespace Camunda.Worker
                 {
                     Type = "an error type",
                     Message = "an error message"
-                }, HttpStatusCode.InternalServerError));
-
-            Expression<Func<IExternalTaskContext, Task>> failureExpression = context => context.ReportFailureAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<int?>(),
-                It.IsAny<int?>()
-            );
+                }, HttpStatusCode.InternalServerError))
+                .Verifiable();
 
             _contextMock
-                .Setup(failureExpression)
-                .Returns(Task.CompletedTask);
+                .Setup(context => context.ReportFailureAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<int?>(),
+                    It.IsAny<int?>()
+                ))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             var result = new BpmnErrorResult("TEST_CODE", "Test message");
 
+            // Act
             await result.ExecuteResultAsync(_contextMock.Object);
 
-            _contextMock.Verify(
-                context => context.ReportBpmnErrorAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
-                ),
-                Times.Once()
-            );
-            _contextMock.Verify(failureExpression, Times.Once());
+            // Assert
+            _contextMock.Verify();
             _contextMock.VerifyGet(c => c.ServiceProvider, Times.Once());
             _contextMock.VerifyNoOtherCalls();
         }

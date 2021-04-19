@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Moq;
 using Xunit;
@@ -13,22 +12,24 @@ namespace Camunda.Worker
         [Fact]
         public async Task TestExecuteResultAsync()
         {
-            Expression<Func<IExternalTaskContext, Task>> expression = context => context.ReportFailureAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<int?>(),
-                It.IsAny<int?>()
-            );
-
+            // Arrange
             _contextMock
-                .Setup(expression)
-                .Returns(Task.CompletedTask);
+                .Setup(context => context.ReportFailureAsync(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<int?>(),
+                    It.IsAny<int?>()
+                ))
+                .Returns(Task.CompletedTask)
+                .Verifiable();
 
             var result = new FailureResult(new Exception("Message"));
 
+            // Act
             await result.ExecuteResultAsync(_contextMock.Object);
 
-            _contextMock.Verify(expression, Times.Once());
+            // Assert
+            _contextMock.Verify();
             _contextMock.VerifyNoOtherCalls();
         }
     }
