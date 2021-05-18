@@ -10,12 +10,12 @@ using Xunit;
 
 namespace Camunda.Worker.Client
 {
-    public class ExternalTaskCamundaTest : IDisposable
+    public class ExternalTaskClientTest : IDisposable
     {
         private readonly MockHttpMessageHandler _handlerMock = new();
         private readonly ExternalTaskClient _client;
 
-        public ExternalTaskCamundaTest()
+        public ExternalTaskClientTest()
         {
             _client = new ExternalTaskClient(
                 new HttpClient(_handlerMock)
