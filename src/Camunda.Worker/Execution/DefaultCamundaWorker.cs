@@ -56,8 +56,21 @@ namespace Camunda.Worker.Execution
             }
             catch (Exception e)
             {
-                _logger.LogWarning(e, "Failed execution of task {Id}", externalTask.Id);
+                Log.FailedExecution(_logger, externalTask.Id, e);
             }
+        }
+
+        private static class Log
+        {
+            private static readonly Action<ILogger, string, Exception?> _failedExecution =
+                LoggerMessage.Define<string>(
+                    LogLevel.Warning,
+                    new EventId(0),
+                    "Failed execution of task {Id}"
+                );
+
+            public static void FailedExecution(ILogger logger, string externalTaskId, Exception e) =>
+                _failedExecution(logger, externalTaskId, e);
         }
     }
 }

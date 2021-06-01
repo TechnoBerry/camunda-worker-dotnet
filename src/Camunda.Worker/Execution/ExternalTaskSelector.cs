@@ -38,15 +38,15 @@ namespace Camunda.Worker.Execution
         {
             try
             {
-                _logger.LogDebug("Waiting for external task");
+                Log.Waiting(_logger);
                 var fetchAndLockRequest = MakeRequestBody();
                 var externalTasks = await PerformSelection(fetchAndLockRequest, cancellationToken);
-                _logger.LogDebug("Locked {Count} external tasks", externalTasks.Count);
+                Log.Locked(_logger, externalTasks.Count);
                 return externalTasks;
             }
             catch (Exception e) when (!cancellationToken.IsCancellationRequested)
             {
-                _logger.LogWarning(e, "Failed receiving of external tasks. Reason: \"{Reason}\"", e.Message);
+                Log.Failed(_logger, e);
                 await DelayOnFailure(cancellationToken);
                 return Array.Empty<ExternalTask>();
             }
@@ -77,5 +77,35 @@ namespace Camunda.Worker.Execution
 
         private static Task DelayOnFailure(CancellationToken cancellationToken) =>
             Task.Delay(10_000, cancellationToken);
+
+        private static class Log
+        {
+            private static readonly Action<ILogger, Exception?> _waiting =
+                LoggerMessage.Define(
+                    LogLevel.Debug,
+                    new EventId(0),
+                    "Waiting for external task"
+                );
+
+            private static readonly Action<ILogger, int, Exception?> _locked =
+                LoggerMessage.Define<int>(
+                    LogLevel.Debug,
+                    new EventId(0),
+                    "Locked {Count} external tasks"
+                );
+
+            private static readonly Action<ILogger, string, Exception?> _failed =
+                LoggerMessage.Define<string>(
+                    LogLevel.Warning,
+                    new EventId(0),
+                    "Failed receiving of external tasks. Reason: \"{Reason}\""
+                );
+
+            public static void Waiting(ILogger logger) => _waiting(logger, null);
+
+            public static void Locked(ILogger logger, int count) => _locked(logger, count, null);
+
+            public static void Failed(ILogger logger, Exception e) => _failed(logger, e.Message, e);
+        }
     }
 }
