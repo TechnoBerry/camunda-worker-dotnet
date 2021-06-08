@@ -43,7 +43,7 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(IContextFactory));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(PipelineDescriptor));
+                                           d.ServiceType == typeof(WorkerHandlerDescriptor));
         }
     }
 }

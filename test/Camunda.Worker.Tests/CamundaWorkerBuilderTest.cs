@@ -66,7 +66,7 @@ namespace Camunda.Worker
             _builder.ConfigurePipeline(pipeline => { });
 
             Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(PipelineDescriptor));
+                                           d.ServiceType == typeof(WorkerHandlerDescriptor));
         }
 
         private class EndpointProvider : IEndpointProvider

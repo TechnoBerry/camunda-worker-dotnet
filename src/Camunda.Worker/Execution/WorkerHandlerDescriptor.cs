@@ -1,8 +1,8 @@
 namespace Camunda.Worker.Execution
 {
-    public class PipelineDescriptor
+    public class WorkerHandlerDescriptor
     {
-        public PipelineDescriptor(ExternalTaskDelegate externalTaskDelegate)
+        public WorkerHandlerDescriptor(ExternalTaskDelegate externalTaskDelegate)
         {
             ExternalTaskDelegate = Guard.NotNull(externalTaskDelegate, nameof(externalTaskDelegate));
         }

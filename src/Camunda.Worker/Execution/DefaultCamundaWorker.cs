@@ -14,21 +14,21 @@ namespace Camunda.Worker.Execution
         private readonly IExternalTaskSelector _selector;
         private readonly IContextFactory _contextFactory;
         private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly PipelineDescriptor _pipelineDescriptor;
+        private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(
             IExternalTaskSelector selector,
             IContextFactory contextFactory,
             IServiceScopeFactory serviceScopeFactory,
-            PipelineDescriptor pipelineDescriptor,
+            WorkerHandlerDescriptor workerHandlerDescriptor,
             ILogger<DefaultCamundaWorker>? logger = null
         )
         {
             _selector = Guard.NotNull(selector, nameof(selector));
             _contextFactory = Guard.NotNull(contextFactory, nameof(contextFactory));
             _serviceScopeFactory = Guard.NotNull(serviceScopeFactory, nameof(serviceScopeFactory));
-            _pipelineDescriptor = Guard.NotNull(pipelineDescriptor, nameof(pipelineDescriptor));
+            _workerHandlerDescriptor = Guard.NotNull(workerHandlerDescriptor, nameof(workerHandlerDescriptor));
             _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
         }
 
@@ -53,7 +53,7 @@ namespace Camunda.Worker.Execution
 
             try
             {
-                await _pipelineDescriptor.ExternalTaskDelegate(context);
+                await _workerHandlerDescriptor.ExternalTaskDelegate(context);
             }
             catch (Exception e)
             {

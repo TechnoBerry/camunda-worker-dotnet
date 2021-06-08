@@ -30,7 +30,7 @@ namespace Camunda.Worker.Execution
                 _selectorMock.Object,
                 _contextFactoryMock.Object,
                 _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
-                new PipelineDescriptor(_routerMock.Object.RouteAsync)
+                new WorkerHandlerDescriptor(_routerMock.Object.RouteAsync)
             );
         }
 
