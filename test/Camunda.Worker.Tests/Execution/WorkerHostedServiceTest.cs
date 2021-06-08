@@ -19,7 +19,7 @@ namespace Camunda.Worker.Execution
         {
             _providerMock.Setup(provider => provider.GetService(typeof(ICamundaWorker)))
                 .Returns(_workerMock.Object);
-            _workerMock.Setup(w => w.Run(It.IsAny<CancellationToken>()))
+            _workerMock.Setup(w => w.RunAsync(It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             using (var workerHostedService =
@@ -32,7 +32,7 @@ namespace Camunda.Worker.Execution
                 provider => provider.GetService(typeof(ICamundaWorker)),
                 Times.Exactly(numberOfWorkers)
             );
-            _workerMock.Verify(w => w.Run(It.IsAny<CancellationToken>()), Times.Exactly(numberOfWorkers));
+            _workerMock.Verify(w => w.RunAsync(It.IsAny<CancellationToken>()), Times.Exactly(numberOfWorkers));
         }
     }
 }

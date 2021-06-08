@@ -32,7 +32,7 @@ namespace Camunda.Worker.Execution
             _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
         }
 
-        public async Task Run(CancellationToken cancellationToken)
+        public async Task RunAsync(CancellationToken cancellationToken)
         {
             while (!cancellationToken.IsCancellationRequested)
             {

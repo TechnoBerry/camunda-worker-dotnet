@@ -68,7 +68,7 @@ namespace Camunda.Worker.Execution
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _worker.Run(cts.Token);
+            await _worker.RunAsync(cts.Token);
 
             // Assert
             _selectorMock.VerifyAll();

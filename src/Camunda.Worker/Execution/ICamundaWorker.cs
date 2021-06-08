@@ -5,6 +5,6 @@ namespace Camunda.Worker.Execution
 {
     public interface ICamundaWorker
     {
-        Task Run(CancellationToken cancellationToken);
+        Task RunAsync(CancellationToken cancellationToken);
     }
 }

@@ -23,7 +23,7 @@ namespace Camunda.Worker.Execution
         {
             var activeTasks = Enumerable.Range(0, _numberOfWorkers)
                 .Select(_ => _serviceProvider.GetRequiredService<ICamundaWorker>())
-                .Select(worker => worker.Run(stoppingToken))
+                .Select(worker => worker.RunAsync(stoppingToken))
                 .ToList();
             return Task.WhenAll(activeTasks);
         }
