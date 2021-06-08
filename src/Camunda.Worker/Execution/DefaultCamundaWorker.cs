@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,6 +61,7 @@ namespace Camunda.Worker.Execution
             }
         }
 
+        [ExcludeFromCodeCoverage]
         private static class Log
         {
             private static readonly Action<ILogger, string, Exception?> _failedExecution =

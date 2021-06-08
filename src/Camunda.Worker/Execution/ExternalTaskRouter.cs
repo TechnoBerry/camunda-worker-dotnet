@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -33,6 +34,7 @@ namespace Camunda.Worker.Execution
             Log.FinishedProcessing(_logger, externalTask.Id);
         }
 
+        [ExcludeFromCodeCoverage]
         private static class Log
         {
             private static readonly Action<ILogger, string, Exception?> _startedProcessing =

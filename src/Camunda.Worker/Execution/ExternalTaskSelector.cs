@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -78,6 +79,7 @@ namespace Camunda.Worker.Execution
         private static Task DelayOnFailure(CancellationToken cancellationToken) =>
             Task.Delay(10_000, cancellationToken);
 
+        [ExcludeFromCodeCoverage]
         private static class Log
         {
             private static readonly Action<ILogger, Exception?> _waiting =
