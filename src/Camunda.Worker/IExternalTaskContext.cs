@@ -14,14 +14,22 @@ namespace Camunda.Worker
 
         Task ExtendLockAsync(int newDuration);
 
-        Task CompleteAsync(IDictionary<string, Variable>? variables = null,
-            IDictionary<string, Variable>? localVariables = null);
+        Task CompleteAsync(
+            IDictionary<string, Variable>? variables = null,
+            IDictionary<string, Variable>? localVariables = null
+        );
 
-        Task ReportFailureAsync(string? errorMessage, string? errorDetails,
+        Task ReportFailureAsync(
+            string? errorMessage,
+            string? errorDetails,
             int? retries = default,
-            int? retryTimeout = default);
+            int? retryTimeout = default
+        );
 
-        Task ReportBpmnErrorAsync(string errorCode, string errorMessage,
-            IDictionary<string, Variable>? variables = null);
+        Task ReportBpmnErrorAsync(
+            string errorCode,
+            string errorMessage,
+            IDictionary<string, Variable>? variables = null
+        );
     }
 }

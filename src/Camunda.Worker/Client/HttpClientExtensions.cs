@@ -36,10 +36,12 @@ namespace Camunda.Worker.Client
             return settings;
         }
 
-        internal static async Task<HttpResponseMessage> PostJsonAsync(this HttpClient client,
+        internal static async Task<HttpResponseMessage> PostJsonAsync(
+            this HttpClient client,
             string path,
             object requestBody,
-            CancellationToken cancellationToken = default)
+            CancellationToken cancellationToken = default
+        )
         {
             using var stream = new MemoryStream();
             using var streamWriter = new StreamWriter(stream);
