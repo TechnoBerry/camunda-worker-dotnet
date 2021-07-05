@@ -8,12 +8,16 @@ namespace Camunda.Worker
 {
     public static class CamundaWorkerBuilderExtensions
     {
-        public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder)
+        public static ICamundaWorkerBuilder AddHandler<T>(
+            this ICamundaWorkerBuilder builder,
+            Action<HandlerMetadata>? configureMetadata = null
+        )
             where T : class, IExternalTaskHandler
         {
             Guard.NotNull(builder, nameof(builder));
 
             var metadata = CollectMetadataFromAttributes(typeof(T));
+            configureMetadata?.Invoke(metadata);
 
             return builder.AddHandler<T>(metadata);
         }

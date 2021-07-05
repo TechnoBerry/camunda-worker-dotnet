@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Execution;
@@ -44,6 +45,37 @@ namespace Camunda.Worker
             Assert.NotNull(metadata);
             var variableName = Assert.Single(metadata.Variables);
             Assert.Equal("testVariable", variableName);
+        }
+
+        [Fact]
+        public void TestAddHandlerWithAttributesAndMetadataCustomization()
+        {
+            // Arrange
+            var savedMetadata = new List<HandlerMetadata>();
+
+            _builderMock
+                .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
+                .Callback((ExternalTaskDelegate _, HandlerMetadata metadata) => savedMetadata.Add(metadata))
+                .Returns(_builderMock.Object);
+
+            // Act
+            _builderMock.Object.AddHandler<HandlerWithTopics>(m =>
+            {
+                m.TenantIds = new[] {"myTenant"};
+            });
+
+            // Assert
+            _builderMock.Verify(
+                builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()),
+                Times.Once());
+            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
+                                            d.ServiceType == typeof(HandlerWithTopics));
+
+            var metadata = Assert.Single(savedMetadata);
+            Assert.NotNull(metadata);
+            var variableName = Assert.Single(metadata.Variables);
+            Assert.Equal("testVariable", variableName);
+            Assert.Equal("myTenant", metadata.TenantIds![0]);
         }
 
         [Fact]
