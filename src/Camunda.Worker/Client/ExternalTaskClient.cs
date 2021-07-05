@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +14,16 @@ namespace Camunda.Worker.Client
         public ExternalTaskClient(HttpClient httpClient)
         {
             _httpClient = Guard.NotNull(httpClient, nameof(httpClient));
+            ValidateHttpClient(httpClient);
+        }
+
+        [ExcludeFromCodeCoverage]
+        private static void ValidateHttpClient(HttpClient httpClient)
+        {
+            if (httpClient.BaseAddress == null)
+            {
+                throw new ArgumentException("BaseAddress must be configured", nameof(httpClient));
+            }
         }
 
         public async Task<List<ExternalTask>> FetchAndLockAsync(

@@ -18,7 +18,6 @@ namespace Camunda.Worker
 
             services.AddSingleton(new CamundaWorkerOptions(workerId));
             services.AddOptions<SelectorOptions>();
-            services.AddExternalTaskClient();
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
             services.TryAddTransient<IExternalTaskSelector, ExternalTaskSelector>();
