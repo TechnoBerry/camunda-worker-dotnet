@@ -123,7 +123,7 @@ namespace Camunda.Worker
             public long Id { get; set; }
 
             [JsonProperty("message")]
-            public string Message { get; set; }
+            public string? Message { get; set; }
         }
     }
 }
