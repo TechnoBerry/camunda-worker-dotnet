@@ -26,7 +26,9 @@ namespace Camunda.Worker.Execution
                 Variables = metadata.Variables,
                 ProcessDefinitionIdIn = metadata.ProcessDefinitionIds,
                 ProcessDefinitionKeyIn = metadata.ProcessDefinitionKeys,
-                TenantIdIn = metadata.TenantIds
+                TenantIdIn = metadata.TenantIds,
+                DeserializeValues = metadata.DeserializeValues,
+                IncludeExtensionProperties = metadata.IncludeExtensionProperties,
             };
 
         public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()

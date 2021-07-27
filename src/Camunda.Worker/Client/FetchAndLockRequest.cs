@@ -59,6 +59,12 @@ namespace Camunda.Worker.Client
 
             public string? BusinessKey { get; set; }
 
+            /// <summary>Determines whether serializable variable values (typically variables that store custom Java objects) should be deserialized on server side (default false).</summary>
+            public bool DeserializeValues { get; set; }
+
+            /// <summary>Determines whether custom extension properties defined in the BPMN activity of the external task (e.g. via the Extensions tab in the Camunda modeler) should be included in the response. Default: false.</summary>
+            public bool IncludeExtensionProperties { get; set; }
+
             public string? ProcessDefinitionId { get; set; }
 
             public IReadOnlyCollection<string>? ProcessDefinitionIdIn { get; set; }
