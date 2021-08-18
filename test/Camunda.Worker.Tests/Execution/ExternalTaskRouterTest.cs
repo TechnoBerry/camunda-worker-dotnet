@@ -25,6 +25,7 @@ namespace Camunda.Worker.Execution
         [Fact]
         public async Task TestRouteAsync()
         {
+            // Arrange
             var calls = new List<IExternalTaskContext>();
 
             Task ExternalTaskDelegate(IExternalTaskContext context)
@@ -36,8 +37,10 @@ namespace Camunda.Worker.Execution
             _endpointProviderMock.Setup(factory => factory.GetEndpointDelegate(It.IsAny<ExternalTask>()))
                 .Returns(ExternalTaskDelegate);
 
+            // Act
             await _router.RouteAsync(_contextMock.Object);
 
+            // Assert
             Assert.Single(calls);
         }
     }
