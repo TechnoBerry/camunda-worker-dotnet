@@ -25,9 +25,6 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(IEndpointProvider));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(IExternalTaskRouter));
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(ITopicsProvider));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&

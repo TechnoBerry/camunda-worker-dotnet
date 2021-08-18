@@ -32,11 +32,5 @@ namespace Camunda.Worker
             return _middlewareList.Reverse()
                 .Aggregate(lastDelegate, (current, middleware) => middleware(current));
         }
-
-        internal static async Task RouteAsync(IExternalTaskContext context)
-        {
-            var router = context.ServiceProvider.GetRequiredService<IExternalTaskRouter>();
-            await router.RouteAsync(context);
-        }
     }
 }

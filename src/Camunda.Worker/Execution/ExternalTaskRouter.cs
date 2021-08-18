@@ -3,9 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker.Execution
 {
-    public sealed class ExternalTaskRouter : IExternalTaskRouter
+    internal static class ExternalTaskRouter
     {
-        public async Task RouteAsync(IExternalTaskContext context)
+        internal static async Task RouteAsync(IExternalTaskContext context)
         {
             Guard.NotNull(context, nameof(context));
             var provider = context.ServiceProvider;

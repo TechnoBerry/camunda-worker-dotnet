@@ -10,7 +10,6 @@ namespace Camunda.Worker.Execution
     {
         private readonly Mock<IExternalTaskContext> _contextMock = new();
         private readonly Mock<IEndpointProvider> _endpointProviderMock = new();
-        private readonly ExternalTaskRouter _router;
 
         public ExternalTaskRouterTest()
         {
@@ -20,7 +19,6 @@ namespace Camunda.Worker.Execution
 
             _contextMock.SetupGet(context => context.ServiceProvider).Returns(serviceProvider);
             _contextMock.SetupGet(context => context.Task).Returns(new ExternalTask("1", "testWorker", "testTopic"));
-            _router = new ExternalTaskRouter();
         }
 
         [Fact]
@@ -39,7 +37,7 @@ namespace Camunda.Worker.Execution
                 .Returns(ExternalTaskDelegate);
 
             // Act
-            await _router.RouteAsync(_contextMock.Object);
+            await ExternalTaskRouter.RouteAsync(_contextMock.Object);
 
             // Assert
             Assert.Single(calls);
