@@ -1,23 +1,17 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskRouter : IExternalTaskRouter
     {
-        private readonly IEndpointProvider _endpointProvider;
-
-        public ExternalTaskRouter(
-            IEndpointProvider endpointProvider
-        )
-        {
-            _endpointProvider = Guard.NotNull(endpointProvider, nameof(endpointProvider));
-        }
-
         public async Task RouteAsync(IExternalTaskContext context)
         {
             Guard.NotNull(context, nameof(context));
+            var provider = context.ServiceProvider;
 
-            var externalTaskDelegate = _endpointProvider.GetEndpointDelegate(context.Task);
+            var endpointProvider = provider.GetRequiredService<IEndpointProvider>();
+            var externalTaskDelegate = endpointProvider.GetEndpointDelegate(context.Task);
             await externalTaskDelegate(context);
         }
     }
