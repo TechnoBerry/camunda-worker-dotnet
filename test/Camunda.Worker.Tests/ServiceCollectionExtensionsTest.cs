@@ -33,7 +33,7 @@ namespace Camunda.Worker
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
                                            d.ServiceType == typeof(IExternalTaskSelector));
 
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
+            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(IContextFactory));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
