@@ -12,12 +12,12 @@ namespace Camunda.Worker
         private readonly IList<Func<ExternalTaskDelegate, ExternalTaskDelegate>> _middlewareList =
             new List<Func<ExternalTaskDelegate, ExternalTaskDelegate>>();
 
-        public PipelineBuilder(IServiceCollection services)
+        public PipelineBuilder(IServiceProvider serviceProvider)
         {
-            Services = services;
+            ApplicationServices = serviceProvider;
         }
 
-        public IServiceCollection Services { get; }
+        public IServiceProvider ApplicationServices { get; }
 
         public IPipelineBuilder Use(Func<ExternalTaskDelegate, ExternalTaskDelegate> middleware)
         {

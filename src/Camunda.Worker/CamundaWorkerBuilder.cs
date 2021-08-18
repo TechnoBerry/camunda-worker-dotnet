@@ -49,10 +49,13 @@ namespace Camunda.Worker
         public ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction)
         {
             Guard.NotNull(configureAction, nameof(configureAction));
-            var builder = new PipelineBuilder(Services);
-            configureAction(builder);
-            var externalTaskDelegate = builder.Build(PipelineBuilder.RouteAsync);
-            Services.AddSingleton(new WorkerHandlerDescriptor(externalTaskDelegate));
+            Services.AddSingleton(provider =>
+            {
+                var builder = new PipelineBuilder(provider);
+                configureAction(builder);
+                var externalTaskDelegate = builder.Build(PipelineBuilder.RouteAsync);
+                return new WorkerHandlerDescriptor(externalTaskDelegate);
+            });
             return this;
         }
     }
