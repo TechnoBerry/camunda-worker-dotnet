@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -12,12 +11,14 @@ namespace Camunda.Worker
     public class PipelineBuilderTest
     {
         private readonly Mock<IExternalTaskContext> _contextMock = new();
-        private readonly IServiceCollection _services = new ServiceCollection();
+        private readonly IServiceProvider _serviceProvider;
 
         public PipelineBuilderTest()
         {
+            var services = new ServiceCollection();
+            _serviceProvider = services.BuildServiceProvider();
             _contextMock.SetupGet(ctx => ctx.ServiceProvider)
-                .Returns(_services.BuildServiceProvider());
+                .Returns(_serviceProvider);
         }
 
         [Theory]
@@ -25,7 +26,7 @@ namespace Camunda.Worker
         [InlineData(100)]
         public async Task TestBuildPipeline(int calls)
         {
-            IPipelineBuilder builder = new PipelineBuilder(_services);
+            IPipelineBuilder builder = new PipelineBuilder(_serviceProvider);
 
             Task LastDelegate(IExternalTaskContext context)
             {

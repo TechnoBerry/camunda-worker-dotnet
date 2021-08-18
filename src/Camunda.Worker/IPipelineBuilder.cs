@@ -1,11 +1,10 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker
 {
     public interface IPipelineBuilder
     {
-        IServiceCollection Services { get; }
+        IServiceProvider ApplicationServices { get; }
 
         IPipelineBuilder Use(Func<ExternalTaskDelegate, ExternalTaskDelegate> middleware);
 
