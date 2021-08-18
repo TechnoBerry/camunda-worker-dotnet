@@ -135,11 +135,11 @@ namespace Camunda.Worker
         public static Variable Null() => new Variable(null, VariableType.Null);
 
         [ExcludeFromCodeCoverage]
-        private void EnsureIsOfType(params VariableType[] types)
+        private void EnsureIsOfType(VariableType type)
         {
-            if (types.Any(type => type == Type)) return;
+            if (type == Type) return;
 
-            throw new InvalidCastException($"Type {Type} not in [{string.Join(", ", types)}]");
+            throw new InvalidCastException($"Type {Type} is not {type}");
         }
 
         [JsonConstructor]
