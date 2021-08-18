@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Bogus;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
@@ -13,6 +15,20 @@ namespace Camunda.Worker.Execution
 
         public HandlerInvokerTest()
         {
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+
+            var externalTask = new Faker<ExternalTask>()
+                .CustomInstantiator(faker => new ExternalTask(
+                    faker.Random.Guid().ToString(),
+                    faker.Random.Word(),
+                    faker.Random.Word())
+                )
+                .Generate();
+
+            _contextMock.SetupGet(ctx => ctx.ServiceProvider)
+                .Returns(serviceProvider);
+            _contextMock.SetupGet(ctx => ctx.Task)
+                .Returns(externalTask);
             _handlerInvoker = new HandlerInvoker(_handlerMock.Object, _contextMock.Object);
         }
 

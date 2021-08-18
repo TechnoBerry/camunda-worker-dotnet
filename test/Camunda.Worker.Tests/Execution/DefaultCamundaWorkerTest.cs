@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,7 @@ namespace Camunda.Worker.Execution
 {
     public class DefaultCamundaWorkerTest : IDisposable
     {
-        private readonly Mock<IExternalTaskRouter> _routerMock = new();
+        private readonly Mock<IHandler> _handlerMock = new();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new();
         private readonly Mock<IContextFactory> _contextFactoryMock = new();
         private readonly ServiceProvider _serviceProvider;
@@ -30,7 +29,7 @@ namespace Camunda.Worker.Execution
                 _selectorMock.Object,
                 _contextFactoryMock.Object,
                 _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
-                new WorkerHandlerDescriptor(_routerMock.Object.RouteAsync)
+                new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );
         }
 
@@ -63,8 +62,8 @@ namespace Camunda.Worker.Execution
                 .ReturnsAsync(externalTasks)
                 .Verifiable();
 
-            _routerMock
-                .Setup(executor => executor.RouteAsync(It.IsAny<IExternalTaskContext>()))
+            _handlerMock
+                .Setup(executor => executor.HandleAsync(It.IsAny<IExternalTaskContext>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -76,10 +75,15 @@ namespace Camunda.Worker.Execution
                 factory => factory.Create(It.IsAny<ExternalTask>(), It.IsAny<IServiceProvider>()),
                 Times.Exactly(numberOfExternalTasks)
             );
-            _routerMock.Verify(
-                executor => executor.RouteAsync(It.IsAny<IExternalTaskContext>()),
+            _handlerMock.Verify(
+                executor => executor.HandleAsync(It.IsAny<IExternalTaskContext>()),
                 Times.Exactly(numberOfExternalTasks)
             );
+        }
+
+        public interface IHandler
+        {
+            Task HandleAsync(IExternalTaskContext context);
         }
     }
 }
