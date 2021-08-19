@@ -13,21 +13,14 @@ namespace Camunda.Worker.Execution
     {
         private readonly Mock<IHandler> _handlerMock = new();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new();
-        private readonly Mock<IContextFactory> _contextFactoryMock = new();
         private readonly ServiceProvider _serviceProvider;
         private readonly DefaultCamundaWorker _worker;
 
         public DefaultCamundaWorkerTest()
         {
             _serviceProvider = new ServiceCollection().BuildServiceProvider();
-
-            var contextMock = new Mock<IExternalTaskContext>();
-            _contextFactoryMock.Setup(factory => factory.Create(It.IsAny<ExternalTask>(), It.IsAny<IServiceProvider>()))
-                .Returns(contextMock.Object);
-
             _worker = new DefaultCamundaWorker(
                 _selectorMock.Object,
-                _contextFactoryMock.Object,
                 _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
                 new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );
@@ -71,10 +64,6 @@ namespace Camunda.Worker.Execution
 
             // Assert
             _selectorMock.VerifyAll();
-            _contextFactoryMock.Verify(
-                factory => factory.Create(It.IsAny<ExternalTask>(), It.IsAny<IServiceProvider>()),
-                Times.Exactly(numberOfExternalTasks)
-            );
             _handlerMock.Verify(
                 executor => executor.HandleAsync(It.IsAny<IExternalTaskContext>()),
                 Times.Exactly(numberOfExternalTasks)

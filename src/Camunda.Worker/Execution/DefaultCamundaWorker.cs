@@ -12,21 +12,18 @@ namespace Camunda.Worker.Execution
     public sealed class DefaultCamundaWorker : ICamundaWorker
     {
         private readonly IExternalTaskSelector _selector;
-        private readonly IContextFactory _contextFactory;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
         public DefaultCamundaWorker(
             IExternalTaskSelector selector,
-            IContextFactory contextFactory,
             IServiceScopeFactory serviceScopeFactory,
             WorkerHandlerDescriptor workerHandlerDescriptor,
             ILogger<DefaultCamundaWorker>? logger = null
         )
         {
             _selector = Guard.NotNull(selector, nameof(selector));
-            _contextFactory = Guard.NotNull(contextFactory, nameof(contextFactory));
             _serviceScopeFactory = Guard.NotNull(serviceScopeFactory, nameof(serviceScopeFactory));
             _workerHandlerDescriptor = Guard.NotNull(workerHandlerDescriptor, nameof(workerHandlerDescriptor));
             _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
@@ -49,7 +46,7 @@ namespace Camunda.Worker.Execution
         private async Task ProcessExternalTask(ExternalTask externalTask)
         {
             using var scope = _serviceScopeFactory.CreateScope();
-            var context = _contextFactory.Create(externalTask, scope.ServiceProvider);
+            var context = new ExternalTaskContext(externalTask, scope.ServiceProvider);
 
             try
             {
