@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Bogus;
+using Camunda.Worker.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -12,6 +13,7 @@ namespace Camunda.Worker.Execution
     public class DefaultCamundaWorkerTest : IDisposable
     {
         private readonly Mock<IHandler> _handlerMock = new();
+        private readonly Mock<IExternalTaskClient> _clientMock = new();
         private readonly Mock<IExternalTaskSelector> _selectorMock = new();
         private readonly ServiceProvider _serviceProvider;
         private readonly DefaultCamundaWorker _worker;
@@ -21,6 +23,7 @@ namespace Camunda.Worker.Execution
             _serviceProvider = new ServiceCollection().BuildServiceProvider();
             _worker = new DefaultCamundaWorker(
                 _selectorMock.Object,
+                _clientMock.Object,
                 _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
                 new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );

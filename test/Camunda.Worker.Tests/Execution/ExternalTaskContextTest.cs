@@ -17,11 +17,9 @@ namespace Camunda.Worker.Execution
 
         public ExternalTaskContextTest()
         {
-            _serviceProviderMock.Setup(provider => provider.GetService(typeof(IExternalTaskClient)))
-                .Returns(_clientMock.Object);
-
             _context = new ExternalTaskContext(
                 new ExternalTask("testId", "testWorker", "testTopic"),
+                _clientMock.Object,
                 _serviceProviderMock.Object
             );
         }

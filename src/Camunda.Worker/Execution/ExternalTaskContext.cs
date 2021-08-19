@@ -2,19 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskContext : IExternalTaskContext
     {
-        public ExternalTaskContext(ExternalTask task, IServiceProvider provider)
+        public ExternalTaskContext(ExternalTask task, IExternalTaskClient client, IServiceProvider provider)
         {
             Task = Guard.NotNull(task, nameof(task));
+            Client = Guard.NotNull(client, nameof(client));
             ServiceProvider = Guard.NotNull(provider, nameof(provider));
         }
 
         public ExternalTask Task { get; }
+
+        private IExternalTaskClient Client { get; }
 
         public IServiceProvider ServiceProvider { get; }
 
@@ -24,9 +26,8 @@ namespace Camunda.Worker.Execution
         {
             ThrowIfCompleted();
 
-            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new ExtendLockRequest(Task.WorkerId, newDuration);
-            await client.ExtendLockAsync(Task.Id, request);
+            await Client.ExtendLockAsync(Task.Id, request);
         }
 
         public async Task CompleteAsync(
@@ -36,13 +37,12 @@ namespace Camunda.Worker.Execution
         {
             ThrowIfCompleted();
 
-            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new CompleteRequest(Task.WorkerId)
             {
                 Variables = variables,
                 LocalVariables = localVariables
             };
-            await client.CompleteAsync(Task.Id, request);
+            await Client.CompleteAsync(Task.Id, request);
 
             Completed = true;
         }
@@ -56,7 +56,6 @@ namespace Camunda.Worker.Execution
         {
             ThrowIfCompleted();
 
-            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new ReportFailureRequest(Task.WorkerId)
             {
                 ErrorMessage = errorMessage,
@@ -64,7 +63,7 @@ namespace Camunda.Worker.Execution
                 Retries = retries,
                 RetryTimeout = retryTimeout
             };
-            await client.ReportFailureAsync(Task.Id, request);
+            await Client.ReportFailureAsync(Task.Id, request);
 
             Completed = true;
         }
@@ -77,12 +76,11 @@ namespace Camunda.Worker.Execution
         {
             ThrowIfCompleted();
 
-            var client = ServiceProvider.GetRequiredService<IExternalTaskClient>();
             var request = new BpmnErrorRequest(Task.WorkerId, errorCode, errorMessage)
             {
                 Variables = variables
             };
-            await client.ReportBpmnErrorAsync(Task.Id, request);
+            await Client.ReportBpmnErrorAsync(Task.Id, request);
 
             Completed = true;
         }
