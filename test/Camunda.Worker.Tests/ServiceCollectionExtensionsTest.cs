@@ -34,9 +34,6 @@ namespace Camunda.Worker
                                            d.ServiceType == typeof(IExternalTaskSelector));
 
             Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(IContextFactory));
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(WorkerHandlerDescriptor));
         }
     }
