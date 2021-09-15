@@ -22,8 +22,7 @@ namespace SampleCamundaWorker
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddExternalTaskClient()
-                .ConfigureHttpClient((provider, client) =>
+            services.AddExternalTaskClient(client =>
                 {
                     client.BaseAddress = new Uri("http://localhost:8080/engine-rest");
                 });
