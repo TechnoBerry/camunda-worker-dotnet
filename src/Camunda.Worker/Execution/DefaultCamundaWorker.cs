@@ -17,7 +17,7 @@ namespace Camunda.Worker.Execution
         private readonly IExternalTaskClient _externalTaskClient;
         private readonly ITopicsProvider _topicsProvider;
         private readonly CamundaWorkerOptions _workerOptions;
-        private readonly SelectorOptions _selectorOptions;
+        private readonly FetchAndLockOptions _fetchAndLockOptions;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
         private readonly ILogger<DefaultCamundaWorker> _logger;
@@ -26,7 +26,7 @@ namespace Camunda.Worker.Execution
             IExternalTaskClient externalTaskClient,
             ITopicsProvider topicsProvider,
             CamundaWorkerOptions workerOptions,
-            IOptions<SelectorOptions> selectorOptions,
+            IOptions<FetchAndLockOptions> fetchAndLockOptions,
             IServiceScopeFactory serviceScopeFactory,
             WorkerHandlerDescriptor workerHandlerDescriptor,
             ILogger<DefaultCamundaWorker>? logger = null
@@ -35,7 +35,7 @@ namespace Camunda.Worker.Execution
             _externalTaskClient = Guard.NotNull(externalTaskClient, nameof(externalTaskClient));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _workerOptions = Guard.NotNull(workerOptions, nameof(workerOptions));
-            _selectorOptions = Guard.NotNull(selectorOptions, nameof(selectorOptions)).Value;
+            _fetchAndLockOptions = Guard.NotNull(fetchAndLockOptions, nameof(fetchAndLockOptions)).Value;
             _serviceScopeFactory = Guard.NotNull(serviceScopeFactory, nameof(serviceScopeFactory));
             _workerHandlerDescriptor = Guard.NotNull(workerHandlerDescriptor, nameof(workerHandlerDescriptor));
             _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
@@ -77,10 +77,10 @@ namespace Camunda.Worker.Execution
         {
             var topics = _topicsProvider.GetTopics();
 
-            var fetchAndLockRequest = new FetchAndLockRequest(_workerOptions.WorkerId, _selectorOptions.MaxTasks)
+            var fetchAndLockRequest = new FetchAndLockRequest(_workerOptions.WorkerId, _fetchAndLockOptions.MaxTasks)
             {
-                UsePriority = _selectorOptions.UsePriority,
-                AsyncResponseTimeout = _selectorOptions.AsyncResponseTimeout,
+                UsePriority = _fetchAndLockOptions.UsePriority,
+                AsyncResponseTimeout = _fetchAndLockOptions.AsyncResponseTimeout,
                 Topics = topics
             };
 

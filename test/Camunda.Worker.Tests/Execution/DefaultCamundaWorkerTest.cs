@@ -18,7 +18,7 @@ namespace Camunda.Worker.Execution
         private readonly Mock<IExternalTaskClient> _clientMock = new();
         private readonly Mock<ITopicsProvider> _topicsProviderMock = new();
         private readonly CamundaWorkerOptions _workerOptions = new("testWorker");
-        private readonly IOptions<SelectorOptions> _selectorOptions = Options.Create(new SelectorOptions
+        private readonly IOptions<FetchAndLockOptions> _fetchAndLockOptions = Options.Create(new FetchAndLockOptions
         {
             AsyncResponseTimeout = 5_000
         });
@@ -32,7 +32,7 @@ namespace Camunda.Worker.Execution
                 _clientMock.Object,
                 _topicsProviderMock.Object,
                 _workerOptions,
-                _selectorOptions,
+                _fetchAndLockOptions,
                 _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
                 new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );
@@ -62,7 +62,7 @@ namespace Camunda.Worker.Execution
             var cts = new CancellationTokenSource();
 
             _clientMock
-                .Setup(selector => selector.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
+                .Setup(client => client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
                 .Callback(cts.Cancel)
                 .ReturnsAsync(externalTasks)
                 .Verifiable();
