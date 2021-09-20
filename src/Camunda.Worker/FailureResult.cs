@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
@@ -20,9 +21,18 @@ namespace Camunda.Worker
             ErrorDetails = errorDetails;
         }
 
-        public Task ExecuteResultAsync(IExternalTaskContext context)
+        public async Task ExecuteResultAsync(IExternalTaskContext context)
         {
-            return context.ReportFailureAsync(ErrorMessage, ErrorDetails, Retries, RetryTimeout);
+            var externalTask = context.Task;
+            var client = context.Client;
+
+            await client.ReportFailureAsync(externalTask.Id, new ReportFailureRequest(externalTask.WorkerId)
+            {
+                ErrorMessage = ErrorMessage,
+                ErrorDetails = ErrorDetails,
+                Retries = Retries,
+                RetryTimeout = RetryTimeout
+            });
         }
     }
 }

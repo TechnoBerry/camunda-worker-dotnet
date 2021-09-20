@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
@@ -8,17 +9,20 @@ namespace Camunda.Worker
     {
         ExternalTask Task { get; }
 
+        IExternalTaskClient Client { get; }
+
         IServiceProvider ServiceProvider { get; }
 
-        bool Completed { get; }
-
+        [Obsolete("Use Client instead")]
         Task ExtendLockAsync(int newDuration);
 
+        [Obsolete("Use Client instead")]
         Task CompleteAsync(
             IDictionary<string, Variable>? variables = null,
             IDictionary<string, Variable>? localVariables = null
         );
 
+        [Obsolete("Use Client instead")]
         Task ReportFailureAsync(
             string? errorMessage,
             string? errorDetails,
@@ -26,6 +30,7 @@ namespace Camunda.Worker
             int? retryTimeout = default
         );
 
+        [Obsolete("Use Client instead")]
         Task ReportBpmnErrorAsync(
             string errorCode,
             string errorMessage,

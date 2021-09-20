@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Bogus;
 using Camunda.Worker.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -10,11 +10,21 @@ namespace Camunda.Worker
 {
     public class BpmnErrorResultTest
     {
+        private readonly ExternalTask _externalTask;
+        private readonly Mock<IExternalTaskClient> _clientMock = new();
         private readonly Mock<IExternalTaskContext> _contextMock = new();
 
         public BpmnErrorResultTest()
         {
-            _contextMock.SetupGet(c => c.Task).Returns(new ExternalTask("", "", ""));
+            _externalTask = new Faker<ExternalTask>()
+                .CustomInstantiator(faker => new ExternalTask(
+                    faker.Random.Guid().ToString(),
+                    faker.Random.Word(),
+                    faker.Random.Word())
+                )
+                .Generate();
+            _contextMock.Setup(ctx => ctx.Task).Returns(_externalTask);
+            _contextMock.Setup(ctx => ctx.Client).Returns(_clientMock.Object);
             _contextMock.SetupGet(c => c.ServiceProvider).Returns(new ServiceCollection().BuildServiceProvider());
         }
 
@@ -22,9 +32,9 @@ namespace Camunda.Worker
         public async Task TestExecuteResultAsync()
         {
             // Arrange
-            _contextMock
-                .Setup(context => context.ReportBpmnErrorAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
+            _clientMock
+                .Setup(client => client.ReportBpmnErrorAsync(
+                    _externalTask.Id, It.IsAny<BpmnErrorRequest>(), default
                 ))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
@@ -35,17 +45,17 @@ namespace Camunda.Worker
             await result.ExecuteResultAsync(_contextMock.Object);
 
             // Assert
-            _contextMock.Verify();
-            _contextMock.VerifyNoOtherCalls();
+            _clientMock.Verify();
+            _clientMock.VerifyNoOtherCalls();
         }
 
         [Fact]
         public async Task TestExecuteResultWithFailedCompletion()
         {
             // Arrange
-            _contextMock
-                .Setup(context => context.ReportBpmnErrorAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, Variable>>()
+            _clientMock
+                .Setup(client => client.ReportBpmnErrorAsync(
+                    _externalTask.Id, It.IsAny<BpmnErrorRequest>(), default
                 ))
                 .ThrowsAsync(new ClientException(new ErrorResponse
                 {
@@ -54,12 +64,9 @@ namespace Camunda.Worker
                 }, HttpStatusCode.InternalServerError))
                 .Verifiable();
 
-            _contextMock
-                .Setup(context => context.ReportFailureAsync(
-                    It.IsAny<string>(),
-                    It.IsAny<string>(),
-                    It.IsAny<int?>(),
-                    It.IsAny<int?>()
+            _clientMock
+                .Setup(client => client.ReportFailureAsync(
+                    _externalTask.Id, It.IsAny<ReportFailureRequest>(), default
                 ))
                 .Returns(Task.CompletedTask)
                 .Verifiable();
@@ -70,9 +77,8 @@ namespace Camunda.Worker
             await result.ExecuteResultAsync(_contextMock.Object);
 
             // Assert
-            _contextMock.Verify();
-            _contextMock.VerifyGet(c => c.ServiceProvider, Times.Once());
-            _contextMock.VerifyNoOtherCalls();
+            _clientMock.Verify();
+            _clientMock.VerifyNoOtherCalls();
         }
     }
 }

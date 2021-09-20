@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Bogus;
+using Camunda.Worker.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -10,6 +11,7 @@ namespace Camunda.Worker.Execution
     public class HandlerInvokerTest
     {
         private readonly Mock<IExternalTaskHandler> _handlerMock = new();
+        private readonly Mock<IExternalTaskClient> _clientMock = new();
         private readonly Mock<IExternalTaskContext> _contextMock = new();
         private readonly HandlerInvoker _handlerInvoker;
 
@@ -29,6 +31,8 @@ namespace Camunda.Worker.Execution
                 .Returns(serviceProvider);
             _contextMock.SetupGet(ctx => ctx.Task)
                 .Returns(externalTask);
+            _contextMock.SetupGet(ctx => ctx.Client)
+                .Returns(_clientMock.Object);
             _handlerInvoker = new HandlerInvoker(_handlerMock.Object, _contextMock.Object);
         }
 
@@ -59,8 +63,8 @@ namespace Camunda.Worker.Execution
             await _handlerInvoker.InvokeAsync();
 
             // Assert
-            _contextMock.Verify(
-                context => context.ReportFailureAsync(It.IsAny<string>(), It.IsAny<string>(), null, null),
+            _clientMock.Verify(
+                client => client.ReportFailureAsync(It.IsAny<string>(), It.IsAny<ReportFailureRequest>(), default),
                 Times.Once()
             );
         }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -37,7 +36,6 @@ namespace Camunda.Worker.Execution
 
             // Assert
             _clientMock.VerifyAll();
-            Assert.False(_context.Completed);
         }
 
         [Fact]
@@ -53,7 +51,6 @@ namespace Camunda.Worker.Execution
 
             // Assert
             _clientMock.VerifyAll();
-            Assert.True(_context.Completed);
         }
 
         [Fact]
@@ -70,7 +67,6 @@ namespace Camunda.Worker.Execution
 
             // Assert
             _clientMock.VerifyAll();
-            Assert.True(_context.Completed);
         }
 
         [Fact]
@@ -87,48 +83,6 @@ namespace Camunda.Worker.Execution
 
             // Assert
             _clientMock.VerifyAll();
-            Assert.True(_context.Completed);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetDoubleCompletionArguments))]
-        public async Task TestDoubleCompletion(
-            Func<IExternalTaskContext, Task> first,
-            Func<IExternalTaskContext, Task> second
-        )
-        {
-            // Arrange
-            _clientMock.Setup(client =>
-                client.CompleteAsync(It.IsAny<string>(), It.IsNotNull<CompleteRequest>(), CancellationToken.None)
-            ).Returns(Task.CompletedTask);
-
-            _clientMock.Setup(client =>
-                client.ReportFailureAsync(It.IsAny<string>(), It.IsNotNull<ReportFailureRequest>(),
-                    CancellationToken.None)
-            ).Returns(Task.CompletedTask);
-
-            _clientMock.Setup(client =>
-                client.ReportBpmnErrorAsync(It.IsAny<string>(), It.IsNotNull<BpmnErrorRequest>(),
-                    CancellationToken.None)
-            ).Returns(Task.CompletedTask);
-
-            await first(_context);
-
-            // Act & Assert
-            await Assert.ThrowsAsync<CamundaWorkerException>(() => second(_context));
-        }
-
-        public static IEnumerable<object[]> GetDoubleCompletionArguments()
-        {
-            return GetCompletionFunctions()
-                .Join(GetCompletionFunctions(), _ => true, _ => true, (a, b) => new object[] {a, b});
-        }
-
-        private static IEnumerable<Func<IExternalTaskContext, Task>> GetCompletionFunctions()
-        {
-            yield return ctx => ctx.CompleteAsync(new Dictionary<string, Variable>());
-            yield return ctx => ctx.ReportFailureAsync("message", "details");
-            yield return ctx => ctx.ReportBpmnErrorAsync("core", "message");
         }
     }
 }

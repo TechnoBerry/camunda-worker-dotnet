@@ -19,17 +19,28 @@ namespace Camunda.Worker
 
         public async Task ExecuteResultAsync(IExternalTaskContext context)
         {
+            var externalTask = context.Task;
+            var client = context.Client;
+
             try
             {
-                await context.CompleteAsync(Variables, LocalVariables);
+                await client.CompleteAsync(externalTask.Id, new CompleteRequest(externalTask.WorkerId)
+                {
+                    Variables = Variables,
+                    LocalVariables = LocalVariables,
+                });
             }
             catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
             {
                 var logger = context.ServiceProvider.GetService<ILogger<CompleteResult>>();
                 logger?.LogWarning(e, "Failed completion of task {TaskId}. Reason: {Reason}",
-                    context.Task.Id, e.Message
+                    externalTask.Id, e.Message
                 );
-                await context.ReportFailureAsync(e.ErrorType, e.ErrorMessage);
+                await client.ReportFailureAsync(externalTask.Id, new ReportFailureRequest(externalTask.WorkerId)
+                {
+                    ErrorMessage = e.ErrorType,
+                    ErrorDetails = e.ErrorMessage,
+                });
             }
         }
     }
