@@ -47,7 +47,7 @@ namespace Camunda.Worker.Execution
             }
             catch (Exception e) when (!cancellationToken.IsCancellationRequested)
             {
-                Log.Failed(_logger, e);
+                Log.FailedLocking(_logger, e);
                 await DelayOnFailure(cancellationToken);
                 return Array.Empty<ExternalTask>();
             }
@@ -96,18 +96,18 @@ namespace Camunda.Worker.Execution
                     "Locked {Count} external tasks"
                 );
 
-            private static readonly Action<ILogger, string, Exception?> _failed =
+            private static readonly Action<ILogger, string, Exception?> _failedLocking =
                 LoggerMessage.Define<string>(
                     LogLevel.Warning,
                     new EventId(0),
-                    "Failed receiving of external tasks. Reason: \"{Reason}\""
+                    "Failed locking of external tasks. Reason: \"{Reason}\""
                 );
 
             public static void Waiting(ILogger logger) => _waiting(logger, null);
 
             public static void Locked(ILogger logger, int count) => _locked(logger, count, null);
 
-            public static void Failed(ILogger logger, Exception e) => _failed(logger, e.Message, e);
+            public static void FailedLocking(ILogger logger, Exception e) => _failedLocking(logger, e.Message, e);
         }
     }
 }
