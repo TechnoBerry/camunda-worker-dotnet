@@ -10,8 +10,6 @@ namespace Camunda.Worker
 
         IServiceProvider ServiceProvider { get; }
 
-        bool Completed { get; }
-
         Task ExtendLockAsync(int newDuration);
 
         Task CompleteAsync(

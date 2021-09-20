@@ -20,12 +20,8 @@ namespace Camunda.Worker.Execution
 
         public IServiceProvider ServiceProvider { get; }
 
-        public bool Completed { get; private set; }
-
         public async Task ExtendLockAsync(int newDuration)
         {
-            ThrowIfCompleted();
-
             var request = new ExtendLockRequest(Task.WorkerId, newDuration);
             await Client.ExtendLockAsync(Task.Id, request);
         }
@@ -35,16 +31,12 @@ namespace Camunda.Worker.Execution
             IDictionary<string, Variable>? localVariables = null
         )
         {
-            ThrowIfCompleted();
-
             var request = new CompleteRequest(Task.WorkerId)
             {
                 Variables = variables,
                 LocalVariables = localVariables
             };
             await Client.CompleteAsync(Task.Id, request);
-
-            Completed = true;
         }
 
         public async Task ReportFailureAsync(
@@ -54,8 +46,6 @@ namespace Camunda.Worker.Execution
             int? retryTimeout = default
         )
         {
-            ThrowIfCompleted();
-
             var request = new ReportFailureRequest(Task.WorkerId)
             {
                 ErrorMessage = errorMessage,
@@ -64,8 +54,6 @@ namespace Camunda.Worker.Execution
                 RetryTimeout = retryTimeout
             };
             await Client.ReportFailureAsync(Task.Id, request);
-
-            Completed = true;
         }
 
         public async Task ReportBpmnErrorAsync(
@@ -74,23 +62,11 @@ namespace Camunda.Worker.Execution
             IDictionary<string, Variable>? variables = null
         )
         {
-            ThrowIfCompleted();
-
             var request = new BpmnErrorRequest(Task.WorkerId, errorCode, errorMessage)
             {
                 Variables = variables
             };
             await Client.ReportBpmnErrorAsync(Task.Id, request);
-
-            Completed = true;
-        }
-
-        private void ThrowIfCompleted()
-        {
-            if (Completed)
-            {
-                throw new CamundaWorkerException("Unable to complete already completed task");
-            }
         }
     }
 }
