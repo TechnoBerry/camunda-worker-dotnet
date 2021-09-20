@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Camunda.Worker.Client;
 
 namespace Camunda.Worker
 {
     public interface IExternalTaskContext
     {
         ExternalTask Task { get; }
+
+        IExternalTaskClient Client { get; }
 
         IServiceProvider ServiceProvider { get; }
 

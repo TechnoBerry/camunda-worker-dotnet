@@ -16,7 +16,7 @@ namespace Camunda.Worker.Execution
 
         public ExternalTask Task { get; }
 
-        private IExternalTaskClient Client { get; }
+        public IExternalTaskClient Client { get; }
 
         public IServiceProvider ServiceProvider { get; }
 
