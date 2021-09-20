@@ -29,12 +29,6 @@ namespace Camunda.Worker
             return this;
         }
 
-        public ICamundaWorkerBuilder AddTaskSelector<TSelector>() where TSelector : class, IExternalTaskSelector
-        {
-            Services.AddTransient<IExternalTaskSelector, TSelector>();
-            return this;
-        }
-
         public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
         {
             Guard.NotNull(handler, nameof(handler));

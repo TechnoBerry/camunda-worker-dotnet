@@ -51,16 +51,6 @@ namespace Camunda.Worker
         }
 
         [Fact]
-        public void TestAddTaskSelector()
-        {
-            _builder.AddTaskSelector<ExternalTaskSelector>();
-
-            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(IExternalTaskSelector) &&
-                                           d.ImplementationType == typeof(ExternalTaskSelector));
-        }
-
-        [Fact]
         public void TestConfigurePipeline()
         {
             _builder.ConfigurePipeline(pipeline => { });
@@ -80,16 +70,6 @@ namespace Camunda.Worker
         private class TopicsProvider : ITopicsProvider
         {
             public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        private class ExternalTaskSelector : IExternalTaskSelector
-        {
-            public Task<IReadOnlyCollection<ExternalTask>> SelectAsync(
-                CancellationToken cancellationToken = default
-            )
             {
                 throw new NotImplementedException();
             }

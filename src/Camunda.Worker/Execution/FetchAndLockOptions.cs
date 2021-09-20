@@ -1,6 +1,6 @@
 namespace Camunda.Worker.Execution
 {
-    public class SelectorOptions
+    public class FetchAndLockOptions
     {
         private int _maxTasks = 1;
         private int _asyncResponseTimeout = 10_000;

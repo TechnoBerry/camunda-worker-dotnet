@@ -17,10 +17,9 @@ namespace Camunda.Worker
             Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
             services.AddSingleton(new CamundaWorkerOptions(workerId));
-            services.AddOptions<SelectorOptions>();
+            services.AddOptions<FetchAndLockOptions>();
 
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
-            services.TryAddTransient<IExternalTaskSelector, ExternalTaskSelector>();
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
             services.TryAddSingleton(_ => new WorkerHandlerDescriptor(ExternalTaskRouter.RouteAsync));
