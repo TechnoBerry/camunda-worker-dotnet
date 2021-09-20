@@ -22,7 +22,7 @@ jobs:
       - name: Unit tests
         run: dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj --collect:"XPlat Code Coverage" --settings ./coverlet.runsettings -r ./coverage
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           directory: ./coverage
