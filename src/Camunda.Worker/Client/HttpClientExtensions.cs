@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -12,7 +11,6 @@ namespace Camunda.Worker.Client
 {
     internal static class HttpClientExtensions
     {
-        private const string JsonContentType = "application/json";
         private static readonly JsonSerializerSettings SerializerSettings = MakeSerializerSettings();
         private static readonly JsonSerializer Serializer = JsonSerializer.Create(SerializerSettings);
 
@@ -36,28 +34,14 @@ namespace Camunda.Worker.Client
             return settings;
         }
 
-        internal static async Task<HttpResponseMessage> PostJsonAsync(
+        internal static async Task<HttpResponseMessage> PostJsonAsync<T>(
             this HttpClient client,
             string path,
-            object requestBody,
+            T requestBody,
             CancellationToken cancellationToken = default
-        )
+        ) where T : notnull
         {
-            using var stream = new MemoryStream();
-            using var streamWriter = new StreamWriter(stream);
-            using var jsonWriter = new JsonTextWriter(streamWriter);
-
-            Serializer.Serialize(jsonWriter, requestBody);
-            await jsonWriter.FlushAsync(cancellationToken);
-
-            stream.Position = 0;
-
-            var requestContent = new StreamContent(stream);
-            requestContent.Headers.ContentType = new MediaTypeHeaderValue(JsonContentType)
-            {
-                CharSet = Encoding.UTF8.WebName
-            };
-
+            var requestContent = JsonContent.Create(requestBody, Serializer);
             var response = await client.PostAsync(path, requestContent, cancellationToken);
             return response;
         }
@@ -76,7 +60,7 @@ namespace Camunda.Worker.Client
         }
 
         internal static bool IsJson(this HttpContentHeaders headers) =>
-            headers.ContentType.MediaType == JsonContentType;
+            headers.ContentType.MediaType == JsonContent.JsonContentType;
 
         internal static bool IsJson(this HttpResponseMessage message) =>
             message.Content?.Headers?.IsJson() ?? false;
