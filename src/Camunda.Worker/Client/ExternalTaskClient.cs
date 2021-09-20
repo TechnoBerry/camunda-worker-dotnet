@@ -33,8 +33,8 @@ namespace Camunda.Worker.Client
         {
             Guard.NotNull(request, nameof(request));
 
-            using var response = await SendRequest("fetchAndLock", request, cancellationToken);
-            await EnsureSuccess(response);
+            using var response = await SendRequestAsync("/fetchAndLock", request, cancellationToken);
+            await EnsureSuccessAsync(response);
 
             var externalTasks = await response.ReadJsonAsync<List<ExternalTask>>();
             return externalTasks;
@@ -48,8 +48,8 @@ namespace Camunda.Worker.Client
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
 
-            using var response = await SendRequest($"{taskId}/complete", request, cancellationToken);
-            await EnsureSuccess(response);
+            using var response = await SendRequestAsync($"/{taskId}/complete", request, cancellationToken);
+            await EnsureSuccessAsync(response);
         }
 
         public async Task ReportFailureAsync(
@@ -60,8 +60,8 @@ namespace Camunda.Worker.Client
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
 
-            using var response = await SendRequest($"{taskId}/failure", request, cancellationToken);
-            await EnsureSuccess(response);
+            using var response = await SendRequestAsync($"/{taskId}/failure", request, cancellationToken);
+            await EnsureSuccessAsync(response);
         }
 
         public async Task ReportBpmnErrorAsync(
@@ -72,8 +72,8 @@ namespace Camunda.Worker.Client
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
 
-            using var response = await SendRequest($"{taskId}/bpmnError", request, cancellationToken);
-            await EnsureSuccess(response);
+            using var response = await SendRequestAsync($"/{taskId}/bpmnError", request, cancellationToken);
+            await EnsureSuccessAsync(response);
         }
 
         public async Task ExtendLockAsync(
@@ -84,22 +84,21 @@ namespace Camunda.Worker.Client
             Guard.NotNull(taskId, nameof(taskId));
             Guard.NotNull(request, nameof(request));
 
-            using var response = await SendRequest($"{taskId}/extendLock", request, cancellationToken);
-            await EnsureSuccess(response);
+            using var response = await SendRequestAsync($"/{taskId}/extendLock", request, cancellationToken);
+            await EnsureSuccessAsync(response);
         }
 
-        private async Task<HttpResponseMessage> SendRequest(
-            string path, object body,
-            CancellationToken cancellationToken
-        )
+        private async Task<HttpResponseMessage> SendRequestAsync<T>(
+            string path, T body, CancellationToken cancellationToken
+        ) where T : notnull
         {
             var basePath = _httpClient.BaseAddress.AbsolutePath.TrimEnd('/');
-            var requestPath = $"{basePath}/external-task/{path}";
+            var requestPath = $"{basePath}/external-task/{path.TrimStart('/')}";
             var response = await _httpClient.PostJsonAsync(requestPath, body, cancellationToken);
             return response;
         }
 
-        private static async Task EnsureSuccess(HttpResponseMessage response)
+        private static async Task EnsureSuccessAsync(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode && response.IsJson())
             {
