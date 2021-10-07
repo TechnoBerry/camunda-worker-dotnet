@@ -2,8 +2,15 @@ namespace Camunda.Worker.Execution
 {
     public class FetchAndLockOptions
     {
+        private string _workerId = string.Empty;
         private int _maxTasks = 1;
         private int _asyncResponseTimeout = 10_000;
+
+        public string WorkerId
+        {
+            get => _workerId;
+            internal set => _workerId = Guard.NotEmptyAndNotNull(value, nameof(WorkerId));
+        }
 
         public int MaxTasks
         {

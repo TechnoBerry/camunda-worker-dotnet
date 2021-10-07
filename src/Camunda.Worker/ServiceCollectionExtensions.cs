@@ -16,9 +16,7 @@ namespace Camunda.Worker
             Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
             Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
-            services.AddSingleton(new CamundaWorkerOptions(workerId));
-            services.AddOptions<FetchAndLockOptions>();
-
+            services.AddOptions<FetchAndLockOptions>().Configure(options => { options.WorkerId = workerId; });
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
