@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Camunda.Worker
@@ -57,6 +57,17 @@ namespace Camunda.Worker
 
             Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                            d.ServiceType == typeof(WorkerHandlerDescriptor));
+        }
+
+        [Fact]
+        public void TestConfigureEvents()
+        {
+            _builder.ConfigureEvents(events =>
+            {
+                events.OnBeforeFetchAndLock = (_, _) => Task.CompletedTask;
+            });
+
+            Assert.Contains(_services, d => d.ServiceType == typeof(IConfigureOptions<WorkerEvents>));
         }
 
         private class EndpointProvider : IEndpointProvider

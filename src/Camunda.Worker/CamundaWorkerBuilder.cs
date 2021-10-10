@@ -52,5 +52,11 @@ namespace Camunda.Worker
             });
             return this;
         }
+
+        public ICamundaWorkerBuilder ConfigureEvents(Action<WorkerEvents> configureAction)
+        {
+            Services.Configure(configureAction);
+            return this;
+        }
     }
 }

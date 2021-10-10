@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -17,7 +16,8 @@ namespace Camunda.Worker.Execution
         private readonly IExternalTaskClient _externalTaskClient;
         private readonly ITopicsProvider _topicsProvider;
         private readonly FetchAndLockOptions _fetchAndLockOptions;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly WorkerEvents _workerEvents;
+        private readonly IServiceProvider _serviceProvider;
         private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
         private readonly ILogger<DefaultCamundaWorker> _logger;
 
@@ -25,7 +25,8 @@ namespace Camunda.Worker.Execution
             IExternalTaskClient externalTaskClient,
             ITopicsProvider topicsProvider,
             IOptions<FetchAndLockOptions> fetchAndLockOptions,
-            IServiceScopeFactory serviceScopeFactory,
+            IOptions<WorkerEvents> workerEvents,
+            IServiceProvider serviceProvider,
             WorkerHandlerDescriptor workerHandlerDescriptor,
             ILogger<DefaultCamundaWorker>? logger = null
         )
@@ -33,7 +34,8 @@ namespace Camunda.Worker.Execution
             _externalTaskClient = Guard.NotNull(externalTaskClient, nameof(externalTaskClient));
             _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
             _fetchAndLockOptions = Guard.NotNull(fetchAndLockOptions, nameof(fetchAndLockOptions)).Value;
-            _serviceScopeFactory = Guard.NotNull(serviceScopeFactory, nameof(serviceScopeFactory));
+            _workerEvents = Guard.NotNull(workerEvents, nameof(workerEvents)).Value;
+            _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));
             _workerHandlerDescriptor = Guard.NotNull(workerHandlerDescriptor, nameof(workerHandlerDescriptor));
             _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
         }
@@ -42,13 +44,23 @@ namespace Camunda.Worker.Execution
         {
             while (!cancellationToken.IsCancellationRequested)
             {
+                await _workerEvents.OnBeforeFetchAndLock(_serviceProvider, cancellationToken);
+
                 var externalTasks = await SelectAsync(cancellationToken);
 
-                var executableTasks = externalTasks
-                    .Select(ProcessExternalTask)
-                    .ToList();
+                if (externalTasks.Count != 0)
+                {
+                    var tasks = new Task[externalTasks.Count];
+                    var i = 0;
+                    foreach (var externalTask in externalTasks)
+                    {
+                        tasks[i++] = Task.Run(() => ProcessExternalTask(externalTask), cancellationToken);
+                    }
 
-                await Task.WhenAll(executableTasks);
+                    await Task.WhenAll(tasks);
+                }
+
+                await _workerEvents.OnAfterProcessingAllTasks(_serviceProvider, cancellationToken);
             }
         }
 
@@ -65,7 +77,7 @@ namespace Camunda.Worker.Execution
             catch (Exception e) when (!cancellationToken.IsCancellationRequested)
             {
                 Log.FailedLocking(_logger, e);
-                await DelayOnFailure(cancellationToken);
+                await _workerEvents.OnFailedFetchAndLock(_serviceProvider, cancellationToken);
                 return Array.Empty<ExternalTask>();
             }
         }
@@ -85,12 +97,9 @@ namespace Camunda.Worker.Execution
             return fetchAndLockRequest;
         }
 
-        private static Task DelayOnFailure(CancellationToken cancellationToken) =>
-            Task.Delay(10_000, cancellationToken);
-
         private async Task ProcessExternalTask(ExternalTask externalTask)
         {
-            using var scope = _serviceScopeFactory.CreateScope();
+            using var scope = _serviceProvider.CreateScope();
             var context = new ExternalTaskContext(externalTask, _externalTaskClient, scope.ServiceProvider);
 
             try

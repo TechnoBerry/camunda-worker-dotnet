@@ -17,5 +17,7 @@ namespace Camunda.Worker
         ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
 
         ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
+
+        ICamundaWorkerBuilder ConfigureEvents(Action<WorkerEvents> configureAction);
     }
 }
