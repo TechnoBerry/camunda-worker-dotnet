@@ -22,18 +22,22 @@ namespace Camunda.Worker.Execution
             WorkerId = "testWorker",
             AsyncResponseTimeout = 5_000
         });
-        private readonly IOptions<WorkerEvents> _workerEventsOptions = Options.Create(new WorkerEvents());
+        private readonly Mock<IWorkerEvents> _workerEventsMock = new();
         private readonly ServiceProvider _serviceProvider;
         private readonly DefaultCamundaWorker _worker;
 
         public DefaultCamundaWorkerTest()
         {
             _serviceProvider = new ServiceCollection().BuildServiceProvider();
+            var workerEventsOptions = Options.Create(new WorkerEvents
+            {
+                OnAfterProcessingAllTasks = _workerEventsMock.Object.OnAfterProcessingAllTasks
+            });
             _worker = new DefaultCamundaWorker(
                 _clientMock.Object,
                 _topicsProviderMock.Object,
                 _fetchAndLockOptions,
-                _workerEventsOptions,
+                workerEventsOptions,
                 _serviceProvider,
                 new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );
@@ -62,9 +66,13 @@ namespace Camunda.Worker.Execution
 
             var cts = new CancellationTokenSource();
 
+            _workerEventsMock
+                .Setup(e => e.OnAfterProcessingAllTasks(It.IsAny<IServiceProvider>(), It.IsAny<CancellationToken>()))
+                .Callback(cts.Cancel)
+                .Returns(Task.CompletedTask);
+
             _clientMock
                 .Setup(client => client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
-                .Callback(cts.Cancel)
                 .ReturnsAsync(externalTasks)
                 .Verifiable();
 
@@ -106,6 +114,11 @@ namespace Camunda.Worker.Execution
         public interface IHandler
         {
             Task HandleAsync(IExternalTaskContext context);
+        }
+
+        public interface IWorkerEvents
+        {
+            public Task OnAfterProcessingAllTasks(IServiceProvider provider, CancellationToken ct);
         }
     }
 }

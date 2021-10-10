@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -49,11 +48,17 @@ namespace Camunda.Worker.Execution
 
                 var externalTasks = await SelectAsync(cancellationToken);
 
-                var executableTasks = externalTasks
-                    .Select(ProcessExternalTask)
-                    .ToList();
+                if (externalTasks.Count != 0)
+                {
+                    var tasks = new Task[externalTasks.Count];
+                    var i = 0;
+                    foreach (var externalTask in externalTasks)
+                    {
+                        tasks[i++] = Task.Run(() => ProcessExternalTask(externalTask), cancellationToken);
+                    }
 
-                await Task.WhenAll(executableTasks);
+                    await Task.WhenAll(tasks);
+                }
 
                 await _workerEvents.OnAfterProcessingAllTasks(_serviceProvider, cancellationToken);
             }
