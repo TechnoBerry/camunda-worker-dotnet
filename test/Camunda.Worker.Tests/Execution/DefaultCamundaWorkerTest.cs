@@ -22,6 +22,7 @@ namespace Camunda.Worker.Execution
             WorkerId = "testWorker",
             AsyncResponseTimeout = 5_000
         });
+        private readonly IOptions<WorkerEvents> _workerEventsOptions = Options.Create(new WorkerEvents());
         private readonly ServiceProvider _serviceProvider;
         private readonly DefaultCamundaWorker _worker;
 
@@ -32,7 +33,8 @@ namespace Camunda.Worker.Execution
                 _clientMock.Object,
                 _topicsProviderMock.Object,
                 _fetchAndLockOptions,
-                _serviceProvider.GetRequiredService<IServiceScopeFactory>(),
+                _workerEventsOptions,
+                _serviceProvider,
                 new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );
         }
