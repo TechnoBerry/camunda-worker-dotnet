@@ -1,5 +1,8 @@
+using System;
+
 namespace Camunda.Worker.Execution
 {
+    [Obsolete("Use IFetchAndLockRequestProvider instead")]
     public class FetchAndLockOptions
     {
         private string _workerId = string.Empty;

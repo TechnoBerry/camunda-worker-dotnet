@@ -12,6 +12,7 @@ namespace Camunda.Worker
 
         ICamundaWorkerBuilder AddEndpointProvider<TProvider>() where TProvider : class, IEndpointProvider;
 
+        [Obsolete("Use IFetchAndLockRequestProvider and AddFetchAndLockRequestProvider instead")]
         ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
 
         ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
