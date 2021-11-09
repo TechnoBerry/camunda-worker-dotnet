@@ -14,8 +14,7 @@ namespace Camunda.Worker.Execution
     public sealed class DefaultCamundaWorker : ICamundaWorker
     {
         private readonly IExternalTaskClient _externalTaskClient;
-        private readonly ITopicsProvider _topicsProvider;
-        private readonly FetchAndLockOptions _fetchAndLockOptions;
+        private readonly IFetchAndLockRequestProvider _fetchAndLockRequestProvider;
         private readonly WorkerEvents _workerEvents;
         private readonly IServiceProvider _serviceProvider;
         private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
@@ -23,8 +22,7 @@ namespace Camunda.Worker.Execution
 
         public DefaultCamundaWorker(
             IExternalTaskClient externalTaskClient,
-            ITopicsProvider topicsProvider,
-            IOptions<FetchAndLockOptions> fetchAndLockOptions,
+            IFetchAndLockRequestProvider fetchAndLockRequestProvider,
             IOptions<WorkerEvents> workerEvents,
             IServiceProvider serviceProvider,
             WorkerHandlerDescriptor workerHandlerDescriptor,
@@ -32,8 +30,7 @@ namespace Camunda.Worker.Execution
         )
         {
             _externalTaskClient = Guard.NotNull(externalTaskClient, nameof(externalTaskClient));
-            _topicsProvider = Guard.NotNull(topicsProvider, nameof(topicsProvider));
-            _fetchAndLockOptions = Guard.NotNull(fetchAndLockOptions, nameof(fetchAndLockOptions)).Value;
+            _fetchAndLockRequestProvider = Guard.NotNull(fetchAndLockRequestProvider, nameof(fetchAndLockRequestProvider));
             _workerEvents = Guard.NotNull(workerEvents, nameof(workerEvents)).Value;
             _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));
             _workerHandlerDescriptor = Guard.NotNull(workerHandlerDescriptor, nameof(workerHandlerDescriptor));
@@ -69,7 +66,7 @@ namespace Camunda.Worker.Execution
             try
             {
                 Log.Waiting(_logger);
-                var fetchAndLockRequest = MakeRequestBody();
+                var fetchAndLockRequest = _fetchAndLockRequestProvider.GetRequest();
                 var externalTasks = await _externalTaskClient.FetchAndLockAsync(fetchAndLockRequest, cancellationToken);
                 Log.Locked(_logger, externalTasks.Count);
                 return externalTasks;
@@ -80,21 +77,6 @@ namespace Camunda.Worker.Execution
                 await _workerEvents.OnFailedFetchAndLock(_serviceProvider, cancellationToken);
                 return Array.Empty<ExternalTask>();
             }
-        }
-
-        private FetchAndLockRequest MakeRequestBody()
-        {
-            var topics = _topicsProvider.GetTopics();
-
-            var fetchAndLockRequest =
-                new FetchAndLockRequest(_fetchAndLockOptions.WorkerId, _fetchAndLockOptions.MaxTasks)
-                {
-                    UsePriority = _fetchAndLockOptions.UsePriority,
-                    AsyncResponseTimeout = _fetchAndLockOptions.AsyncResponseTimeout,
-                    Topics = topics
-                };
-
-            return fetchAndLockRequest;
         }
 
         private async Task ProcessExternalTask(ExternalTask externalTask)

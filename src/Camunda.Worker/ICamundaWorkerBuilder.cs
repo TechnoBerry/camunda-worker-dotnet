@@ -14,6 +14,10 @@ namespace Camunda.Worker
 
         ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
 
+        ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
+            Func<WorkerServiceOptions, IServiceProvider, IFetchAndLockRequestProvider> factory
+        );
+
         ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
 
         ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);

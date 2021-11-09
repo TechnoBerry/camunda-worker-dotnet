@@ -45,9 +45,19 @@ namespace Camunda.Worker
         {
             _builder.AddTopicsProvider<TopicsProvider>();
 
-            Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(ITopicsProvider) &&
-                                           d.ImplementationType == typeof(TopicsProvider));
+            using var provider = _services.BuildServiceProvider();
+
+            Assert.IsType<TopicsProvider>(provider.GetService<ITopicsProvider>());
+        }
+
+        [Fact]
+        public void TestAddFetchAndLockRequestProvider()
+        {
+            _builder.AddFetchAndLockRequestProvider((_, _) => new FetchAndLockRequestProvider());
+
+            using var provider = _services.BuildServiceProvider();
+
+            Assert.IsType<FetchAndLockRequestProvider>(provider.GetService<IFetchAndLockRequestProvider>());
         }
 
         [Fact]
@@ -81,6 +91,14 @@ namespace Camunda.Worker
         private class TopicsProvider : ITopicsProvider
         {
             public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
+        {
+            public FetchAndLockRequest GetRequest()
             {
                 throw new NotImplementedException();
             }

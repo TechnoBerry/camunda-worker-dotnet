@@ -2,6 +2,7 @@ using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker
 {
@@ -24,7 +25,11 @@ namespace Camunda.Worker
             services.TryAddSingleton(_ => new WorkerHandlerDescriptor(ExternalTaskRouter.RouteAsync));
             services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
-            return new CamundaWorkerBuilder(services, workerId);
+            return new CamundaWorkerBuilder(services, workerId)
+                .AddFetchAndLockRequestProvider((options, provider) => new LegacyFetchAndLockRequestProvider(
+                    provider.GetRequiredService<ITopicsProvider>(),
+                    provider.GetRequiredService<IOptions<FetchAndLockOptions>>()
+                ));
         }
     }
 }

@@ -29,6 +29,20 @@ namespace Camunda.Worker
             return this;
         }
 
+        public ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
+            Func<WorkerServiceOptions, IServiceProvider, IFetchAndLockRequestProvider> factory
+        )
+        {
+            Services.AddSingleton(provider =>
+            {
+                var handlerDescriptors = provider.GetServices<HandlerDescriptor>();
+                var options = new WorkerServiceOptions(WorkerId, handlerDescriptors);
+                return factory(options, provider);
+            });
+
+            return this;
+        }
+
         public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
         {
             Guard.NotNull(handler, nameof(handler));
