@@ -2,13 +2,13 @@ using System;
 
 namespace Camunda.Worker.Execution
 {
-    [Obsolete("Use IFetchAndLockRequestProvider instead")]
     public class FetchAndLockOptions
     {
         private string _workerId = string.Empty;
         private int _maxTasks = 1;
         private int _asyncResponseTimeout = 10_000;
 
+        [Obsolete]
         public string WorkerId
         {
             get => _workerId;
