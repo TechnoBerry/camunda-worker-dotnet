@@ -16,12 +16,7 @@ namespace Camunda.Worker.Execution
     {
         private readonly Mock<IHandler> _handlerMock = new();
         private readonly Mock<IExternalTaskClient> _clientMock = new();
-        private readonly Mock<ITopicsProvider> _topicsProviderMock = new();
-        private readonly IOptions<FetchAndLockOptions> _fetchAndLockOptions = Options.Create(new FetchAndLockOptions
-        {
-            WorkerId = "testWorker",
-            AsyncResponseTimeout = 5_000
-        });
+        private readonly Mock<IFetchAndLockRequestProvider> _fetchAndLockRequestProviderMock = new();
         private readonly Mock<IWorkerEvents> _workerEventsMock = new();
         private readonly ServiceProvider _serviceProvider;
         private readonly DefaultCamundaWorker _worker;
@@ -29,15 +24,17 @@ namespace Camunda.Worker.Execution
         public DefaultCamundaWorkerTest()
         {
             _serviceProvider = new ServiceCollection().BuildServiceProvider();
-            var workerEventsOptions = Options.Create(new WorkerEvents
-            {
-                OnAfterProcessingAllTasks = _workerEventsMock.Object.OnAfterProcessingAllTasks
-            });
+
+            _fetchAndLockRequestProviderMock.Setup(provider => provider.GetRequest())
+                .Returns(new FetchAndLockRequest("test"));
+
             _worker = new DefaultCamundaWorker(
                 _clientMock.Object,
-                _topicsProviderMock.Object,
-                _fetchAndLockOptions,
-                workerEventsOptions,
+                _fetchAndLockRequestProviderMock.Object,
+                Options.Create(new WorkerEvents
+                {
+                    OnAfterProcessingAllTasks = _workerEventsMock.Object.OnAfterProcessingAllTasks
+                }),
                 _serviceProvider,
                 new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
             );

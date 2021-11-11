@@ -1,4 +1,4 @@
-using Camunda.Worker.Client;
+using System;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,21 +19,17 @@ namespace Camunda.Worker
 
             var fetchAndLockOptions = provider.GetRequiredService<IOptions<FetchAndLockOptions>>().Value;
             Assert.Equal("testWorker", fetchAndLockOptions.WorkerId);
+            Assert.NotNull(provider.GetService<IOptions<WorkerEvents>>()?.Value);
 
-            var workerEvents = provider.GetRequiredService<IOptions<WorkerEvents>>().Value;
-            Assert.NotNull(workerEvents);
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(IEndpointProvider));
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(ITopicsProvider));
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Transient &&
-                                           d.ServiceType == typeof(ICamundaWorker));
-
-            Assert.Contains(services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                           d.ServiceType == typeof(WorkerHandlerDescriptor));
+            Assert.Contains(services, IsRegistered(typeof(IEndpointProvider), ServiceLifetime.Singleton));
+            Assert.Contains(services, IsRegistered(typeof(ITopicsProvider), ServiceLifetime.Transient));
+            Assert.Contains(services, IsRegistered(typeof(ICamundaWorker), ServiceLifetime.Transient));
+            Assert.Contains(services, IsRegistered(typeof(WorkerHandlerDescriptor), ServiceLifetime.Singleton));
+            Assert.Contains(services, IsRegistered(typeof(IFetchAndLockRequestProvider), ServiceLifetime.Singleton));
         }
+
+        private static Predicate<ServiceDescriptor> IsRegistered(Type serviceType, ServiceLifetime lifetime)
+            => descriptor => descriptor.Lifetime == lifetime &&
+                             descriptor.ServiceType == serviceType;
     }
 }
