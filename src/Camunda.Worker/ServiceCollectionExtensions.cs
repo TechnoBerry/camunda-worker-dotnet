@@ -22,14 +22,14 @@ namespace Camunda.Worker
             services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
             services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
             services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
-            services.TryAddSingleton(_ => new WorkerHandlerDescriptor(ExternalTaskRouter.RouteAsync));
             services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
             return new CamundaWorkerBuilder(services, workerId)
                 .AddFetchAndLockRequestProvider((options, provider) => new LegacyFetchAndLockRequestProvider(
                     provider.GetRequiredService<ITopicsProvider>(),
                     provider.GetRequiredService<IOptions<FetchAndLockOptions>>()
-                ));
+                ))
+                .ConfigurePipeline(_ => { });
         }
     }
 }

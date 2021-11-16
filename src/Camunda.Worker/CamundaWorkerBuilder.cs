@@ -59,9 +59,9 @@ namespace Camunda.Worker
             Guard.NotNull(configureAction, nameof(configureAction));
             Services.AddSingleton(provider =>
             {
-                var builder = new PipelineBuilder(provider);
-                configureAction(builder);
-                var externalTaskDelegate = builder.Build(ExternalTaskRouter.RouteAsync);
+                var externalTaskDelegate = new PipelineBuilder(provider)
+                    .Also(configureAction)
+                    .Build(ExternalTaskRouter.RouteAsync);
                 return new WorkerHandlerDescriptor(externalTaskDelegate);
             });
             return this;
