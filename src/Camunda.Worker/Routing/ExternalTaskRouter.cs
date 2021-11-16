@@ -1,7 +1,8 @@
 using System.Threading.Tasks;
+using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker.Routing
 {
     internal static class ExternalTaskRouter
     {
