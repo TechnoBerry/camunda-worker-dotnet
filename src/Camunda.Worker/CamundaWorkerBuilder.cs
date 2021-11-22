@@ -30,7 +30,7 @@ namespace Camunda.Worker
             return this;
         }
 
-        public ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
+        internal CamundaWorkerBuilder AddFetchAndLockRequestProvider(
             Func<WorkerServiceOptions, IServiceProvider, IFetchAndLockRequestProvider> factory
         )
         {
