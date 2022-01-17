@@ -23,7 +23,7 @@ namespace Camunda.Worker.Execution
 
         public async Task InvokeAsync()
         {
-            Log.StartedProcessing(_logger, _context.Task.Id);
+            LogHelper.LogStartedProcessing(_logger, _context.Task.Id);
             IExecutionResult executionResult;
             try
             {
@@ -35,31 +35,41 @@ namespace Camunda.Worker.Execution
             }
 
             await executionResult.ExecuteResultAsync(_context);
-            Log.FinishedProcessing(_logger, _context.Task.Id);
+            LogHelper.LogFinishedProcessing(_logger, _context.Task.Id);
         }
 
         [ExcludeFromCodeCoverage]
-        private static class Log
+        private static class LogHelper
         {
-            private static readonly Action<ILogger, string, Exception?> _startedProcessing =
+            private static readonly Action<ILogger, string, Exception?> StartedProcessing =
                 LoggerMessage.Define<string>(
                     LogLevel.Debug,
                     new EventId(0),
                     "Started processing of task {TaskId}"
                 );
 
-            private static readonly Action<ILogger, string, Exception?> _finishedProcessing =
+            private static readonly Action<ILogger, string, Exception?> FinishedProcessing =
                 LoggerMessage.Define<string>(
                     LogLevel.Debug,
                     new EventId(0),
                     "Finished processing of task {TaskId}"
                 );
 
-            public static void StartedProcessing(ILogger logger, string taskId) =>
-                _startedProcessing(logger, taskId, null);
+            public static void LogStartedProcessing(ILogger logger, string taskId)
+            {
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    StartedProcessing(logger, taskId, null);
+                }
+            }
 
-            public static void FinishedProcessing(ILogger logger, string taskId) =>
-                _finishedProcessing(logger, taskId, null);
+            public static void LogFinishedProcessing(ILogger logger, string taskId)
+            {
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    FinishedProcessing(logger, taskId, null);
+                }
+            }
         }
     }
 }
