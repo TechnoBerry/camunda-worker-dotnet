@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 
@@ -12,6 +13,8 @@ namespace Camunda.Worker
         IExternalTaskClient Client { get; }
 
         IServiceProvider ServiceProvider { get; }
+
+        CancellationToken ProcessingAborted { get; }
 
         [Obsolete("Use Client instead")]
         Task ExtendLockAsync(int newDuration);

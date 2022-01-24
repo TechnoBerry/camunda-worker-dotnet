@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 
@@ -7,8 +8,14 @@ namespace Camunda.Worker.Execution
 {
     public sealed class ExternalTaskContext : IExternalTaskContext
     {
-        public ExternalTaskContext(ExternalTask task, IExternalTaskClient client, IServiceProvider provider)
+        public ExternalTaskContext(
+            ExternalTask task,
+            IExternalTaskClient client,
+            IServiceProvider provider,
+            CancellationToken processingAborted
+        )
         {
+            ProcessingAborted = processingAborted;
             Task = Guard.NotNull(task, nameof(task));
             Client = Guard.NotNull(client, nameof(client));
             ServiceProvider = Guard.NotNull(provider, nameof(provider));
@@ -19,6 +26,8 @@ namespace Camunda.Worker.Execution
         public IExternalTaskClient Client { get; }
 
         public IServiceProvider ServiceProvider { get; }
+
+        public CancellationToken ProcessingAborted { get; }
 
         public async Task ExtendLockAsync(int newDuration)
         {

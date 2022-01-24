@@ -19,7 +19,8 @@ namespace Camunda.Worker.Execution
             _context = new ExternalTaskContext(
                 new ExternalTask("testId", "testWorker", "testTopic"),
                 _clientMock.Object,
-                _serviceProviderMock.Object
+                _serviceProviderMock.Object,
+                default
             );
         }
 

@@ -27,9 +27,9 @@ namespace Camunda.Worker.Execution
             IExecutionResult executionResult;
             try
             {
-                executionResult = await _handler.HandleAsync(_context.Task, default);
+                executionResult = await _handler.HandleAsync(_context.Task, _context.ProcessingAborted);
             }
-            catch (Exception e)
+            catch (Exception e) when (!_context.ProcessingAborted.IsCancellationRequested)
             {
                 executionResult = new FailureResult(e);
             }

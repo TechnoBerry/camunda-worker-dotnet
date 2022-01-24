@@ -51,7 +51,10 @@ namespace Camunda.Worker.Execution
                     var i = 0;
                     foreach (var externalTask in externalTasks)
                     {
-                        tasks[i++] = Task.Run(() => ProcessExternalTask(externalTask), cancellationToken);
+                        tasks[i++] = Task.Run(
+                            () => ProcessExternalTaskAsync(externalTask, cancellationToken),
+                            cancellationToken
+                        );
                     }
 
                     await Task.WhenAll(tasks);
@@ -79,10 +82,15 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private async Task ProcessExternalTask(ExternalTask externalTask)
+        private async Task ProcessExternalTaskAsync(ExternalTask externalTask, CancellationToken cancellationToken)
         {
             using var scope = _serviceProvider.CreateScope();
-            var context = new ExternalTaskContext(externalTask, _externalTaskClient, scope.ServiceProvider);
+            var context = new ExternalTaskContext(
+                externalTask,
+                _externalTaskClient,
+                scope.ServiceProvider,
+                cancellationToken
+            );
 
             try
             {
