@@ -45,7 +45,7 @@ namespace Camunda.Worker.Execution
 
                 var externalTasks = await SelectAsync(cancellationToken);
 
-                if (externalTasks.Count != 0)
+                if (externalTasks != null && externalTasks.Count != 0)
                 {
                     var tasks = new Task[externalTasks.Count];
                     var i = 0;
@@ -61,7 +61,7 @@ namespace Camunda.Worker.Execution
             }
         }
 
-        private async Task<IReadOnlyCollection<ExternalTask>> SelectAsync(CancellationToken cancellationToken = default)
+        private async Task<List<ExternalTask>?> SelectAsync(CancellationToken cancellationToken)
         {
             try
             {
@@ -75,7 +75,7 @@ namespace Camunda.Worker.Execution
             {
                 LogHelper.LogFailedLocking(_logger, e);
                 await _workerEvents.OnFailedFetchAndLock(_serviceProvider, cancellationToken);
-                return Array.Empty<ExternalTask>();
+                return null;
             }
         }
 
