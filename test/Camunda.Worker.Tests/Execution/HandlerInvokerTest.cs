@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Camunda.Worker.Execution
 {
-    public class HandlerInvokerTest
+    public class HandlerInvokerTest : IDisposable
     {
         private readonly Mock<IExternalTaskHandler> _handlerMock = new();
         private readonly Mock<IExternalTaskClient> _clientMock = new();
@@ -93,6 +93,11 @@ namespace Camunda.Worker.Execution
 
             // Assert
             await Assert.ThrowsAsync<TaskCanceledException>(() => invokerTask);
+        }
+
+        public void Dispose()
+        {
+            _processingAborted.Dispose();
         }
     }
 }
