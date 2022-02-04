@@ -73,6 +73,9 @@ namespace Camunda.Worker.Client
 
             public IReadOnlyCollection<string>? ProcessDefinitionKeyIn { get; set; }
 
+            /// <summary>A dictionary used for filtering tasks based on process instance variable values. The property Key of the dictionary represents a process variable name, while the property value represents the process variable value to filter tasks by.</summary>
+            public IReadOnlyCollection<KeyValuePair<string, string>>? ProcessVariables { get; set; }
+
             public bool? WithoutTenantId { get; set; }
 
             public IReadOnlyCollection<string>? TenantIdIn { get; set; }
