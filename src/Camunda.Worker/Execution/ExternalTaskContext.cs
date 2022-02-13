@@ -12,13 +12,13 @@ namespace Camunda.Worker.Execution
             ExternalTask task,
             IExternalTaskClient client,
             IServiceProvider provider,
-            CancellationToken processingAborted
+            CancellationToken processingAborted = default
         )
         {
-            ProcessingAborted = processingAborted;
             Task = Guard.NotNull(task, nameof(task));
             Client = Guard.NotNull(client, nameof(client));
             ServiceProvider = Guard.NotNull(provider, nameof(provider));
+            ProcessingAborted = processingAborted;
         }
 
         public ExternalTask Task { get; }
