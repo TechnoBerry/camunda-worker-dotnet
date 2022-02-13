@@ -26,6 +26,7 @@ namespace Camunda.Worker.Execution
                 Variables = metadata.Variables,
                 ProcessDefinitionIdIn = metadata.ProcessDefinitionIds,
                 ProcessDefinitionKeyIn = metadata.ProcessDefinitionKeys,
+                ProcessVariables = metadata.ProcessVariables,
                 TenantIdIn = metadata.TenantIds,
                 DeserializeValues = metadata.DeserializeValues,
                 IncludeExtensionProperties = metadata.IncludeExtensionProperties,
