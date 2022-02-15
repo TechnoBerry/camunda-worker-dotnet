@@ -88,6 +88,8 @@ namespace Camunda.Worker
         /// </summary>
         public string? ErrorDetails { get; set; }
 
+        public IDictionary<string, string>? ExtensionProperties { get; set; }
+
         public IDictionary<string, Variable>? Variables { get; set; }
     }
 }

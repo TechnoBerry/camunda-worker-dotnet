@@ -23,5 +23,7 @@ namespace Camunda.Worker
             get => _lockDuration;
             set => _lockDuration = Guard.GreaterThanOrEqual(value, Constants.MinimumLockDuration, nameof(LockDuration));
         }
+
+        public bool IncludeExtensionProperties { get; set; }
     }
 }
