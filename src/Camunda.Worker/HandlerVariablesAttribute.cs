@@ -14,5 +14,7 @@ namespace Camunda.Worker
         public IReadOnlyList<string> Variables { get; }
 
         public bool LocalVariables { get; set; }
+
+        public bool AllVariables { get; set; }
     }
 }
