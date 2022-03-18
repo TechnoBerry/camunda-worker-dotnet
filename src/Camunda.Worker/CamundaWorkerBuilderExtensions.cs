@@ -36,7 +36,7 @@ namespace Camunda.Worker
             return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
             {
                 LocalVariables = variablesAttribute?.LocalVariables ?? false,
-                Variables = variablesAttribute?.Variables,
+                Variables =  variablesAttribute?.AllVariables ?? false ? null : variablesAttribute?.Variables,
                 IncludeExtensionProperties = topicsAttribute.IncludeExtensionProperties
             };
         }

@@ -21,7 +21,7 @@ namespace Camunda.Worker.Execution
 
         /// <summary>Determines whether custom extension properties defined in the BPMN activity of the external task (e.g. via the Extensions tab in the Camunda modeler) should be included in the response. Default: false.</summary>
         public bool IncludeExtensionProperties { get; set; }
-        
+
         public IReadOnlyList<string>? Variables { get; set; }
 
         public IReadOnlyList<string>? ProcessDefinitionIds { get; set; }
