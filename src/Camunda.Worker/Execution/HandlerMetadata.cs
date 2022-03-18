@@ -15,7 +15,6 @@ namespace Camunda.Worker.Execution
         public int LockDuration { get; }
 
         public bool LocalVariables { get; set; }
-        public bool AllVariables { get; set; }
 
         /// <summary>Determines whether serializable variable values (typically variables that store custom Java objects) should be deserialized on server side (default false).</summary>
         public bool DeserializeValues { get; set; }

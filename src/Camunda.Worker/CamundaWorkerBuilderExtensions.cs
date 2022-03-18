@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Camunda.Worker.Execution;
@@ -37,7 +36,6 @@ namespace Camunda.Worker
             return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
             {
                 LocalVariables = variablesAttribute?.LocalVariables ?? false,
-                AllVariables = variablesAttribute?.AllVariables ?? false,
                 Variables =  variablesAttribute?.AllVariables ?? false ? null : variablesAttribute?.Variables,
                 IncludeExtensionProperties = topicsAttribute.IncludeExtensionProperties
             };
