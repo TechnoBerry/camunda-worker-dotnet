@@ -92,7 +92,7 @@ public class ExternalTaskClient : IExternalTaskClient
         string path, T body, CancellationToken cancellationToken
     ) where T : notnull
     {
-        var basePath = _httpClient.BaseAddress.AbsolutePath.TrimEnd('/');
+        var basePath = _httpClient.BaseAddress?.AbsolutePath.TrimEnd('/') ?? string.Empty;
         var requestPath = $"{basePath}/external-task/{path.TrimStart('/')}";
         var response = await _httpClient.PostJsonAsync(requestPath, body, cancellationToken);
         return response;

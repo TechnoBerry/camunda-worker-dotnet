@@ -64,7 +64,7 @@ public class Variable : IEquatable<Variable>
     public string AsString()
     {
         EnsureIsOfType(VariableType.String);
-        return Convert.ToString(Value);
+        return Convert.ToString(Value) ?? string.Empty;
     }
 
     [ExcludeFromCodeCoverage]
@@ -77,7 +77,7 @@ public class Variable : IEquatable<Variable>
     public byte[] AsBytes()
     {
         EnsureIsOfType(VariableType.Bytes);
-        var stringValue = Convert.ToString(Value);
+        var stringValue = Convert.ToString(Value) ?? string.Empty;
         return Convert.FromBase64String(stringValue);
     }
 
@@ -126,7 +126,7 @@ public class Variable : IEquatable<Variable>
     public XElement AsXElement()
     {
         EnsureIsOfType(VariableType.Xml);
-        var stringValue = Convert.ToString(Value);
+        var stringValue = Convert.ToString(Value) ?? string.Empty;
         return XElement.Parse(stringValue);
     }
 
@@ -152,7 +152,7 @@ public class Variable : IEquatable<Variable>
     public VariableType Type { get; }
 
     [ExcludeFromCodeCoverage]
-    public bool Equals(Variable other)
+    public bool Equals(Variable? other)
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
@@ -160,12 +160,12 @@ public class Variable : IEquatable<Variable>
     }
 
     [ExcludeFromCodeCoverage]
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((Variable) obj);
+        return Equals((Variable)obj);
     }
 
     [ExcludeFromCodeCoverage]

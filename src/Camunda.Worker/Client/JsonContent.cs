@@ -34,7 +34,7 @@ internal sealed class JsonContent : HttpContent
         return new JsonContent(body, typeof(T), serializer);
     }
 
-    protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
+    protected override async Task SerializeToStreamAsync(Stream stream, TransportContext? context)
     {
         var streamWriter = new StreamWriter(stream);
         _serializer.Serialize(streamWriter, _body, _bodyType);
