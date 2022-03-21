@@ -1,13 +1,12 @@
 using System;
 
-namespace Camunda.Worker
+namespace Camunda.Worker;
+
+public interface IPipelineBuilder
 {
-    public interface IPipelineBuilder
-    {
-        IServiceProvider ApplicationServices { get; }
+    IServiceProvider ApplicationServices { get; }
 
-        IPipelineBuilder Use(Func<ExternalTaskDelegate, ExternalTaskDelegate> middleware);
+    IPipelineBuilder Use(Func<ExternalTaskDelegate, ExternalTaskDelegate> middleware);
 
-        ExternalTaskDelegate Build(ExternalTaskDelegate lastDelegate);
-    }
+    ExternalTaskDelegate Build(ExternalTaskDelegate lastDelegate);
 }

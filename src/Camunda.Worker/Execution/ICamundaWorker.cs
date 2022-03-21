@@ -1,10 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker.Execution;
+
+public interface ICamundaWorker
 {
-    public interface ICamundaWorker
-    {
-        Task RunAsync(CancellationToken cancellationToken);
-    }
+    Task RunAsync(CancellationToken cancellationToken);
 }
