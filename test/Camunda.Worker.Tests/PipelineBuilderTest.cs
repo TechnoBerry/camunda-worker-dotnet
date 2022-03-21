@@ -6,57 +6,56 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker
+namespace Camunda.Worker;
+
+public class PipelineBuilderTest
 {
-    public class PipelineBuilderTest
+    private readonly Mock<IExternalTaskContext> _contextMock = new();
+    private readonly IServiceProvider _serviceProvider;
+
+    public PipelineBuilderTest()
     {
-        private readonly Mock<IExternalTaskContext> _contextMock = new();
-        private readonly IServiceProvider _serviceProvider;
+        var services = new ServiceCollection();
+        _serviceProvider = services.BuildServiceProvider();
+        _contextMock.SetupGet(ctx => ctx.ServiceProvider)
+            .Returns(_serviceProvider);
+    }
 
-        public PipelineBuilderTest()
+    [Theory]
+    [InlineData(10)]
+    [InlineData(100)]
+    public async Task TestBuildPipeline(int calls)
+    {
+        IPipelineBuilder builder = new PipelineBuilder(_serviceProvider);
+
+        Task LastDelegate(IExternalTaskContext context)
         {
-            var services = new ServiceCollection();
-            _serviceProvider = services.BuildServiceProvider();
-            _contextMock.SetupGet(ctx => ctx.ServiceProvider)
-                .Returns(_serviceProvider);
+            return Task.CompletedTask;
         }
 
-        [Theory]
-        [InlineData(10)]
-        [InlineData(100)]
-        public async Task TestBuildPipeline(int calls)
-        {
-            IPipelineBuilder builder = new PipelineBuilder(_serviceProvider);
+        var numsIn = new List<int>(calls);
+        var numsOut = new List<int>(calls);
 
-            Task LastDelegate(IExternalTaskContext context)
+        Enumerable.Range(0, calls)
+            .Select(i => (Func<ExternalTaskDelegate, ExternalTaskDelegate>) (next => async ctx =>
             {
-                return Task.CompletedTask;
-            }
+                numsIn.Add(i);
 
-            var numsIn = new List<int>(calls);
-            var numsOut = new List<int>(calls);
+                await next(ctx);
 
-            Enumerable.Range(0, calls)
-                .Select(i => (Func<ExternalTaskDelegate, ExternalTaskDelegate>) (next => async ctx =>
-                {
-                    numsIn.Add(i);
+                numsOut.Add(i);
+            }))
+            .Aggregate(builder, (b, func) => b.Use(func));
 
-                    await next(ctx);
+        var result = builder.Build(LastDelegate);
+        await result(_contextMock.Object);
 
-                    numsOut.Add(i);
-                }))
-                .Aggregate(builder, (b, func) => b.Use(func));
+        Assert.Equal(calls, numsIn.Count);
+        Assert.Equal(calls, numsOut.Count);
 
-            var result = builder.Build(LastDelegate);
-            await result(_contextMock.Object);
+        Assert.Equal(numsIn.Count, numsIn.Distinct().Count());
+        Assert.Equal(numsOut.Count, numsOut.Distinct().Count());
 
-            Assert.Equal(calls, numsIn.Count);
-            Assert.Equal(calls, numsOut.Count);
-
-            Assert.Equal(numsIn.Count, numsIn.Distinct().Count());
-            Assert.Equal(numsOut.Count, numsOut.Distinct().Count());
-
-            Assert.Equal(numsIn, ((IEnumerable<int>) numsOut).Reverse().ToList());
-        }
+        Assert.Equal(numsIn, ((IEnumerable<int>) numsOut).Reverse().ToList());
     }
 }

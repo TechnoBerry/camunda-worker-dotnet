@@ -5,43 +5,42 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 
-namespace Camunda.Worker.Routing
+namespace Camunda.Worker.Routing;
+
+public class ExternalTaskRouterTest
 {
-    public class ExternalTaskRouterTest
+    private readonly Mock<IExternalTaskContext> _contextMock = new();
+    private readonly Mock<IEndpointProvider> _endpointProviderMock = new();
+
+    public ExternalTaskRouterTest()
     {
-        private readonly Mock<IExternalTaskContext> _contextMock = new();
-        private readonly Mock<IEndpointProvider> _endpointProviderMock = new();
+        var serviceProvider = new ServiceCollection()
+            .AddSingleton(_endpointProviderMock.Object)
+            .BuildServiceProvider();
 
-        public ExternalTaskRouterTest()
+        _contextMock.SetupGet(context => context.ServiceProvider).Returns(serviceProvider);
+        _contextMock.SetupGet(context => context.Task).Returns(new ExternalTask("1", "testWorker", "testTopic"));
+    }
+
+    [Fact]
+    public async Task TestRouteAsync()
+    {
+        // Arrange
+        var calls = new List<IExternalTaskContext>();
+
+        Task ExternalTaskDelegate(IExternalTaskContext context)
         {
-            var serviceProvider = new ServiceCollection()
-                .AddSingleton(_endpointProviderMock.Object)
-                .BuildServiceProvider();
-
-            _contextMock.SetupGet(context => context.ServiceProvider).Returns(serviceProvider);
-            _contextMock.SetupGet(context => context.Task).Returns(new ExternalTask("1", "testWorker", "testTopic"));
+            calls.Add(context);
+            return Task.CompletedTask;
         }
 
-        [Fact]
-        public async Task TestRouteAsync()
-        {
-            // Arrange
-            var calls = new List<IExternalTaskContext>();
+        _endpointProviderMock.Setup(factory => factory.GetEndpointDelegate(It.IsAny<ExternalTask>()))
+            .Returns(ExternalTaskDelegate);
 
-            Task ExternalTaskDelegate(IExternalTaskContext context)
-            {
-                calls.Add(context);
-                return Task.CompletedTask;
-            }
+        // Act
+        await ExternalTaskRouter.RouteAsync(_contextMock.Object);
 
-            _endpointProviderMock.Setup(factory => factory.GetEndpointDelegate(It.IsAny<ExternalTask>()))
-                .Returns(ExternalTaskDelegate);
-
-            // Act
-            await ExternalTaskRouter.RouteAsync(_contextMock.Object);
-
-            // Assert
-            Assert.Single(calls);
-        }
+        // Assert
+        Assert.Single(calls);
     }
 }
