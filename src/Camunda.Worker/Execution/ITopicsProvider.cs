@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Camunda.Worker.Client;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker.Execution;
+
+public interface ITopicsProvider
 {
-    public interface ITopicsProvider
-    {
-        IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics();
-    }
+    IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics();
 }

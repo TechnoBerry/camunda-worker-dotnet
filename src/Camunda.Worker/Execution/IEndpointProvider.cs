@@ -1,7 +1,6 @@
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker.Execution;
+
+public interface IEndpointProvider
 {
-    public interface IEndpointProvider
-    {
-        ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask);
-    }
+    ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask);
 }

@@ -1,12 +1,11 @@
-namespace Camunda.Worker.Execution
-{
-    public class WorkerHandlerDescriptor
-    {
-        public WorkerHandlerDescriptor(ExternalTaskDelegate externalTaskDelegate)
-        {
-            ExternalTaskDelegate = Guard.NotNull(externalTaskDelegate, nameof(externalTaskDelegate));
-        }
+namespace Camunda.Worker.Execution;
 
-        public ExternalTaskDelegate ExternalTaskDelegate { get; }
+public class WorkerHandlerDescriptor
+{
+    public WorkerHandlerDescriptor(ExternalTaskDelegate externalTaskDelegate)
+    {
+        ExternalTaskDelegate = Guard.NotNull(externalTaskDelegate, nameof(externalTaskDelegate));
     }
+
+    public ExternalTaskDelegate ExternalTaskDelegate { get; }
 }

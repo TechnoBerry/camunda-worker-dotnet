@@ -2,22 +2,21 @@ using System;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Camunda.Worker
+namespace Camunda.Worker;
+
+public interface ICamundaWorkerBuilder
 {
-    public interface ICamundaWorkerBuilder
-    {
-        IServiceCollection Services { get; }
+    IServiceCollection Services { get; }
 
-        string WorkerId { get; }
+    string WorkerId { get; }
 
-        ICamundaWorkerBuilder AddEndpointProvider<TProvider>() where TProvider : class, IEndpointProvider;
+    ICamundaWorkerBuilder AddEndpointProvider<TProvider>() where TProvider : class, IEndpointProvider;
 
-        ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
+    ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
 
-        ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
+    ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
 
-        ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
+    ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
 
-        ICamundaWorkerBuilder ConfigureEvents(Action<WorkerEvents> configureAction);
-    }
+    ICamundaWorkerBuilder ConfigureEvents(Action<WorkerEvents> configureAction);
 }

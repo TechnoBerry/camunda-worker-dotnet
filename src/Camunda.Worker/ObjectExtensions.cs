@@ -1,13 +1,12 @@
 using System;
 
-namespace Camunda.Worker
+namespace Camunda.Worker;
+
+internal static class ObjectExtensions
 {
-    internal static class ObjectExtensions
+    internal static T Also<T>(this T self, Action<T> action)
     {
-        internal static T Also<T>(this T self, Action<T> action)
-        {
-            action(self);
-            return self;
-        }
+        action(self);
+        return self;
     }
 }

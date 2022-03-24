@@ -4,61 +4,60 @@ using System.Threading.Tasks;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Camunda.Worker
+namespace Camunda.Worker;
+
+public static class CamundaWorkerBuilderExtensions
 {
-    public static class CamundaWorkerBuilderExtensions
+    public static ICamundaWorkerBuilder AddHandler<T>(
+        this ICamundaWorkerBuilder builder,
+        Action<HandlerMetadata>? configureMetadata = null
+    )
+        where T : class, IExternalTaskHandler
     {
-        public static ICamundaWorkerBuilder AddHandler<T>(
-            this ICamundaWorkerBuilder builder,
-            Action<HandlerMetadata>? configureMetadata = null
-        )
-            where T : class, IExternalTaskHandler
+        Guard.NotNull(builder, nameof(builder));
+
+        var metadata = CollectMetadataFromAttributes(typeof(T));
+        configureMetadata?.Invoke(metadata);
+
+        return builder.AddHandler<T>(metadata);
+    }
+
+    private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)
+    {
+        var topicsAttribute = handlerType.GetCustomAttribute<HandlerTopicsAttribute>();
+
+        if (topicsAttribute == null)
         {
-            Guard.NotNull(builder, nameof(builder));
-
-            var metadata = CollectMetadataFromAttributes(typeof(T));
-            configureMetadata?.Invoke(metadata);
-
-            return builder.AddHandler<T>(metadata);
+            throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicsAttribute\"");
         }
 
-        private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)
+        var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+
+        return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
         {
-            var topicsAttribute = handlerType.GetCustomAttribute<HandlerTopicsAttribute>();
+            LocalVariables = variablesAttribute?.LocalVariables ?? false,
+            Variables =  variablesAttribute?.AllVariables ?? false ? null : variablesAttribute?.Variables,
+            IncludeExtensionProperties = topicsAttribute.IncludeExtensionProperties
+        };
+    }
 
-            if (topicsAttribute == null)
-            {
-                throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicsAttribute\"");
-            }
+    public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder, HandlerMetadata metadata)
+        where T : class, IExternalTaskHandler
+    {
+        Guard.NotNull(builder, nameof(builder));
+        Guard.NotNull(metadata, nameof(metadata));
 
-            var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
+        var services = builder.Services;
+        services.AddTransient<T>();
 
-            return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
-            {
-                LocalVariables = variablesAttribute?.LocalVariables ?? false,
-                Variables =  variablesAttribute?.AllVariables ?? false ? null : variablesAttribute?.Variables,
-                IncludeExtensionProperties = topicsAttribute.IncludeExtensionProperties
-            };
-        }
+        return builder.AddHandler(HandlerDelegate<T>, metadata);
+    }
 
-        public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder, HandlerMetadata metadata)
-            where T : class, IExternalTaskHandler
-        {
-            Guard.NotNull(builder, nameof(builder));
-            Guard.NotNull(metadata, nameof(metadata));
-
-            var services = builder.Services;
-            services.AddTransient<T>();
-
-            return builder.AddHandler(HandlerDelegate<T>, metadata);
-        }
-
-        private static Task HandlerDelegate<T>(IExternalTaskContext context)
-            where T : class, IExternalTaskHandler
-        {
-            var handler = context.ServiceProvider.GetRequiredService<T>();
-            var invoker = new HandlerInvoker(handler, context);
-            return invoker.InvokeAsync();
-        }
+    private static Task HandlerDelegate<T>(IExternalTaskContext context)
+        where T : class, IExternalTaskHandler
+    {
+        var handler = context.ServiceProvider.GetRequiredService<T>();
+        var invoker = new HandlerInvoker(handler, context);
+        return invoker.InvokeAsync();
     }
 }

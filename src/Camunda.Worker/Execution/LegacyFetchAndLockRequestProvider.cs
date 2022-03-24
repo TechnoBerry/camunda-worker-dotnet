@@ -1,34 +1,33 @@
 using Camunda.Worker.Client;
 using Microsoft.Extensions.Options;
 
-namespace Camunda.Worker.Execution
+namespace Camunda.Worker.Execution;
+
+internal class LegacyFetchAndLockRequestProvider : IFetchAndLockRequestProvider
 {
-    internal class LegacyFetchAndLockRequestProvider : IFetchAndLockRequestProvider
+    private readonly ITopicsProvider _topicsProvider;
+    private readonly FetchAndLockOptions _options;
+
+    internal LegacyFetchAndLockRequestProvider(
+        ITopicsProvider topicsProvider,
+        IOptions<FetchAndLockOptions> options
+    )
     {
-        private readonly ITopicsProvider _topicsProvider;
-        private readonly FetchAndLockOptions _options;
+        _topicsProvider = topicsProvider;
+        _options = options.Value;
+    }
 
-        internal LegacyFetchAndLockRequestProvider(
-            ITopicsProvider topicsProvider,
-            IOptions<FetchAndLockOptions> options
-        )
+    public FetchAndLockRequest GetRequest()
+    {
+        var topics = _topicsProvider.GetTopics();
+
+        var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId, _options.MaxTasks)
         {
-            _topicsProvider = topicsProvider;
-            _options = options.Value;
-        }
+            UsePriority = _options.UsePriority,
+            AsyncResponseTimeout = _options.AsyncResponseTimeout,
+            Topics = topics
+        };
 
-        public FetchAndLockRequest GetRequest()
-        {
-            var topics = _topicsProvider.GetTopics();
-
-            var fetchAndLockRequest = new FetchAndLockRequest(_options.WorkerId, _options.MaxTasks)
-            {
-                UsePriority = _options.UsePriority,
-                AsyncResponseTimeout = _options.AsyncResponseTimeout,
-                Topics = topics
-            };
-
-            return fetchAndLockRequest;
-        }
+        return fetchAndLockRequest;
     }
 }

@@ -1,10 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Camunda.Worker
+namespace Camunda.Worker;
+
+public interface IExternalTaskHandler
 {
-    public interface IExternalTaskHandler
-    {
-        Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken);
-    }
+    Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken);
 }
