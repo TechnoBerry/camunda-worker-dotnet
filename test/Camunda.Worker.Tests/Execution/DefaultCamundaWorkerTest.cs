@@ -85,6 +85,23 @@ public class DefaultCamundaWorkerTest : IDisposable
             executor => executor.HandleAsync(It.IsAny<IExternalTaskContext>()),
             Times.Exactly(numberOfExternalTasks)
         );
+        Assert.True(externalTasks
+            .ToHashSet(new ExternalTaskComparer())
+            .SetEquals(
+                GetHandlerInvocationContexts().Select(ctx => ctx.Task)
+            ));
+    }
+
+    private IEnumerable<IExternalTaskContext> GetHandlerInvocationContexts()
+    {
+        foreach (var invocation in _handlerMock.Invocations)
+        {
+            if (invocation.Method.Name == nameof(IHandler.HandleAsync) &&
+                invocation.Arguments.FirstOrDefault() is IExternalTaskContext ctx)
+            {
+                yield return ctx;
+            }
+        }
     }
 
     [Fact]
@@ -116,5 +133,22 @@ public class DefaultCamundaWorkerTest : IDisposable
     public interface IWorkerEvents
     {
         public Task OnAfterProcessingAllTasks(IServiceProvider provider, CancellationToken ct);
+    }
+
+    private class ExternalTaskComparer : IEqualityComparer<ExternalTask>
+    {
+        public bool Equals(ExternalTask? x, ExternalTask? y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(ExternalTask obj)
+        {
+            return obj.Id.GetHashCode();
+        }
     }
 }
