@@ -9,8 +9,7 @@ namespace Camunda.Worker;
 
 public class PipelineBuilder : IPipelineBuilder
 {
-    private readonly IList<Func<ExternalTaskDelegate, ExternalTaskDelegate>> _middlewareList =
-        new List<Func<ExternalTaskDelegate, ExternalTaskDelegate>>();
+    private readonly List<Func<ExternalTaskDelegate, ExternalTaskDelegate>> _middlewareList = new();
 
     public PipelineBuilder(IServiceProvider serviceProvider)
     {
@@ -29,7 +28,8 @@ public class PipelineBuilder : IPipelineBuilder
     {
         Guard.NotNull(lastDelegate, nameof(lastDelegate));
 
-        return _middlewareList.Reverse()
+        return _middlewareList.AsEnumerable()
+            .Reverse()
             .Aggregate(lastDelegate, (current, middleware) => middleware(current));
     }
 }
