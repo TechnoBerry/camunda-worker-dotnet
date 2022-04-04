@@ -31,15 +31,10 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
     }
 
     internal CamundaWorkerBuilder AddFetchAndLockRequestProvider(
-        Func<WorkerServiceOptions, IServiceProvider, IFetchAndLockRequestProvider> factory
+        Func<string, IServiceProvider, IFetchAndLockRequestProvider> factory
     )
     {
-        Services.AddSingleton(provider =>
-        {
-            var handlerDescriptors = provider.GetServices<HandlerDescriptor>();
-            var options = new WorkerServiceOptions(WorkerId, handlerDescriptors);
-            return factory(options, provider);
-        });
+        Services.AddSingleton(provider => factory(WorkerId, provider));
 
         return this;
     }
