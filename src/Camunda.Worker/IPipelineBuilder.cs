@@ -4,9 +4,9 @@ namespace Camunda.Worker;
 
 public interface IPipelineBuilder
 {
-    string WorkerId { get; }
-
     IServiceProvider ApplicationServices { get; }
+
+    WorkerIdString WorkerId { get; }
 
     IPipelineBuilder Use(Func<ExternalTaskDelegate, ExternalTaskDelegate> middleware);
 

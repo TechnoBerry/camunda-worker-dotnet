@@ -27,7 +27,7 @@ public class PipelineBuilderTest
     [InlineData(100)]
     public async Task TestBuildPipeline(int calls)
     {
-        IPipelineBuilder builder = new PipelineBuilder(new Faker().Random.String(), _serviceProvider);
+        IPipelineBuilder builder = new PipelineBuilder(_serviceProvider, new WorkerIdString(new Faker().Random.String()));
 
         Task LastDelegate(IExternalTaskContext context)
         {

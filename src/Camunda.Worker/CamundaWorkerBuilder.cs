@@ -2,12 +2,13 @@ using System;
 using Camunda.Worker.Execution;
 using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker;
 
 public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 {
-    public CamundaWorkerBuilder(IServiceCollection services, string workerId)
+    public CamundaWorkerBuilder(IServiceCollection services, WorkerIdString workerId)
     {
         Services = services;
         WorkerId = workerId;
@@ -15,7 +16,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 
     public IServiceCollection Services { get; }
 
-    public string WorkerId { get; }
+    public WorkerIdString WorkerId { get; }
 
     public ICamundaWorkerBuilder AddEndpointProvider<TProvider>()
         where TProvider : class, IEndpointProvider
@@ -31,7 +32,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
     }
 
     internal CamundaWorkerBuilder AddFetchAndLockRequestProvider(
-        Func<string, IServiceProvider, IFetchAndLockRequestProvider> factory
+        Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
     )
     {
         Services.AddSingleton(provider => factory(WorkerId, provider));
@@ -39,12 +40,21 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
+    internal CamundaWorkerBuilder AddLegacyFetchAndLockRequestProvider()
+    {
+        return AddFetchAndLockRequestProvider((workerId, provider) => new LegacyFetchAndLockRequestProvider(
+            workerId,
+            provider.GetRequiredService<ITopicsProvider>(),
+            provider.GetRequiredService<IOptions<FetchAndLockOptions>>()
+        ));
+    }
+
     public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
     {
         Guard.NotNull(handler, nameof(handler));
         Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
 
-        var descriptor = new HandlerDescriptor(handler, handlerMetadata);
+        var descriptor = new HandlerDescriptor(handler, handlerMetadata, WorkerId);
 
         Services.AddSingleton(descriptor);
         return this;
@@ -55,7 +65,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         Guard.NotNull(configureAction, nameof(configureAction));
         Services.AddSingleton(provider =>
         {
-            var externalTaskDelegate = new PipelineBuilder(WorkerId, provider)
+            var externalTaskDelegate = new PipelineBuilder(provider, WorkerId)
                 .Also(configureAction)
                 .Build(ExternalTaskRouter.RouteAsync);
             return new WorkerHandlerDescriptor(externalTaskDelegate);

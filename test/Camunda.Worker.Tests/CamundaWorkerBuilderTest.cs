@@ -16,7 +16,7 @@ public class CamundaWorkerBuilderTest
 
     public CamundaWorkerBuilderTest()
     {
-        _builder = new CamundaWorkerBuilder(_services, "testWorker");
+        _builder = new CamundaWorkerBuilder(_services, new WorkerIdString("testWorker"));
     }
 
     [Fact]

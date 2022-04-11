@@ -13,9 +13,10 @@ public class TopicBasedEndpointProviderTest
     {
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
+        var workerId = new WorkerIdString("testWorker");
         var provider = new TopicBasedEndpointProvider(new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}))
+            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId)
         });
 
         var handlerDelegate = provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"));

@@ -13,8 +13,9 @@ public class LegacyFetchAndLockRequestProviderTests
     public void GetRequest_ShouldReturnsRequest()
     {
         // Arrange
+        var workerId = new WorkerIdString(new Faker().Lorem.Word());
         var fetchAndLockOptions = new Faker<FetchAndLockOptions>()
-            .RuleFor(o => o.WorkerId, f => f.Lorem.Word())
+            .RuleFor(o => o.WorkerId, workerId.Value)
             .RuleFor(o => o.MaxTasks, f => f.Random.Int(1, 10))
             .RuleFor(o => o.AsyncResponseTimeout, f => f.Random.Int(100, 10000))
             .RuleFor(o => o.UsePriority, f => f.Random.Bool())
@@ -28,6 +29,7 @@ public class LegacyFetchAndLockRequestProviderTests
         topicsProviderMock.Setup(p => p.GetTopics()).Returns(topics);
 
         var sut = new LegacyFetchAndLockRequestProvider(
+            workerId,
             topicsProviderMock.Object,
             Options.Create(fetchAndLockOptions)
         );
