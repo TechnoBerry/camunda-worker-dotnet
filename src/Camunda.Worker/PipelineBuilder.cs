@@ -11,10 +11,13 @@ public class PipelineBuilder : IPipelineBuilder
 {
     private readonly List<Func<ExternalTaskDelegate, ExternalTaskDelegate>> _middlewareList = new();
 
-    public PipelineBuilder(IServiceProvider serviceProvider)
+    public PipelineBuilder(string workerId, IServiceProvider serviceProvider)
     {
+        WorkerId = workerId;
         ApplicationServices = serviceProvider;
     }
+
+    public string WorkerId { get; }
 
     public IServiceProvider ApplicationServices { get; }
 

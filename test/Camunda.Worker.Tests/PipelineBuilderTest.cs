@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bogus;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -26,7 +27,7 @@ public class PipelineBuilderTest
     [InlineData(100)]
     public async Task TestBuildPipeline(int calls)
     {
-        IPipelineBuilder builder = new PipelineBuilder(_serviceProvider);
+        IPipelineBuilder builder = new PipelineBuilder(new Faker().Random.String(), _serviceProvider);
 
         Task LastDelegate(IExternalTaskContext context)
         {
