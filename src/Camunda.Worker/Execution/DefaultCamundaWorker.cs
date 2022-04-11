@@ -41,11 +41,9 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await _workerEvents.OnBeforeFetchAndLock(_serviceProvider, cancellationToken);
-
             var externalTasks = await SelectAsync(cancellationToken);
 
-            if (externalTasks != null && externalTasks.Count != 0)
+            if (externalTasks is { Count: > 0 })
             {
                 var tasks = new Task[externalTasks.Count];
                 var i = 0;
@@ -66,6 +64,8 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
 
     private async Task<List<ExternalTask>?> SelectAsync(CancellationToken cancellationToken)
     {
+        await _workerEvents.OnBeforeFetchAndLock(_serviceProvider, cancellationToken);
+
         try
         {
             LogHelper.LogWaiting(_logger);

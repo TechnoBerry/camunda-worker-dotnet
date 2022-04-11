@@ -33,6 +33,7 @@ public class DefaultCamundaWorkerTest : IDisposable
             _fetchAndLockRequestProviderMock.Object,
             Options.Create(new WorkerEvents
             {
+                OnFailedFetchAndLock = _workerEventsMock.Object.OnFailedFetchAndLock,
                 OnAfterProcessingAllTasks = _workerEventsMock.Object.OnAfterProcessingAllTasks
             }),
             _serviceProvider,
@@ -125,6 +126,29 @@ public class DefaultCamundaWorkerTest : IDisposable
         _clientMock.VerifyAll();
     }
 
+    [Fact]
+    public async Task TestFailedFetchAndLock()
+    {
+        // Arrange
+        var cts = new CancellationTokenSource();
+
+        _workerEventsMock
+            .Setup(e => e.OnAfterProcessingAllTasks(It.IsAny<IServiceProvider>(), It.IsAny<CancellationToken>()))
+            .Callback(cts.Cancel)
+            .Returns(Task.CompletedTask);
+
+        _clientMock
+            .Setup(client => client.FetchAndLockAsync(It.IsAny<FetchAndLockRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Some exception"))
+            .Verifiable();
+
+        // Act
+        await _worker.RunAsync(cts.Token);
+
+        // Assert
+        _workerEventsMock.Verify(e => e.OnFailedFetchAndLock(It.IsAny<IServiceProvider>(), It.IsAny<CancellationToken>()), Times.Once());
+    }
+
     public interface IHandler
     {
         Task HandleAsync(IExternalTaskContext context);
@@ -133,6 +157,8 @@ public class DefaultCamundaWorkerTest : IDisposable
     public interface IWorkerEvents
     {
         public Task OnAfterProcessingAllTasks(IServiceProvider provider, CancellationToken ct);
+
+        public Task OnFailedFetchAndLock(IServiceProvider provider, CancellationToken ct);
     }
 
     private class ExternalTaskComparer : IEqualityComparer<ExternalTask>
