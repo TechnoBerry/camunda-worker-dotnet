@@ -8,15 +8,15 @@ public sealed class StaticTopicsProvider : ITopicsProvider
 {
     private readonly IReadOnlyList<FetchAndLockRequest.Topic> _topics;
 
-    public StaticTopicsProvider(IEnumerable<HandlerDescriptor> handlerDescriptors)
+    public StaticTopicsProvider(IEnumerable<HandlerEndpoint> endpoints)
     {
-        _topics = handlerDescriptors.SelectMany(ConvertDescriptorToTopic).ToList();
+        _topics = endpoints.SelectMany(ConvertEndpointToTopic).ToList();
     }
 
-    private static IEnumerable<FetchAndLockRequest.Topic> ConvertDescriptorToTopic(HandlerDescriptor descriptor)
+    private static IEnumerable<FetchAndLockRequest.Topic> ConvertEndpointToTopic(HandlerEndpoint endpoint)
     {
-        return descriptor.Metadata.TopicNames
-            .Select(topicName => MakeTopicRequest(descriptor.Metadata, topicName));
+        return endpoint.Metadata.TopicNames
+            .Select(topicName => MakeTopicRequest(endpoint.Metadata, topicName));
     }
 
     private static FetchAndLockRequest.Topic MakeTopicRequest(HandlerMetadata metadata, string topicName) =>

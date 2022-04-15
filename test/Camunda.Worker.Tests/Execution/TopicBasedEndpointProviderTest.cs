@@ -16,7 +16,7 @@ public class TopicBasedEndpointProviderTest
         var workerId = new WorkerIdString("testWorker");
         var provider = new TopicBasedEndpointProvider(new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId)
+            new HandlerEndpoint(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId)
         });
 
         var handlerDelegate = provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"));
@@ -26,7 +26,7 @@ public class TopicBasedEndpointProviderTest
     [Fact]
     public void TestGetUnknownEndpointDelegate()
     {
-        var provider = new TopicBasedEndpointProvider(Enumerable.Empty<HandlerDescriptor>());
+        var provider = new TopicBasedEndpointProvider(Enumerable.Empty<HandlerEndpoint>());
         Assert.Throws<ArgumentException>(
             () => provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"))
         );

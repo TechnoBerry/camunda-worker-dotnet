@@ -8,11 +8,11 @@ public class TopicBasedEndpointProvider : IEndpointProvider
 {
     private readonly IReadOnlyDictionary<string, ExternalTaskDelegate> _handlerDelegates;
 
-    public TopicBasedEndpointProvider(IEnumerable<HandlerDescriptor> descriptors)
+    public TopicBasedEndpointProvider(IEnumerable<HandlerEndpoint> endpoints)
     {
-        _handlerDelegates = descriptors
-            .SelectMany(descriptor => descriptor.Metadata.TopicNames
-                .Select(topicName => (topicName, handlerDelegate: descriptor.HandlerDelegate))
+        _handlerDelegates = endpoints
+            .SelectMany(endpoint => endpoint.Metadata.TopicNames
+                .Select(topicName => (topicName, handlerDelegate: endpoint.HandlerDelegate))
             )
             .ToDictionary(pair => pair.topicName, pair => pair.handlerDelegate);
     }
