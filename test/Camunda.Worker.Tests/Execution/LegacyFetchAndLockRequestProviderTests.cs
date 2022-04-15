@@ -15,7 +15,6 @@ public class LegacyFetchAndLockRequestProviderTests
         // Arrange
         var workerId = new WorkerIdString(new Faker().Lorem.Word());
         var fetchAndLockOptions = new Faker<FetchAndLockOptions>()
-            .RuleFor(o => o.WorkerId, workerId.Value)
             .RuleFor(o => o.MaxTasks, f => f.Random.Int(1, 10))
             .RuleFor(o => o.AsyncResponseTimeout, f => f.Random.Int(100, 10000))
             .RuleFor(o => o.UsePriority, f => f.Random.Bool())
@@ -39,7 +38,7 @@ public class LegacyFetchAndLockRequestProviderTests
 
         // Assert
         Assert.Same(topics, request.Topics);
-        Assert.Equal(fetchAndLockOptions.WorkerId, request.WorkerId);
+        Assert.Equal(workerId.Value, request.WorkerId);
         Assert.Equal(fetchAndLockOptions.MaxTasks, request.MaxTasks);
         Assert.Equal(fetchAndLockOptions.AsyncResponseTimeout, request.AsyncResponseTimeout);
         Assert.Equal(fetchAndLockOptions.UsePriority, request.UsePriority);

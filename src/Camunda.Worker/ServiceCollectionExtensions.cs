@@ -16,7 +16,7 @@ public static class CamundaWorkerServiceCollectionExtensions
         var workerIdString = new WorkerIdString(workerId);
         Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
-        services.AddOptions<FetchAndLockOptions>().Configure(options => { options.WorkerId = workerIdString.Value; });
+        services.AddOptions<FetchAndLockOptions>();
         services.AddOptions<WorkerEvents>();
         services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
         services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
