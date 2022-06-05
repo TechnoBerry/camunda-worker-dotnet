@@ -9,14 +9,13 @@ public static class CamundaWorkerServiceCollectionExtensions
 {
     public static ICamundaWorkerBuilder AddCamundaWorker(
         this IServiceCollection services,
-        string workerId,
+        WorkerIdString workerId,
         int numberOfWorkers = Constants.MinimumParallelExecutors
     )
     {
-        Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
         Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
-        services.AddOptions<FetchAndLockOptions>().Configure(options => { options.WorkerId = workerId; });
+        services.AddOptions<FetchAndLockOptions>().Configure(options => { options.WorkerId = workerId.Value; });
         services.AddOptions<WorkerEvents>();
         services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
         services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();

@@ -8,7 +8,7 @@ public interface ICamundaWorkerBuilder
 {
     IServiceCollection Services { get; }
 
-    string WorkerId { get; }
+    WorkerIdString WorkerId { get; }
 
     ICamundaWorkerBuilder AddEndpointProvider<TProvider>() where TProvider : class, IEndpointProvider;
 
