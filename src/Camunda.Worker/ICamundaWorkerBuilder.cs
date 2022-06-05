@@ -12,8 +12,6 @@ public interface ICamundaWorkerBuilder
 
     ICamundaWorkerBuilder AddEndpointProvider<TProvider>() where TProvider : class, IEndpointProvider;
 
-    ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
-
     ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
         Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
     );

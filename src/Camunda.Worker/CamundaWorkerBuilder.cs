@@ -25,12 +25,6 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    public ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider
-    {
-        Services.AddTransient<ITopicsProvider, TProvider>();
-        return this;
-    }
-
     internal CamundaWorkerBuilder AddDefaultFetchAndLockRequestProvider()
     {
         AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(

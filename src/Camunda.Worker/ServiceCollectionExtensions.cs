@@ -17,7 +17,6 @@ public static class CamundaWorkerServiceCollectionExtensions
 
         services.AddOptions<FetchAndLockOptions>(workerId.Value);
         services.AddOptions<WorkerEvents>();
-        services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
         services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
         services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
         services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
