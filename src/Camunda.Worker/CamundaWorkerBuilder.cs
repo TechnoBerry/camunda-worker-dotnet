@@ -2,6 +2,7 @@ using System;
 using Camunda.Worker.Execution;
 using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker;
 
@@ -30,7 +31,18 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    internal CamundaWorkerBuilder AddFetchAndLockRequestProvider(
+    internal CamundaWorkerBuilder AddDefaultFetchAndLockRequestProvider()
+    {
+        AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(
+            workerId,
+            provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>(),
+            provider.GetServices<HandlerDescriptor>()
+        ));
+
+        return this;
+    }
+
+    public ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
         Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
     )
     {

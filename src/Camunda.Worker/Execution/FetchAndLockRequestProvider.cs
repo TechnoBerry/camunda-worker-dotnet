@@ -5,13 +5,13 @@ using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution;
 
-internal class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
+public sealed class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
 {
     private readonly WorkerIdString _workerId;
     private readonly FetchAndLockOptions _options;
     private readonly HandlerDescriptor[] _handlerDescriptors;
 
-    internal FetchAndLockRequestProvider(
+    public FetchAndLockRequestProvider(
         WorkerIdString workerId,
         IOptionsMonitor<FetchAndLockOptions> options,
         IEnumerable<HandlerDescriptor> handlerDescriptors

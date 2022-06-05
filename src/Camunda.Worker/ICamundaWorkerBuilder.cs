@@ -14,6 +14,10 @@ public interface ICamundaWorkerBuilder
 
     ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider;
 
+    ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
+        Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
+    );
+
     ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
 
     ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
