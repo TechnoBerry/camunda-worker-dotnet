@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Bogus;
 using Moq;
 using Xunit;
 
@@ -15,7 +16,7 @@ public class TopicBasedEndpointProviderTest
 
         var provider = new TopicBasedEndpointProvider(new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}))
+            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), new Faker().Lorem.Word())
         });
 
         var handlerDelegate = provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"));

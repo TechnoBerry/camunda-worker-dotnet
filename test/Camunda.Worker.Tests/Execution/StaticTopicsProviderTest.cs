@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Bogus;
 using Xunit;
 
 namespace Camunda.Worker.Execution;
@@ -28,15 +29,16 @@ public class StaticTopicsProviderTest
 
     private static HandlerDescriptor[] GetDescriptors()
     {
+        var workerId = new Faker().Lorem.Word();
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
         return new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"})),
+            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId),
             new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
             {
                 Variables = new[] {"X"},
                 LocalVariables = true
-            })
+            }, workerId)
         };
     }
 }

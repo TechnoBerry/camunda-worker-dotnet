@@ -9,14 +9,13 @@ public static class CamundaWorkerServiceCollectionExtensions
 {
     public static ICamundaWorkerBuilder AddCamundaWorker(
         this IServiceCollection services,
-        string workerId,
+        WorkerIdString workerId,
         int numberOfWorkers = Constants.MinimumParallelExecutors
     )
     {
-        Guard.NotEmptyAndNotNull(workerId, nameof(workerId));
         Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
-        services.AddOptions<FetchAndLockOptions>().Configure(options => { options.WorkerId = workerId; });
+        services.AddOptions<FetchAndLockOptions>(workerId.Value);
         services.AddOptions<WorkerEvents>();
         services.TryAddTransient<ITopicsProvider, StaticTopicsProvider>();
         services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
@@ -24,9 +23,10 @@ public static class CamundaWorkerServiceCollectionExtensions
         services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
         return new CamundaWorkerBuilder(services, workerId)
-            .AddFetchAndLockRequestProvider((_, provider) => new LegacyFetchAndLockRequestProvider(
+            .AddFetchAndLockRequestProvider((workerId, provider) => new LegacyFetchAndLockRequestProvider(
+                workerId,
                 provider.GetRequiredService<ITopicsProvider>(),
-                provider.GetRequiredService<IOptions<FetchAndLockOptions>>()
+                provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>()
             ))
             .ConfigurePipeline(_ => { });
     }
