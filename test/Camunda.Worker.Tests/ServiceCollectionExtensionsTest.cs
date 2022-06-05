@@ -17,7 +17,7 @@ public class ServiceCollectionExtensionsTest
 
         using var provider = services.BuildServiceProvider();
 
-        Assert.NotNull(provider.GetService<IOptions<FetchAndLockOptions>>()?.Value);
+        Assert.NotNull(provider.GetService<IOptionsMonitor<FetchAndLockOptions>>()?.Get("testWorker"));
         Assert.NotNull(provider.GetService<IOptions<WorkerEvents>>()?.Value);
 
         Assert.Contains(services, IsRegistered(typeof(IEndpointProvider), ServiceLifetime.Singleton));

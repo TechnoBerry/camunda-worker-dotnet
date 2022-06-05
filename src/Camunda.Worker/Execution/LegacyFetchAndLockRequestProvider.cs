@@ -12,12 +12,12 @@ internal class LegacyFetchAndLockRequestProvider : IFetchAndLockRequestProvider
     internal LegacyFetchAndLockRequestProvider(
         WorkerIdString workerId,
         ITopicsProvider topicsProvider,
-        IOptions<FetchAndLockOptions> options
+        IOptionsMonitor<FetchAndLockOptions> options
     )
     {
         _workerId = workerId;
         _topicsProvider = topicsProvider;
-        _options = options.Value;
+        _options = options.Get(workerId.Value);
     }
 
     public FetchAndLockRequest GetRequest()

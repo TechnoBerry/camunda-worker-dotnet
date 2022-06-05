@@ -30,7 +30,7 @@ public class LegacyFetchAndLockRequestProviderTests
         var sut = new LegacyFetchAndLockRequestProvider(
             workerId,
             topicsProviderMock.Object,
-            Options.Create(fetchAndLockOptions)
+            CreateOptions(workerId.Value, fetchAndLockOptions)
         );
 
         // Act
@@ -42,5 +42,15 @@ public class LegacyFetchAndLockRequestProviderTests
         Assert.Equal(fetchAndLockOptions.MaxTasks, request.MaxTasks);
         Assert.Equal(fetchAndLockOptions.AsyncResponseTimeout, request.AsyncResponseTimeout);
         Assert.Equal(fetchAndLockOptions.UsePriority, request.UsePriority);
+    }
+
+    private static IOptionsMonitor<T> CreateOptions<T>(string optionsKey, T value)
+    {
+        var optionsMonitorMock = new Mock<IOptionsMonitor<T>>();
+        optionsMonitorMock
+            .Setup(o => o.Get(optionsKey))
+            .Returns(value);
+
+        return optionsMonitorMock.Object;
     }
 }
