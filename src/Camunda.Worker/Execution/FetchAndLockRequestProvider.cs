@@ -3,13 +3,13 @@ using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution;
 
-internal class LegacyFetchAndLockRequestProvider : IFetchAndLockRequestProvider
+internal class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
 {
     private readonly WorkerIdString _workerId;
     private readonly ITopicsProvider _topicsProvider;
     private readonly FetchAndLockOptions _options;
 
-    internal LegacyFetchAndLockRequestProvider(
+    internal FetchAndLockRequestProvider(
         WorkerIdString workerId,
         ITopicsProvider topicsProvider,
         IOptionsMonitor<FetchAndLockOptions> options

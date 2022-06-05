@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Camunda.Worker.Execution;
 
-public class LegacyFetchAndLockRequestProviderTests
+public class FetchAndLockRequestProviderTests
 {
     [Fact]
     public void GetRequest_ShouldReturnsRequest()
@@ -27,7 +27,7 @@ public class LegacyFetchAndLockRequestProviderTests
         var topicsProviderMock = new Mock<ITopicsProvider>();
         topicsProviderMock.Setup(p => p.GetTopics()).Returns(topics);
 
-        var sut = new LegacyFetchAndLockRequestProvider(
+        var sut = new FetchAndLockRequestProvider(
             workerId,
             topicsProviderMock.Object,
             CreateOptions(workerId.Value, fetchAndLockOptions)
