@@ -44,7 +44,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         Guard.NotNull(handler, nameof(handler));
         Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
 
-        var descriptor = new HandlerDescriptor(handler, handlerMetadata);
+        var descriptor = new HandlerDescriptor(handler, handlerMetadata, WorkerId);
 
         Services.AddSingleton(descriptor);
         return this;
