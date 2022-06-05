@@ -23,7 +23,8 @@ public static class CamundaWorkerServiceCollectionExtensions
         services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
         return new CamundaWorkerBuilder(services, workerId)
-            .AddFetchAndLockRequestProvider((_, provider) => new LegacyFetchAndLockRequestProvider(
+            .AddFetchAndLockRequestProvider((workerId, provider) => new LegacyFetchAndLockRequestProvider(
+                workerId,
                 provider.GetRequiredService<ITopicsProvider>(),
                 provider.GetRequiredService<IOptions<FetchAndLockOptions>>()
             ))
