@@ -25,8 +25,8 @@ public static class CamundaWorkerServiceCollectionExtensions
         return new CamundaWorkerBuilder(services, workerId)
             .AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(
                 workerId,
-                provider.GetRequiredService<ITopicsProvider>(),
-                provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>()
+                provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>(),
+                provider.GetServices<HandlerDescriptor>()
             ))
             .ConfigurePipeline(_ => { });
     }

@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Bogus;
 using Camunda.Worker.Client;
 using Microsoft.Extensions.Options;
@@ -20,24 +22,28 @@ public class FetchAndLockRequestProviderTests
             .RuleFor(o => o.UsePriority, f => f.Random.Bool())
             .Generate();
 
-        var topics = new Faker<FetchAndLockRequest.Topic>()
-            .CustomInstantiator(f => new FetchAndLockRequest.Topic(f.Random.Hash(), f.Random.Int(1000, 10000)))
-            .GenerateLazy(5)
-            .ToList();
-        var topicsProviderMock = new Mock<ITopicsProvider>();
-        topicsProviderMock.Setup(p => p.GetTopics()).Returns(topics);
+        var handlerDescriptors = GetDescriptors(workerId);
 
         var sut = new FetchAndLockRequestProvider(
             workerId,
-            topicsProviderMock.Object,
-            CreateOptions(workerId.Value, fetchAndLockOptions)
+            CreateOptions(workerId.Value, fetchAndLockOptions),
+            handlerDescriptors
         );
 
         // Act
         var request = sut.GetRequest();
 
         // Assert
-        Assert.Same(topics, request.Topics);
+        Assert.NotNull(request.Topics);
+        Assert.Collection(request.Topics, handlerDescriptors
+            .SelectMany(descriptor => descriptor.Metadata.TopicNames.Select(topicName => (topicName, descriptor.Metadata)))
+            .Select(pair => new Action<FetchAndLockRequest.Topic>(topic =>
+            {
+                Assert.Equal(pair.topicName, topic.TopicName);
+                Assert.Equal(pair.Metadata.LockDuration, topic.LockDuration);
+            }))
+            .ToArray()
+        );
         Assert.Equal(workerId.Value, request.WorkerId);
         Assert.Equal(fetchAndLockOptions.MaxTasks, request.MaxTasks);
         Assert.Equal(fetchAndLockOptions.AsyncResponseTimeout, request.AsyncResponseTimeout);
@@ -52,5 +58,19 @@ public class FetchAndLockRequestProviderTests
             .Returns(value);
 
         return optionsMonitorMock.Object;
+    }
+
+    private static HandlerDescriptor[] GetDescriptors(WorkerIdString workerId)
+    {
+        Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
+        return new[]
+        {
+            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId),
+            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
+            {
+                Variables = new[] {"X"},
+                LocalVariables = true
+            }, workerId)
+        };
     }
 }
