@@ -41,16 +41,6 @@ public class CamundaWorkerBuilderTest
     }
 
     [Fact]
-    public void TestAddTopicsProvider()
-    {
-        _builder.AddTopicsProvider<TopicsProvider>();
-
-        using var provider = _services.BuildServiceProvider();
-
-        Assert.IsType<TopicsProvider>(provider.GetService<ITopicsProvider>());
-    }
-
-    [Fact]
     public void TestAddFetchAndLockRequestProvider()
     {
         _builder.AddFetchAndLockRequestProvider((_, _) => new FetchAndLockRequestProvider());
@@ -83,14 +73,6 @@ public class CamundaWorkerBuilderTest
     private class EndpointProvider : IEndpointProvider
     {
         public ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    private class TopicsProvider : ITopicsProvider
-    {
-        public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
         {
             throw new NotImplementedException();
         }
