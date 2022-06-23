@@ -16,9 +16,12 @@ public class SayHelloHandler : IExternalTaskHandler
 
         await Task.Delay(1000);
 
-        return new CompleteResult(new Dictionary<string, Variable>
+        return Task.FromResult<IExecutionResult>(new CompleteResult
         {
-            ["MESSAGE"] = Variable.String($"Hello, {username}!")
+            Variables = new Dictionary<string, Variable>
+            {
+                ["MESSAGE"] = Variable.String("Hello, Guest!")
+            }
         });
     }
 }
