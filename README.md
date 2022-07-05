@@ -16,13 +16,13 @@ public class SayHelloHandler : IExternalTaskHandler
 
         await Task.Delay(1000);
 
-        return Task.FromResult<IExecutionResult>(new CompleteResult
+        return new CompleteResult
         {
             Variables = new Dictionary<string, Variable>
             {
                 ["MESSAGE"] = Variable.String("Hello, Guest!")
             }
-        });
+        };
     }
 }
 ```
