@@ -31,6 +31,7 @@ public class HandlerInvoker
         }
         catch (Exception e) when (!_context.ProcessingAborted.IsCancellationRequested)
         {
+            LogHelper.LogFailedProcessing(_logger, _context.Task.Id, e);
             executionResult = new FailureResult(e);
         }
 
@@ -55,6 +56,13 @@ public class HandlerInvoker
                 "Finished processing of task {TaskId}"
             );
 
+        private static readonly Action<ILogger, string, Exception?> FailedProcessing =
+            LoggerMessage.Define<string>(
+                LogLevel.Error,
+                new EventId(0),
+                "Failed processing of task {TaskId}"
+            );
+
         public static void LogStartedProcessing(ILogger logger, string taskId)
         {
             if (logger.IsEnabled(LogLevel.Debug))
@@ -68,6 +76,14 @@ public class HandlerInvoker
             if (logger.IsEnabled(LogLevel.Debug))
             {
                 FinishedProcessing(logger, taskId, null);
+            }
+        }
+
+        public static void LogFailedProcessing(ILogger logger, string taskId, Exception e)
+        {
+            if (logger.IsEnabled(LogLevel.Error))
+            {
+                FailedProcessing(logger, taskId, e);
             }
         }
     }
