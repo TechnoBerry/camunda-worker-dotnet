@@ -28,14 +28,18 @@ public class ExternalTaskRouterTest
         // Arrange
         var calls = new List<IExternalTaskContext>();
 
-        Task ExternalTaskDelegate(IExternalTaskContext context)
-        {
-            calls.Add(context);
-            return Task.CompletedTask;
-        }
+        var endpoint = new Endpoint(
+            context =>
+            {
+                calls.Add(context);
+                return Task.CompletedTask;
+            },
+            new HandlerMetadata(new []{ "testTopic" }),
+            "testWorker"
+        );
 
-        _endpointProviderMock.Setup(factory => factory.GetEndpointDelegate(It.IsAny<ExternalTask>()))
-            .Returns(ExternalTaskDelegate);
+        _endpointProviderMock.Setup(factory => factory.GetEndpoint(It.IsAny<ExternalTask>()))
+            .Returns(endpoint);
 
         // Act
         await ExternalTaskRouter.RouteAsync(_contextMock.Object);

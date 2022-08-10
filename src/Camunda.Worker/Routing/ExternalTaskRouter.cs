@@ -1,5 +1,5 @@
+using System;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker.Routing;
@@ -12,7 +12,13 @@ internal static class ExternalTaskRouter
         var provider = context.ServiceProvider;
 
         var endpointProvider = provider.GetRequiredService<IEndpointProvider>();
-        var externalTaskDelegate = endpointProvider.GetEndpointDelegate(context.Task);
-        await externalTaskDelegate(context);
+        var endpoint = endpointProvider.GetEndpoint(context.Task);
+
+        if (endpoint is null)
+        {
+            throw new ApplicationException($"Endpoint for external task {context.Task.Id} could not be resolved");
+        }
+
+        await endpoint.HandlerDelegate(context);
     }
 }

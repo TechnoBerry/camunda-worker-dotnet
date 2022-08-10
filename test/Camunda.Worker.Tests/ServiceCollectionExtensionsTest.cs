@@ -1,5 +1,6 @@
 using System;
 using Camunda.Worker.Execution;
+using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;

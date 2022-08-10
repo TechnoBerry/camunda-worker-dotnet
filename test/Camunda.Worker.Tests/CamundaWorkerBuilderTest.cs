@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
+using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -72,7 +73,8 @@ public class CamundaWorkerBuilderTest
 
     private class EndpointProvider : IEndpointProvider
     {
-        public ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask)
+
+        public Endpoint? GetEndpoint(ExternalTask externalTask)
         {
             throw new NotImplementedException();
         }
