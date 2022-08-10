@@ -16,7 +16,7 @@ public class TopicBasedEndpointProviderTest
 
         var provider = new TopicBasedEndpointProvider(new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), new Faker().Lorem.Word())
+            new Endpoint(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), new Faker().Lorem.Word())
         });
 
         var handlerDelegate = provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"));
@@ -26,7 +26,7 @@ public class TopicBasedEndpointProviderTest
     [Fact]
     public void TestGetUnknownEndpointDelegate()
     {
-        var provider = new TopicBasedEndpointProvider(Enumerable.Empty<HandlerDescriptor>());
+        var provider = new TopicBasedEndpointProvider(Enumerable.Empty<Endpoint>());
         Assert.Throws<ArgumentException>(
             () => provider.GetEndpointDelegate(new ExternalTask("test", "test", "topic1"))
         );

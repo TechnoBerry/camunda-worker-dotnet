@@ -9,17 +9,17 @@ public sealed class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
 {
     private readonly WorkerIdString _workerId;
     private readonly FetchAndLockOptions _options;
-    private readonly HandlerDescriptor[] _handlerDescriptors;
+    private readonly Endpoint[] _endpoints;
 
     public FetchAndLockRequestProvider(
         WorkerIdString workerId,
         IOptionsMonitor<FetchAndLockOptions> options,
-        IEnumerable<HandlerDescriptor> handlerDescriptors
+        IEnumerable<Endpoint> endpoints
     )
     {
         _workerId = workerId;
         _options = options.Get(workerId.Value);
-        _handlerDescriptors = handlerDescriptors
+        _endpoints = endpoints
             .Where(d => d.WorkerId == _workerId)
             .ToArray();
     }
@@ -40,13 +40,13 @@ public sealed class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
 
     private List<FetchAndLockRequest.Topic> GetTopics()
     {
-        var topics = new List<FetchAndLockRequest.Topic>(_handlerDescriptors.Length);
+        var topics = new List<FetchAndLockRequest.Topic>(_endpoints.Length);
 
-        foreach (var descriptor in _handlerDescriptors)
+        foreach (var endpoint in _endpoints)
         {
-            foreach (var topicName in descriptor.Metadata.TopicNames)
+            foreach (var topicName in endpoint.Metadata.TopicNames)
             {
-                topics.Add(MakeTopicRequest(descriptor.Metadata, topicName));
+                topics.Add(MakeTopicRequest(endpoint.Metadata, topicName));
             }
         }
 

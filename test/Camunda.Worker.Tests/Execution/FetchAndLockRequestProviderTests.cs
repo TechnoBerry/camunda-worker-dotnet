@@ -22,12 +22,12 @@ public class FetchAndLockRequestProviderTests
             .RuleFor(o => o.UsePriority, f => f.Random.Bool())
             .Generate();
 
-        var handlerDescriptors = GetDescriptors(workerId);
+        var endpoints = GetEndpoints(workerId);
 
         var sut = new FetchAndLockRequestProvider(
             workerId,
             CreateOptions(workerId.Value, fetchAndLockOptions),
-            handlerDescriptors
+            endpoints
         );
 
         // Act
@@ -35,8 +35,8 @@ public class FetchAndLockRequestProviderTests
 
         // Assert
         Assert.NotNull(request.Topics);
-        Assert.Collection(request.Topics, handlerDescriptors
-            .SelectMany(descriptor => descriptor.Metadata.TopicNames.Select(topicName => (topicName, descriptor.Metadata)))
+        Assert.Collection(request.Topics, endpoints
+            .SelectMany(endpoint => endpoint.Metadata.TopicNames.Select(topicName => (topicName, endpoint.Metadata)))
             .Select(pair => new Action<FetchAndLockRequest.Topic>(topic =>
             {
                 Assert.Equal(pair.topicName, topic.TopicName);
@@ -60,13 +60,13 @@ public class FetchAndLockRequestProviderTests
         return optionsMonitorMock.Object;
     }
 
-    private static HandlerDescriptor[] GetDescriptors(WorkerIdString workerId)
+    private static Endpoint[] GetEndpoints(WorkerIdString workerId)
     {
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
         return new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId),
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
+            new Endpoint(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId),
+            new Endpoint(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
             {
                 Variables = new[] {"X"},
                 LocalVariables = true

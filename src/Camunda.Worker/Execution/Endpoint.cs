@@ -1,8 +1,8 @@
 namespace Camunda.Worker.Execution;
 
-public sealed class HandlerDescriptor
+public sealed class Endpoint
 {
-    public HandlerDescriptor(ExternalTaskDelegate handlerDelegate, HandlerMetadata metadata, WorkerIdString workerId)
+    public Endpoint(ExternalTaskDelegate handlerDelegate, HandlerMetadata metadata, WorkerIdString workerId)
     {
         WorkerId = workerId;
         HandlerDelegate = Guard.NotNull(handlerDelegate, nameof(handlerDelegate));

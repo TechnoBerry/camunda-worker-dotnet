@@ -30,7 +30,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(
             workerId,
             provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>(),
-            provider.GetServices<HandlerDescriptor>()
+            provider.GetServices<Endpoint>()
         ));
 
         return this;
@@ -50,9 +50,9 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         Guard.NotNull(handler, nameof(handler));
         Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
 
-        var descriptor = new HandlerDescriptor(handler, handlerMetadata, WorkerId);
+        var endpoint = new Endpoint(handler, handlerMetadata, WorkerId);
 
-        Services.AddSingleton(descriptor);
+        Services.AddSingleton(endpoint);
         return this;
     }
 
