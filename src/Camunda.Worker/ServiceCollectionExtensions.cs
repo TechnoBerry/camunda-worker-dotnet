@@ -23,6 +23,7 @@ public static class CamundaWorkerServiceCollectionExtensions
 
         return new CamundaWorkerBuilder(services, workerId)
             .AddDefaultFetchAndLockRequestProvider()
+            .AddDefaultEndpointProvider()
             .ConfigurePipeline(_ => { });
     }
 }

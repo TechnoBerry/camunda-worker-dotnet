@@ -32,13 +32,13 @@ public class CamundaWorkerBuilderTest
     }
 
     [Fact]
-    public void TestAddFactoryProvider()
+    public void TestAddEndpointProvider()
     {
-        _builder.AddEndpointProvider<EndpointProvider>();
+        _builder.AddEndpointProvider((_, _) => new EndpointProvider());
 
-        Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                        d.ServiceType == typeof(IEndpointProvider) &&
-                                        d.ImplementationType == typeof(EndpointProvider));
+        using var provider = _services.BuildServiceProvider();
+
+        Assert.IsType<EndpointProvider>(provider.GetService<IEndpointProvider>());
     }
 
     [Fact]

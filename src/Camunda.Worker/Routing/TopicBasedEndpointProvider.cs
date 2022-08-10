@@ -8,9 +8,10 @@ public class TopicBasedEndpointProvider : IEndpointProvider
 {
     private readonly IReadOnlyDictionary<string, Endpoint> _endpoints;
 
-    public TopicBasedEndpointProvider(IEnumerable<Endpoint> endpoints)
+    public TopicBasedEndpointProvider(WorkerIdString workerId, IEnumerable<Endpoint> endpoints)
     {
         _endpoints = endpoints
+            .Where(endpoint => endpoint.WorkerId == workerId)
             .SelectMany(endpoint => endpoint.Metadata.TopicNames
                 .Select(topicName => (topicName, endpoint))
             )

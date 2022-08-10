@@ -18,10 +18,20 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 
     public WorkerIdString WorkerId { get; }
 
-    public ICamundaWorkerBuilder AddEndpointProvider<TProvider>()
-        where TProvider : class, IEndpointProvider
+    internal CamundaWorkerBuilder AddDefaultEndpointProvider()
     {
-        Services.AddSingleton<IEndpointProvider, TProvider>();
+        AddEndpointProvider((workerId, provider) => new TopicBasedEndpointProvider(
+            workerId,
+            provider.GetServices<Endpoint>()
+        ));
+
+        return this;
+    }
+
+    public ICamundaWorkerBuilder AddEndpointProvider(Func<WorkerIdString, IServiceProvider, IEndpointProvider> factory)
+    {
+        Services.AddSingleton(provider => factory(WorkerId, provider));
+
         return this;
     }
 

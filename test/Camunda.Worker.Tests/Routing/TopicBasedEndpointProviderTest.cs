@@ -11,12 +11,14 @@ public class TopicBasedEndpointProviderTest
     [Fact]
     public void TestGetKnownEndpoint()
     {
-        var provider = new TopicBasedEndpointProvider(new[]
+        var workerId = new Faker().Lorem.Word();
+
+        var provider = new TopicBasedEndpointProvider(workerId, new[]
         {
             new Endpoint(
                 _ => Task.CompletedTask,
                 new HandlerMetadata(new[] {"topic1"}),
-                new Faker().Lorem.Word()
+                workerId
             )
         });
 
@@ -27,7 +29,7 @@ public class TopicBasedEndpointProviderTest
     [Fact]
     public void TestGetUnknownEndpoint()
     {
-        var provider = new TopicBasedEndpointProvider(Enumerable.Empty<Endpoint>());
+        var provider = new TopicBasedEndpointProvider(new Faker().Lorem.Word(), Enumerable.Empty<Endpoint>());
         var endpoint = provider.GetEndpoint(new ExternalTask("test", "test", "topic1"));
 
         Assert.Null(endpoint);
