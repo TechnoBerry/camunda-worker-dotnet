@@ -13,9 +13,13 @@ public class TopicBasedEndpointProvider : IEndpointProvider
         _endpoints = endpoints
             .Where(endpoint => endpoint.WorkerId == workerId)
             .SelectMany(endpoint => endpoint.Metadata.TopicNames
-                .Select(topicName => (topicName, endpoint))
+                .Select(topicName => new
+                {
+                    TopicName = topicName,
+                    Endpoint = endpoint
+                })
             )
-            .ToDictionary(pair => pair.topicName, pair => pair.endpoint);
+            .ToDictionary(pair => pair.TopicName, pair => pair.Endpoint);
     }
 
     public Endpoint? GetEndpoint(ExternalTask externalTask)
