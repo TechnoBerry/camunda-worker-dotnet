@@ -6,14 +6,14 @@ using Xunit;
 
 namespace Camunda.Worker.Routing;
 
-public class TopicBasedEndpointProviderTest
+public class TopicBasedEndpointResolverTest
 {
     [Fact]
-    public void TestGetKnownEndpoint()
+    public void TestResolveKnownEndpoint()
     {
         var workerId = new Faker().Lorem.Word();
 
-        var provider = new TopicBasedEndpointProvider(workerId, new[]
+        var provider = new TopicBasedEndpointResolver(workerId, new[]
         {
             new Endpoint(
                 _ => Task.CompletedTask,
@@ -22,15 +22,15 @@ public class TopicBasedEndpointProviderTest
             )
         });
 
-        var endpoint = provider.GetEndpoint(new ExternalTask("test", "test", "topic1"));
+        var endpoint = provider.Resolve(new ExternalTask("test", "test", "topic1"));
         Assert.NotNull(endpoint);
     }
 
     [Fact]
-    public void TestGetUnknownEndpoint()
+    public void TestResolveUnknownEndpoint()
     {
-        var provider = new TopicBasedEndpointProvider(new Faker().Lorem.Word(), Enumerable.Empty<Endpoint>());
-        var endpoint = provider.GetEndpoint(new ExternalTask("test", "test", "topic1"));
+        var provider = new TopicBasedEndpointResolver(new Faker().Lorem.Word(), Enumerable.Empty<Endpoint>());
+        var endpoint = provider.Resolve(new ExternalTask("test", "test", "topic1"));
 
         Assert.Null(endpoint);
     }

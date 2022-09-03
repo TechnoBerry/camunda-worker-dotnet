@@ -4,11 +4,11 @@ using Camunda.Worker.Execution;
 
 namespace Camunda.Worker.Routing;
 
-public class TopicBasedEndpointProvider : IEndpointProvider
+public class TopicBasedEndpointResolver : IEndpointResolver
 {
     private readonly IReadOnlyDictionary<string, Endpoint> _endpoints;
 
-    public TopicBasedEndpointProvider(WorkerIdString workerId, IEnumerable<Endpoint> endpoints)
+    public TopicBasedEndpointResolver(WorkerIdString workerId, IEnumerable<Endpoint> endpoints)
     {
         _endpoints = endpoints
             .Where(endpoint => endpoint.WorkerId == workerId)
@@ -22,7 +22,7 @@ public class TopicBasedEndpointProvider : IEndpointProvider
             .ToDictionary(pair => pair.TopicName, pair => pair.Endpoint);
     }
 
-    public Endpoint? GetEndpoint(ExternalTask externalTask)
+    public Endpoint? Resolve(ExternalTask externalTask)
     {
         Guard.NotNull(externalTask, nameof(externalTask));
         return _endpoints.GetValueOrDefault(externalTask.TopicName);

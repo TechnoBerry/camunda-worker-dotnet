@@ -11,8 +11,8 @@ internal static class ExternalTaskRouter
         Guard.NotNull(context, nameof(context));
         var provider = context.ServiceProvider;
 
-        var endpointProvider = provider.GetRequiredService<IEndpointProvider>();
-        var endpoint = endpointProvider.GetEndpoint(context.Task);
+        var endpointResolver = provider.GetRequiredService<IEndpointResolver>();
+        var endpoint = endpointResolver.Resolve(context.Task);
 
         if (endpoint is null)
         {

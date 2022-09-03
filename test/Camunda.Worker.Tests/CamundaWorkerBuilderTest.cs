@@ -32,13 +32,13 @@ public class CamundaWorkerBuilderTest
     }
 
     [Fact]
-    public void TestAddEndpointProvider()
+    public void TestAddEndpointResolver()
     {
-        _builder.AddEndpointProvider((_, _) => new EndpointProvider());
+        _builder.AddEndpointResolver((_, _) => new EndpointResolver());
 
         using var provider = _services.BuildServiceProvider();
 
-        Assert.IsType<EndpointProvider>(provider.GetService<IEndpointProvider>());
+        Assert.IsType<EndpointResolver>(provider.GetService<IEndpointResolver>());
     }
 
     [Fact]
@@ -71,10 +71,10 @@ public class CamundaWorkerBuilderTest
         Assert.Contains(_services, d => d.ServiceType == typeof(IConfigureOptions<WorkerEvents>));
     }
 
-    private class EndpointProvider : IEndpointProvider
+    private class EndpointResolver : IEndpointResolver
     {
 
-        public Endpoint? GetEndpoint(ExternalTask externalTask)
+        public Endpoint? Resolve(ExternalTask externalTask)
         {
             throw new NotImplementedException();
         }

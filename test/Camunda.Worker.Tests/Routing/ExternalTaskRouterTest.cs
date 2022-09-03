@@ -10,12 +10,12 @@ namespace Camunda.Worker.Routing;
 public class ExternalTaskRouterTest
 {
     private readonly Mock<IExternalTaskContext> _contextMock = new();
-    private readonly Mock<IEndpointProvider> _endpointProviderMock = new();
+    private readonly Mock<IEndpointResolver> _endpointResolverMock = new();
 
     public ExternalTaskRouterTest()
     {
         var serviceProvider = new ServiceCollection()
-            .AddSingleton(_endpointProviderMock.Object)
+            .AddSingleton(_endpointResolverMock.Object)
             .BuildServiceProvider();
 
         _contextMock.SetupGet(context => context.ServiceProvider).Returns(serviceProvider);
@@ -38,7 +38,7 @@ public class ExternalTaskRouterTest
             "testWorker"
         );
 
-        _endpointProviderMock.Setup(factory => factory.GetEndpoint(It.IsAny<ExternalTask>()))
+        _endpointResolverMock.Setup(factory => factory.Resolve(It.IsAny<ExternalTask>()))
             .Returns(endpoint);
 
         // Act

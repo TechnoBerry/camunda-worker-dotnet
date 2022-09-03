@@ -18,9 +18,9 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 
     public WorkerIdString WorkerId { get; }
 
-    internal CamundaWorkerBuilder AddDefaultEndpointProvider()
+    internal CamundaWorkerBuilder AddDefaultEndpointResolver()
     {
-        AddEndpointProvider((workerId, provider) => new TopicBasedEndpointProvider(
+        AddEndpointResolver((workerId, provider) => new TopicBasedEndpointResolver(
             workerId,
             provider.GetServices<Endpoint>()
         ));
@@ -28,7 +28,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    public ICamundaWorkerBuilder AddEndpointProvider(Func<WorkerIdString, IServiceProvider, IEndpointProvider> factory)
+    public ICamundaWorkerBuilder AddEndpointResolver(Func<WorkerIdString, IServiceProvider, IEndpointResolver> factory)
     {
         Services.AddSingleton(provider => factory(WorkerId, provider));
 

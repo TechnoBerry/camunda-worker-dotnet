@@ -11,8 +11,8 @@ public interface ICamundaWorkerBuilder
 
     WorkerIdString WorkerId { get; }
 
-    ICamundaWorkerBuilder AddEndpointProvider(
-        Func<WorkerIdString, IServiceProvider, IEndpointProvider> factory
+    ICamundaWorkerBuilder AddEndpointResolver(
+        Func<WorkerIdString, IServiceProvider, IEndpointResolver> factory
     );
 
     ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
