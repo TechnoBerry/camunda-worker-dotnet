@@ -54,7 +54,7 @@ public sealed class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
         return topics;
     }
 
-    private static FetchAndLockRequest.Topic MakeTopicRequest(HandlerMetadata metadata, string topicName) =>
+    private static FetchAndLockRequest.Topic MakeTopicRequest(EndpointMetadata metadata, string topicName) =>
         new(topicName, metadata.LockDuration)
         {
             LocalVariables = metadata.LocalVariables,

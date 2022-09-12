@@ -17,7 +17,7 @@ public class TopicBasedEndpointResolverTest
         {
             new Endpoint(
                 _ => Task.CompletedTask,
-                new HandlerMetadata(new[] {"topic1"}),
+                new EndpointMetadata(new[] {"topic1"}),
                 workerId
             )
         });

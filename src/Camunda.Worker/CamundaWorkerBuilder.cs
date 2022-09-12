@@ -56,12 +56,12 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
+    public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, EndpointMetadata endpointMetadata)
     {
         Guard.NotNull(handler, nameof(handler));
-        Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
+        Guard.NotNull(endpointMetadata, nameof(endpointMetadata));
 
-        var endpoint = new Endpoint(handler, handlerMetadata, WorkerId);
+        var endpoint = new Endpoint(handler, endpointMetadata, WorkerId);
 
         Services.AddSingleton(endpoint);
         return this;

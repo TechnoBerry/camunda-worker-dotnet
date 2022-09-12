@@ -20,7 +20,7 @@ public interface ICamundaWorkerBuilder
         Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
     );
 
-    ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata);
+    ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, EndpointMetadata endpointMetadata);
 
     ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction);
 

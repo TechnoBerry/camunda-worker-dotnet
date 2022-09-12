@@ -25,7 +25,7 @@ public class CamundaWorkerBuilderTest
     {
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
-        _builder.AddHandler(FakeHandlerDelegate, new HandlerMetadata(new[] {"testTopic"}));
+        _builder.AddHandler(FakeHandlerDelegate, new EndpointMetadata(new[] {"testTopic"}));
 
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                         d.ImplementationInstance != null);

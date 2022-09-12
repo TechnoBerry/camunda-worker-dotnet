@@ -2,7 +2,7 @@ namespace Camunda.Worker.Endpoints;
 
 public sealed class Endpoint
 {
-    public Endpoint(ExternalTaskDelegate handlerDelegate, HandlerMetadata metadata, WorkerIdString workerId)
+    public Endpoint(ExternalTaskDelegate handlerDelegate, EndpointMetadata metadata, WorkerIdString workerId)
     {
         WorkerId = workerId;
         HandlerDelegate = Guard.NotNull(handlerDelegate, nameof(handlerDelegate));
@@ -11,7 +11,7 @@ public sealed class Endpoint
 
     public ExternalTaskDelegate HandlerDelegate { get; }
 
-    public HandlerMetadata Metadata { get; }
+    public EndpointMetadata Metadata { get; }
 
     public WorkerIdString WorkerId { get; }
 }

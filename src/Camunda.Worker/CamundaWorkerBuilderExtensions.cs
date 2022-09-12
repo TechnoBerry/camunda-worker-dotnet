@@ -11,7 +11,7 @@ public static class CamundaWorkerBuilderExtensions
 {
     public static ICamundaWorkerBuilder AddHandler<T>(
         this ICamundaWorkerBuilder builder,
-        Action<HandlerMetadata>? configureMetadata = null
+        Action<EndpointMetadata>? configureMetadata = null
     )
         where T : class, IExternalTaskHandler
     {
@@ -23,7 +23,7 @@ public static class CamundaWorkerBuilderExtensions
         return builder.AddHandler<T>(metadata);
     }
 
-    private static HandlerMetadata CollectMetadataFromAttributes(Type handlerType)
+    private static EndpointMetadata CollectMetadataFromAttributes(Type handlerType)
     {
         var topicsAttribute = handlerType.GetCustomAttribute<HandlerTopicsAttribute>();
 
@@ -34,7 +34,7 @@ public static class CamundaWorkerBuilderExtensions
 
         var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();
 
-        return new HandlerMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
+        return new EndpointMetadata(topicsAttribute.TopicNames, topicsAttribute.LockDuration)
         {
             LocalVariables = variablesAttribute?.LocalVariables ?? false,
             Variables =  variablesAttribute?.AllVariables ?? false ? null : variablesAttribute?.Variables,
@@ -42,7 +42,7 @@ public static class CamundaWorkerBuilderExtensions
         };
     }
 
-    public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder, HandlerMetadata metadata)
+    public static ICamundaWorkerBuilder AddHandler<T>(this ICamundaWorkerBuilder builder, EndpointMetadata metadata)
         where T : class, IExternalTaskHandler
     {
         Guard.NotNull(builder, nameof(builder));

@@ -34,7 +34,7 @@ public class ExternalTaskRouterTest
                 calls.Add(context);
                 return Task.CompletedTask;
             },
-            new HandlerMetadata(new []{ "testTopic" }),
+            new EndpointMetadata(new []{ "testTopic" }),
             "testWorker"
         );
 

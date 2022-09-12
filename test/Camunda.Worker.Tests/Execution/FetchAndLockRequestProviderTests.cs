@@ -66,8 +66,8 @@ public class FetchAndLockRequestProviderTests
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
         return new[]
         {
-            new Endpoint(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId),
-            new Endpoint(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
+            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(new[] {"topic1"}), workerId),
+            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(new[] {"test2"}, 10_000)
             {
                 Variables = new[] {"X"},
                 LocalVariables = true
