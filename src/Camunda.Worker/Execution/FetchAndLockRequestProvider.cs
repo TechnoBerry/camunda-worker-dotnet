@@ -15,14 +15,12 @@ public sealed class FetchAndLockRequestProvider : IFetchAndLockRequestProvider
     public FetchAndLockRequestProvider(
         WorkerIdString workerId,
         IOptionsMonitor<FetchAndLockOptions> options,
-        IEnumerable<Endpoint> endpoints
+        IEndpointsCollection endpointsCollection
     )
     {
         _workerId = workerId;
         _options = options.Get(workerId.Value);
-        _endpoints = endpoints
-            .Where(d => d.WorkerId == _workerId)
-            .ToArray();
+        _endpoints = endpointsCollection.GetEndpoints(workerId).ToArray();
     }
 
     public FetchAndLockRequest GetRequest()

@@ -1,5 +1,5 @@
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
-using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -17,6 +17,7 @@ public static class CamundaWorkerServiceCollectionExtensions
 
         services.AddOptions<FetchAndLockOptions>(workerId.Value);
         services.AddOptions<WorkerEvents>();
+        services.TryAddSingleton<IEndpointsCollection, EndpointsCollection>();
         services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
         services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 

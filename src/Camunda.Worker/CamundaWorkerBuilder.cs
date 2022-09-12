@@ -23,7 +23,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
     {
         AddEndpointResolver((workerId, provider) => new TopicBasedEndpointResolver(
             workerId,
-            provider.GetServices<Endpoint>()
+            provider.GetRequiredService<IEndpointsCollection>()
         ));
 
         return this;
@@ -41,7 +41,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(
             workerId,
             provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>(),
-            provider.GetServices<Endpoint>()
+            provider.GetRequiredService<IEndpointsCollection>()
         ));
 
         return this;

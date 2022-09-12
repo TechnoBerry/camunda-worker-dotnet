@@ -8,10 +8,9 @@ public class TopicBasedEndpointResolver : IEndpointResolver
 {
     private readonly IReadOnlyDictionary<string, Endpoint> _endpoints;
 
-    public TopicBasedEndpointResolver(WorkerIdString workerId, IEnumerable<Endpoint> endpoints)
+    public TopicBasedEndpointResolver(WorkerIdString workerId, IEndpointsCollection endpointsCollection)
     {
-        _endpoints = endpoints
-            .Where(endpoint => endpoint.WorkerId == workerId)
+        _endpoints = endpointsCollection.GetEndpoints(workerId)
             .SelectMany(endpoint => endpoint.Metadata.TopicNames
                 .Select(topicName => new
                 {

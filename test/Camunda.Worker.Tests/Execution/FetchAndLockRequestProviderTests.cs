@@ -24,11 +24,14 @@ public class FetchAndLockRequestProviderTests
             .Generate();
 
         var endpoints = GetEndpoints(workerId);
+        var endpointsCollectionMock = new Mock<IEndpointsCollection>();
+        endpointsCollectionMock.Setup(e => e.GetEndpoints(workerId))
+            .Returns(endpoints);
 
         var sut = new FetchAndLockRequestProvider(
             workerId,
             CreateOptions(workerId.Value, fetchAndLockOptions),
-            endpoints
+            endpointsCollectionMock.Object
         );
 
         // Act
