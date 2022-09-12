@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
+using Camunda.Worker.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;

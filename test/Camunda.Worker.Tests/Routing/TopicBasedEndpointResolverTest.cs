@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
-using Camunda.Worker.Execution;
+using Camunda.Worker.Endpoints;
 using Xunit;
 
 namespace Camunda.Worker.Routing;

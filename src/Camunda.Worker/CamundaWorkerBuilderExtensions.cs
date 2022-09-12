@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 

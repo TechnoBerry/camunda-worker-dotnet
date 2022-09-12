@@ -1,4 +1,5 @@
 using System;
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
 using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;

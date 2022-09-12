@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using Camunda.Worker.Execution;
+using Camunda.Worker.Endpoints;
 
 namespace Camunda.Worker.Routing;
 

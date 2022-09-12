@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Camunda.Worker.Client;
+using Camunda.Worker.Endpoints;
 using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution;

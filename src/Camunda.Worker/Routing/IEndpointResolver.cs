@@ -1,4 +1,4 @@
-using Camunda.Worker.Execution;
+using Camunda.Worker.Endpoints;
 
 namespace Camunda.Worker.Routing;
 

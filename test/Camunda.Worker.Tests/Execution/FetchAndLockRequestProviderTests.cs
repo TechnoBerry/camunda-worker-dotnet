@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using Camunda.Worker.Client;
+using Camunda.Worker.Endpoints;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;

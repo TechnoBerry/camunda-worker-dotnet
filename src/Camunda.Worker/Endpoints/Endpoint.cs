@@ -1,4 +1,4 @@
-namespace Camunda.Worker.Execution;
+namespace Camunda.Worker.Endpoints;
 
 public sealed class Endpoint
 {
