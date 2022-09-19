@@ -1,7 +1,7 @@
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker;
 
@@ -17,12 +17,13 @@ public static class CamundaWorkerServiceCollectionExtensions
 
         services.AddOptions<FetchAndLockOptions>(workerId.Value);
         services.AddOptions<WorkerEvents>();
+        services.TryAddSingleton<IEndpointsCollection, EndpointsCollection>();
         services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
-        services.TryAddSingleton<IEndpointProvider, TopicBasedEndpointProvider>();
         services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
 
         return new CamundaWorkerBuilder(services, workerId)
             .AddDefaultFetchAndLockRequestProvider()
+            .AddDefaultEndpointResolver()
             .ConfigurePipeline(_ => { });
     }
 }

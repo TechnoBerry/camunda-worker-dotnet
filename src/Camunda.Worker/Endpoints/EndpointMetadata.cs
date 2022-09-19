@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 
-namespace Camunda.Worker.Execution;
+namespace Camunda.Worker.Endpoints;
 
-public class HandlerMetadata
+public class EndpointMetadata
 {
-    public HandlerMetadata(IReadOnlyList<string> topicNames, int lockDuration = Constants.MinimumLockDuration)
+    public EndpointMetadata(IReadOnlyList<string> topicNames, int lockDuration = Constants.MinimumLockDuration)
     {
         TopicNames = Guard.NotNull(topicNames, nameof(topicNames));
         LockDuration = Guard.GreaterThanOrEqual(lockDuration, Constants.MinimumLockDuration, nameof(lockDuration));

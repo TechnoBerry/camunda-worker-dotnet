@@ -1,4 +1,5 @@
 using System;
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
 using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,10 +19,20 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 
     public WorkerIdString WorkerId { get; }
 
-    public ICamundaWorkerBuilder AddEndpointProvider<TProvider>()
-        where TProvider : class, IEndpointProvider
+    internal CamundaWorkerBuilder AddDefaultEndpointResolver()
     {
-        Services.AddSingleton<IEndpointProvider, TProvider>();
+        AddEndpointResolver((workerId, provider) => new TopicBasedEndpointResolver(
+            workerId,
+            provider.GetRequiredService<IEndpointsCollection>()
+        ));
+
+        return this;
+    }
+
+    public ICamundaWorkerBuilder AddEndpointResolver(Func<WorkerIdString, IServiceProvider, IEndpointResolver> factory)
+    {
+        Services.AddSingleton(provider => factory(WorkerId, provider));
+
         return this;
     }
 
@@ -30,7 +41,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(
             workerId,
             provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>(),
-            provider.GetServices<HandlerDescriptor>()
+            provider.GetRequiredService<IEndpointsCollection>()
         ));
 
         return this;
@@ -45,14 +56,14 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
+    public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, EndpointMetadata endpointMetadata)
     {
         Guard.NotNull(handler, nameof(handler));
-        Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
+        Guard.NotNull(endpointMetadata, nameof(endpointMetadata));
 
-        var descriptor = new HandlerDescriptor(handler, handlerMetadata, WorkerId);
+        var endpoint = new Endpoint(handler, endpointMetadata, WorkerId);
 
-        Services.AddSingleton(descriptor);
+        Services.AddSingleton(endpoint);
         return this;
     }
 

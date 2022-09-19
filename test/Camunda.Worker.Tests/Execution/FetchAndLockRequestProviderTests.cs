@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bogus;
 using Camunda.Worker.Client;
+using Camunda.Worker.Endpoints;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -22,12 +23,15 @@ public class FetchAndLockRequestProviderTests
             .RuleFor(o => o.UsePriority, f => f.Random.Bool())
             .Generate();
 
-        var handlerDescriptors = GetDescriptors(workerId);
+        var endpoints = GetEndpoints(workerId);
+        var endpointsCollectionMock = new Mock<IEndpointsCollection>();
+        endpointsCollectionMock.Setup(e => e.GetEndpoints(workerId))
+            .Returns(endpoints);
 
         var sut = new FetchAndLockRequestProvider(
             workerId,
             CreateOptions(workerId.Value, fetchAndLockOptions),
-            handlerDescriptors
+            endpointsCollectionMock.Object
         );
 
         // Act
@@ -35,8 +39,8 @@ public class FetchAndLockRequestProviderTests
 
         // Assert
         Assert.NotNull(request.Topics);
-        Assert.Collection(request.Topics, handlerDescriptors
-            .SelectMany(descriptor => descriptor.Metadata.TopicNames.Select(topicName => (topicName, descriptor.Metadata)))
+        Assert.Collection(request.Topics, endpoints
+            .SelectMany(endpoint => endpoint.Metadata.TopicNames.Select(topicName => (topicName, endpoint.Metadata)))
             .Select(pair => new Action<FetchAndLockRequest.Topic>(topic =>
             {
                 Assert.Equal(pair.topicName, topic.TopicName);
@@ -60,13 +64,13 @@ public class FetchAndLockRequestProviderTests
         return optionsMonitorMock.Object;
     }
 
-    private static HandlerDescriptor[] GetDescriptors(WorkerIdString workerId)
+    private static Endpoint[] GetEndpoints(WorkerIdString workerId)
     {
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
         return new[]
         {
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"topic1"}), workerId),
-            new HandlerDescriptor(FakeHandlerDelegate, new HandlerMetadata(new[] {"test2"}, 10_000)
+            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(new[] {"topic1"}), workerId),
+            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(new[] {"test2"}, 10_000)
             {
                 Variables = new[] {"X"},
                 LocalVariables = true
