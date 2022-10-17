@@ -11,7 +11,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <TargetFrameworks>net5.0;net6.0;netcoreapp3.1;netstandard2.1</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,22 +22,6 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-    <PackageReference Update="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Update="Microsoft.Extensions.Options" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Update="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
-    <PackageReference Update="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
-    <PackageReference Update="Microsoft.Extensions.Http" Version="3.1.0" />
-    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
-    <PackageReference Update="Microsoft.Extensions.Options" Version="3.1.0" />
   </ItemGroup>
 
 </Project>
