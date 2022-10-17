@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
@@ -68,15 +67,15 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
 
         try
         {
-            LogHelper.LogWaiting(_logger);
+            Log.Worker_Waiting(_logger);
             var fetchAndLockRequest = _fetchAndLockRequestProvider.GetRequest();
             var externalTasks = await _externalTaskClient.FetchAndLockAsync(fetchAndLockRequest, cancellationToken);
-            LogHelper.LogLocked(_logger, externalTasks.Count);
+            Log.Worker_Locked(_logger, externalTasks.Count);
             return externalTasks;
         }
         catch (Exception e) when (!cancellationToken.IsCancellationRequested)
         {
-            LogHelper.LogFailedLocking(_logger, e);
+            Log.Worker_FailedLocking(_logger, e.Message, e);
             await _workerEvents.OnFailedFetchAndLock(_serviceProvider, cancellationToken);
             return null;
         }
@@ -98,71 +97,7 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
         }
         catch (Exception e)
         {
-            LogHelper.LogFailedExecution(_logger, externalTask.Id, e);
-        }
-    }
-
-    [ExcludeFromCodeCoverage]
-    private static class LogHelper
-    {
-        private static readonly Action<ILogger, Exception?> Waiting =
-            LoggerMessage.Define(
-                LogLevel.Debug,
-                new EventId(0),
-                "Waiting for external task"
-            );
-
-        private static readonly Action<ILogger, int, Exception?> Locked =
-            LoggerMessage.Define<int>(
-                LogLevel.Debug,
-                new EventId(0),
-                "Locked {Count} external tasks"
-            );
-
-        private static readonly Action<ILogger, string, Exception?> FailedLocking =
-            LoggerMessage.Define<string>(
-                LogLevel.Warning,
-                new EventId(0),
-                "Failed locking of external tasks. Reason: \"{Reason}\""
-            );
-
-        private static readonly Action<ILogger, string, Exception?> FailedExecution =
-            LoggerMessage.Define<string>(
-                LogLevel.Warning,
-                new EventId(0),
-                "Failed execution of task {Id}"
-            );
-
-        public static void LogWaiting(ILogger logger)
-        {
-            if (logger.IsEnabled(LogLevel.Debug))
-            {
-                Waiting(logger, null);
-            }
-        }
-
-        public static void LogLocked(ILogger logger, int count)
-        {
-            if (logger.IsEnabled(LogLevel.Debug))
-            {
-                Locked(logger, count, null);
-            }
-        }
-
-        public static void LogFailedLocking(ILogger logger, Exception e)
-        {
-            if (logger.IsEnabled(LogLevel.Warning))
-            {
-                FailedLocking(logger, e.Message, e);
-            }
-        }
-
-        public static void LogFailedExecution(ILogger logger, string externalTaskId, Exception e)
-        {
-            if (logger.IsEnabled(LogLevel.Warning))
-            {
-                FailedExecution(logger, externalTaskId, e);
-            }
+            Log.Worker_FailedExecution(_logger, externalTask.Id, e);
         }
     }
 }
