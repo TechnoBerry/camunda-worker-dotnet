@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Camunda.Worker.Variables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -13,9 +14,9 @@ public sealed class CompleteResult : IExecutionResult
     {
     }
 
-    public IDictionary<string, Variable>? Variables { get; set; }
+    public Dictionary<string, VariableBase>? Variables { get; set; }
 
-    public IDictionary<string, Variable>? LocalVariables { get; set; }
+    public Dictionary<string, VariableBase>? LocalVariables { get; set; }
 
     public async Task ExecuteResultAsync(IExternalTaskContext context)
     {

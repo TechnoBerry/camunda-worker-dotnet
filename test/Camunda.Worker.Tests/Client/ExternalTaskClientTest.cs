@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Camunda.Worker.Variables;
 using RichardSzalay.MockHttp;
 using Xunit;
 
@@ -82,9 +83,9 @@ public class ExternalTaskClientTest : IDisposable
 
         var request = new CompleteRequest("testWorker")
         {
-            Variables = new Dictionary<string, Variable>
+            Variables = new Dictionary<string, VariableBase>
             {
-                ["TEST"] = Variable.String("testString")
+                ["TEST"] = new StringVariable("testString")
             }
         };
 
@@ -118,7 +119,7 @@ public class ExternalTaskClientTest : IDisposable
 
         var request = new BpmnErrorRequest("testWorker", "testCode", "Error")
         {
-            Variables = new Dictionary<string, Variable>()
+            Variables = new Dictionary<string, VariableBase>()
         };
 
         await _client.ReportBpmnErrorAsync("testTask", request, CancellationToken.None);
