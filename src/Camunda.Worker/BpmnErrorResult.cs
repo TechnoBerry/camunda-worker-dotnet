@@ -5,6 +5,7 @@ using Camunda.Worker.Client;
 using Camunda.Worker.Variables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Camunda.Worker;
 
@@ -38,10 +39,9 @@ public sealed class BpmnErrorResult : IExecutionResult
         }
         catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
         {
-            var logger = context.ServiceProvider.GetService<ILogger<BpmnErrorResult>>();
-            logger?.LogWarning(e, "Failed completion of task {TaskId}. Reason: {Reason}",
-                externalTask.Id, e.Message
-            );
+            var logger = context.ServiceProvider.GetService<ILogger<BpmnErrorResult>>()
+                         ?? NullLogger<BpmnErrorResult>.Instance;
+            Log.Result_FailedCompletion(logger, externalTask.Id, e.Message, e);
             await client.ReportFailureAsync(externalTask.Id, new ReportFailureRequest(externalTask.WorkerId)
             {
                 ErrorMessage = e.ErrorType,

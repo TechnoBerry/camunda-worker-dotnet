@@ -33,4 +33,12 @@ internal static partial class Log
     public static partial void Invoker_FailedProcessing(ILogger logger, string externalTaskId, Exception e);
 
     #endregion
+
+    [LoggerMessage(0, LogLevel.Warning, "Failed completion of task {ExternalTaskId}. Reason: {Reason}")]
+    public static partial void Result_FailedCompletion(
+        ILogger logger,
+        string externalTaskId,
+        string reason,
+        Exception e
+    );
 }
