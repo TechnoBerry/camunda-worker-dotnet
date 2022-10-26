@@ -30,6 +30,7 @@ public class ExternalTaskClient : IExternalTaskClient
                 opts.Converters.Add(new JsonStringEnumConverter());
                 opts.Converters.Add(new VariableJsonConverter());
                 opts.Converters.Add(new JsonVariableJsonConverter());
+                opts.Converters.Add(new XmlVariableJsonConverter());
             });
     }
 

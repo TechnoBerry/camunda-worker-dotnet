@@ -23,7 +23,6 @@ public class JsonVariableJsonConverter : JsonConverter<JsonVariable>
     public override void Write(Utf8JsonWriter writer, JsonVariable value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
-        writer.WriteString("type", "Json");
         writer.WriteString("value", value.Value.ToJsonString());
         writer.WriteEndObject();
     }

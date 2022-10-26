@@ -26,6 +26,7 @@ public class VariableJsonConverter : JsonConverter<VariableBase>
             "Bytes" => rootElement.Deserialize<BytesVariable>(options),
             "Null" => rootElement.Deserialize<NullVariable>(options),
             "Json" => rootElement.Deserialize<JsonVariable>(options),
+            "Xml" => rootElement.Deserialize<XmlVariable>(options),
             _ => rootElement.Deserialize<UnknownVariable>(options)
         };
     }
@@ -46,6 +47,7 @@ public class VariableJsonConverter : JsonConverter<VariableBase>
             BytesVariable => "Bytes",
             NullVariable => "Null",
             JsonVariable => "Json",
+            XmlVariable => "Xml",
             UnknownVariable unknownVariable => unknownVariable.Type,
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
         };
