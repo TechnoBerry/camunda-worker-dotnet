@@ -4,7 +4,7 @@ using System.Text.Json.Nodes;
 
 namespace Camunda.Worker.Variables;
 
-public record JsonVariable(JsonNode Value) : VariableBase
+public sealed record JsonVariable(JsonNode Value) : VariableBase
 {
     public static JsonVariable Create<T>(T value, JsonSerializerOptions? options = null)
     {

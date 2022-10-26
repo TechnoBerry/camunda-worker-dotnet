@@ -1,3 +1,3 @@
 namespace Camunda.Worker.Variables;
 
-public record NullVariable : VariableBase;
+public sealed record NullVariable : VariableBase;
