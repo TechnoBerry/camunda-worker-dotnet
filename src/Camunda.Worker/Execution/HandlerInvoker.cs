@@ -22,7 +22,7 @@ public class HandlerInvoker
 
     public async Task InvokeAsync()
     {
-        Log.Invoker_StartedProcessing(_logger, _context.Task.Id);
+        _logger.LogInvoker_StartedProcessing(_context.Task.Id);
         IExecutionResult executionResult;
         try
         {
@@ -30,11 +30,11 @@ public class HandlerInvoker
         }
         catch (Exception e) when (!_context.ProcessingAborted.IsCancellationRequested)
         {
-            Log.Invoker_FailedProcessing(_logger, _context.Task.Id, e);
+            _logger.LogInvoker_FailedProcessing(_context.Task.Id, e);
             executionResult = new FailureResult(e);
         }
 
         await executionResult.ExecuteResultAsync(_context);
-        Log.Invoker_FinishedProcessing(_logger, _context.Task.Id);
+        _logger.LogInvoker_FinishedProcessing(_context.Task.Id);
     }
 }

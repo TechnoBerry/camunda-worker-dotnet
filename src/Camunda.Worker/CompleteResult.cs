@@ -34,9 +34,8 @@ public sealed class CompleteResult : IExecutionResult
         }
         catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
         {
-            var logger = context.ServiceProvider.GetService<ILogger<CompleteResult>>()
-                         ?? NullLogger<CompleteResult>.Instance;
-            Log.Result_FailedCompletion(logger, externalTask.Id, e.Message, e);
+            var logger = context.ServiceProvider.GetService<ILogger<CompleteResult>>();
+            logger?.LogResult_FailedCompletion(externalTask.Id, e.Message, e);
             await client.ReportFailureAsync(externalTask.Id, new ReportFailureRequest(externalTask.WorkerId)
             {
                 ErrorMessage = e.ErrorType,

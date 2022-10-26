@@ -67,15 +67,15 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
 
         try
         {
-            Log.Worker_Waiting(_logger);
+            _logger.LogWorker_Waiting();
             var fetchAndLockRequest = _fetchAndLockRequestProvider.GetRequest();
             var externalTasks = await _externalTaskClient.FetchAndLockAsync(fetchAndLockRequest, cancellationToken);
-            Log.Worker_Locked(_logger, externalTasks.Count);
+            _logger.LogWorker_Locked(externalTasks.Count);
             return externalTasks;
         }
         catch (Exception e) when (!cancellationToken.IsCancellationRequested)
         {
-            Log.Worker_FailedLocking(_logger, e.Message, e);
+            _logger.LogWorker_FailedLocking(e.Message, e);
             await _workerEvents.OnFailedFetchAndLock(_serviceProvider, cancellationToken);
             return null;
         }
@@ -97,7 +97,7 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
         }
         catch (Exception e)
         {
-            Log.Worker_FailedExecution(_logger, externalTask.Id, e);
+            _logger.LogWorker_FailedExecution(externalTask.Id, e);
         }
     }
 }
