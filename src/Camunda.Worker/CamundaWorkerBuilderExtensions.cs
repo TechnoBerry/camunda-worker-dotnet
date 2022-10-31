@@ -29,7 +29,10 @@ public static class CamundaWorkerBuilderExtensions
 
         if (topicsAttribute == null)
         {
-            throw new Exception($"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicsAttribute\"");
+            throw new ArgumentException(
+                $"\"{handlerType.FullName}\" doesn't provide any \"HandlerTopicsAttribute\"",
+                nameof(handlerType)
+            );
         }
 
         var variablesAttribute = handlerType.GetCustomAttribute<HandlerVariablesAttribute>();

@@ -16,7 +16,7 @@ internal static class ExternalTaskRouter
 
         if (endpoint is null)
         {
-            throw new ApplicationException($"Endpoint for external task {context.Task.Id} could not be resolved");
+            throw new CamundaWorkerException($"Endpoint for external task {context.Task.Id} could not be resolved");
         }
 
         await endpoint.HandlerDelegate(context);

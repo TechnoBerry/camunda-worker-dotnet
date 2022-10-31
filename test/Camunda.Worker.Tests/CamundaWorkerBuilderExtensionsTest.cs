@@ -86,7 +86,7 @@ public class CamundaWorkerBuilderExtensionsTest
             .Returns(_builderMock.Object);
 
         // Act & Assert
-        Assert.Throws<Exception>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
+        Assert.Throws<ArgumentException>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
     }
 
     [Fact]
