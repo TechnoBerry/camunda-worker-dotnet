@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Camunda.Worker.Variables;
 
 namespace Camunda.Worker;
 
 public class ExternalTask
 {
-    [JsonConstructor]
     public ExternalTask(string id, string workerId, string topicName)
     {
         Id = Guard.NotNull(id, nameof(id));
@@ -88,7 +87,7 @@ public class ExternalTask
     /// </summary>
     public string? ErrorDetails { get; set; }
 
-    public IDictionary<string, string>? ExtensionProperties { get; set; }
+    public Dictionary<string, string>? ExtensionProperties { get; set; }
 
-    public IDictionary<string, Variable>? Variables { get; set; }
+    public Dictionary<string, VariableBase> Variables { get; set; } = new();
 }

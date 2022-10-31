@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace Camunda.Worker.Client;
 
 public class ReportFailureRequest
@@ -13,9 +11,7 @@ public class ReportFailureRequest
     public string? ErrorMessage { get; set; }
     public string? ErrorDetails { get; set; }
 
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int? Retries { get; set; }
 
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public int? RetryTimeout { get; set; }
 }

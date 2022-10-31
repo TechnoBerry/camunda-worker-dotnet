@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Bogus;
 using Camunda.Worker.Client;
+using Camunda.Worker.Variables;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -42,7 +43,7 @@ public class CompleteResultTest
 
         var result = new CompleteResult
         {
-            Variables = new Dictionary<string, Variable>()
+            Variables = new Dictionary<string, VariableBase>()
         };
 
         //Act
@@ -77,7 +78,7 @@ public class CompleteResultTest
 
         var result = new CompleteResult
         {
-            Variables = new Dictionary<string, Variable>()
+            Variables = new Dictionary<string, VariableBase>()
         };
 
         // Act

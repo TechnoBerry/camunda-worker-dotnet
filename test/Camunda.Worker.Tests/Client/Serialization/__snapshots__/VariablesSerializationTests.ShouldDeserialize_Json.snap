@@ -1,0 +1,24 @@
+﻿{
+  "Value": {
+    "Username": {
+      "_value": {
+        "ValueKind": "String"
+      },
+      "Value": {
+        "ValueKind": "String"
+      },
+      "Options": null
+    },
+    "Roles": [
+      {
+        "_value": {
+          "ValueKind": "String"
+        },
+        "Value": {
+          "ValueKind": "String"
+        },
+        "Options": null
+      }
+    ]
+  }
+}

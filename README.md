@@ -12,15 +12,24 @@ public class SayHelloHandler : IExternalTaskHandler
 {
     public async Task<IExecutionResult> HandleAsync(ExternalTask externalTask, CancellationToken cancellationToken)
     {
-        var username = externalTask.Variables["USERNAME"].Value;
+        if (!externalTask.TryGetVariable<StringVariable>("USERNAME", out var usernameVariable))
+        {
+            return new BpmnErrorResult("NO_USER", "Username not provided");
+        }
 
-        await Task.Delay(1000);
+        var username = usernameVariable.Value;
+
+        await Task.Delay(1000, cancellationToken);
 
         return new CompleteResult
         {
-            Variables = new Dictionary<string, Variable>
+            Variables = new Dictionary<string, VariableBase>
             {
-                ["MESSAGE"] = Variable.String("Hello, Guest!")
+                ["MESSAGE"] = new StringVariable($"Hello, {username}!"),
+                ["USER_INFO"] = JsonVariable.Create(new UserInfo(username, new List<string>
+                {
+                    "Admin"
+                }))
             }
         };
     }

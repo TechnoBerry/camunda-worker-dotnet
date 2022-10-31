@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Camunda.Worker.Variables;
 
 namespace Camunda.Worker.Client;
 
@@ -11,7 +12,7 @@ public class CompleteRequest
 
     public string WorkerId { get; }
 
-    public IDictionary<string, Variable>? Variables { get; set; }
+    public Dictionary<string, VariableBase>? Variables { get; set; }
 
-    public IDictionary<string, Variable>? LocalVariables { get; set; }
+    public Dictionary<string, VariableBase>? LocalVariables { get; set; }
 }

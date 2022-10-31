@@ -2,19 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using Camunda.Worker.Client.Serialization;
 
 namespace Camunda.Worker.Client;
 
 public class ExternalTaskClient : IExternalTaskClient
 {
     private readonly HttpClient _httpClient;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     public ExternalTaskClient(HttpClient httpClient)
     {
         _httpClient = Guard.NotNull(httpClient, nameof(httpClient));
         ValidateHttpClient(httpClient);
+
+        _jsonSerializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            }
+            .Also(opts =>
+            {
+                opts.Converters.Add(new JsonStringEnumConverter());
+                opts.Converters.Add(new VariableJsonConverter());
+                opts.Converters.Add(new JsonVariableJsonConverter());
+                opts.Converters.Add(new XmlVariableJsonConverter());
+            });
     }
 
     [ExcludeFromCodeCoverage]
@@ -36,8 +53,10 @@ public class ExternalTaskClient : IExternalTaskClient
         using var response = await SendRequestAsync("/fetchAndLock", request, cancellationToken);
         await EnsureSuccessAsync(response);
 
-        var externalTasks = await response.ReadJsonAsync<List<ExternalTask>>();
-        return externalTasks;
+        var externalTasks = await response.Content
+            .ReadFromJsonAsync<List<ExternalTask>>(_jsonSerializerOptions, cancellationToken);
+
+        return externalTasks ?? new List<ExternalTask>();
     }
 
     public async Task CompleteAsync(
@@ -94,17 +113,18 @@ public class ExternalTaskClient : IExternalTaskClient
     {
         var basePath = _httpClient.BaseAddress?.AbsolutePath.TrimEnd('/') ?? string.Empty;
         var requestPath = $"{basePath}/external-task/{path.TrimStart('/')}";
-        var response = await _httpClient.PostJsonAsync(requestPath, body, cancellationToken);
+        var response = await _httpClient.PostAsJsonAsync(requestPath, body, _jsonSerializerOptions, cancellationToken);
         return response;
     }
 
-    private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+    private async Task EnsureSuccessAsync(HttpResponseMessage response)
     {
         if (!response.IsSuccessStatusCode && response.IsJson())
         {
-            var errorResponse = await response.ReadJsonAsync<ErrorResponse>();
+            var errorResponse = await response.Content
+                .ReadFromJsonAsync<ErrorResponse>(_jsonSerializerOptions);
             response.Content.Dispose();
-            throw new ClientException(errorResponse, response.StatusCode);
+            throw new ClientException(errorResponse ?? new ErrorResponse(), response.StatusCode);
         }
 
         response.EnsureSuccessStatusCode();

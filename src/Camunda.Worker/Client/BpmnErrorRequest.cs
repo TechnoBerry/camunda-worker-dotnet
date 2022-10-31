@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Camunda.Worker.Variables;
 
 namespace Camunda.Worker.Client;
 
@@ -17,5 +18,5 @@ public class BpmnErrorRequest
 
     public string ErrorMessage { get; }
 
-    public IDictionary<string, Variable>? Variables { get; set; }
+    public Dictionary<string, VariableBase>? Variables { get; set; }
 }

@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Camunda.Worker.Variables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Camunda.Worker;
 
@@ -13,9 +15,9 @@ public sealed class CompleteResult : IExecutionResult
     {
     }
 
-    public IDictionary<string, Variable>? Variables { get; set; }
+    public Dictionary<string, VariableBase>? Variables { get; set; }
 
-    public IDictionary<string, Variable>? LocalVariables { get; set; }
+    public Dictionary<string, VariableBase>? LocalVariables { get; set; }
 
     public async Task ExecuteResultAsync(IExternalTaskContext context)
     {
@@ -33,9 +35,7 @@ public sealed class CompleteResult : IExecutionResult
         catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
         {
             var logger = context.ServiceProvider.GetService<ILogger<CompleteResult>>();
-            logger?.LogWarning(e, "Failed completion of task {TaskId}. Reason: {Reason}",
-                externalTask.Id, e.Message
-            );
+            logger?.LogResult_FailedCompletion(externalTask.Id, e.Message, e);
             await client.ReportFailureAsync(externalTask.Id, new ReportFailureRequest(externalTask.WorkerId)
             {
                 ErrorMessage = e.ErrorType,
