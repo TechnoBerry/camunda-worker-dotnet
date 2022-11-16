@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -14,10 +15,10 @@ namespace Camunda.Worker.Execution;
 
 public class DefaultCamundaWorkerTest : IDisposable
 {
-    private readonly Mock<IHandler> _handlerMock = new();
     private readonly Mock<IExternalTaskClient> _clientMock = new();
     private readonly Mock<IFetchAndLockRequestProvider> _fetchAndLockRequestProviderMock = new();
     private readonly Mock<IWorkerEvents> _workerEventsMock = new();
+    private readonly Mock<FakeExternalTaskProcessingService> _processingServiceMock = new();
     private readonly ServiceProvider _serviceProvider;
     private readonly DefaultCamundaWorker _worker;
 
@@ -37,7 +38,7 @@ public class DefaultCamundaWorkerTest : IDisposable
                 OnAfterProcessingAllTasks = _workerEventsMock.Object.OnAfterProcessingAllTasks
             }),
             _serviceProvider,
-            new WorkerHandlerDescriptor(_handlerMock.Object.HandleAsync)
+            _processingServiceMock.Object
         );
     }
 
@@ -74,35 +75,28 @@ public class DefaultCamundaWorkerTest : IDisposable
             .ReturnsAsync(externalTasks)
             .Verifiable();
 
-        _handlerMock
-            .Setup(executor => executor.HandleAsync(It.IsAny<IExternalTaskContext>()))
+        var processedTasks = new ConcurrentBag<ExternalTask>();
+
+        _processingServiceMock
+            .Setup(service => service.ProcessAsync(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
+            .Callback((ExternalTask externalTask, CancellationToken _) =>
+            {
+                processedTasks.Add(externalTask);
+            })
             .Returns(Task.CompletedTask);
 
         // Act
         await _worker.RunAsync(cts.Token);
 
         // Assert
-        _handlerMock.Verify(
-            executor => executor.HandleAsync(It.IsAny<IExternalTaskContext>()),
+        _processingServiceMock.Verify(
+            service => service.ProcessAsync(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()),
             Times.Exactly(numberOfExternalTasks)
         );
-        Assert.True(externalTasks
-            .ToHashSet(new ExternalTaskComparer())
-            .SetEquals(
-                GetHandlerInvocationContexts().Select(ctx => ctx.Task)
-            ));
-    }
-
-    private IEnumerable<IExternalTaskContext> GetHandlerInvocationContexts()
-    {
-        foreach (var invocation in _handlerMock.Invocations)
-        {
-            if (invocation.Method.Name == nameof(IHandler.HandleAsync) &&
-                invocation.Arguments.FirstOrDefault() is IExternalTaskContext ctx)
-            {
-                yield return ctx;
-            }
-        }
+        Assert.Equal(
+            externalTasks.ToHashSet(new ExternalTaskComparer()),
+            processedTasks.ToHashSet(new ExternalTaskComparer())
+        );
     }
 
     [Fact]
@@ -149,11 +143,6 @@ public class DefaultCamundaWorkerTest : IDisposable
         _workerEventsMock.Verify(e => e.OnFailedFetchAndLock(It.IsAny<IServiceProvider>(), It.IsAny<CancellationToken>()), Times.Once());
     }
 
-    public interface IHandler
-    {
-        Task HandleAsync(IExternalTaskContext context);
-    }
-
     public interface IWorkerEvents
     {
         public Task OnAfterProcessingAllTasks(IServiceProvider provider, CancellationToken ct);
@@ -176,5 +165,10 @@ public class DefaultCamundaWorkerTest : IDisposable
         {
             return obj.Id.GetHashCode();
         }
+    }
+
+    public abstract class FakeExternalTaskProcessingService : IExternalTaskProcessingService
+    {
+        public abstract Task ProcessAsync(ExternalTask externalTask, CancellationToken cancellationToken);
     }
 }

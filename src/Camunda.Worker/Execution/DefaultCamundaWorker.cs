@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker.Execution;
 
-public sealed class DefaultCamundaWorker : ICamundaWorker
+internal sealed class DefaultCamundaWorker : ICamundaWorker
 {
     private readonly IExternalTaskClient _externalTaskClient;
     private readonly IFetchAndLockRequestProvider _fetchAndLockRequestProvider;
     private readonly WorkerEvents _workerEvents;
     private readonly IServiceProvider _serviceProvider;
-    private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
+    private readonly IExternalTaskProcessingService _processingService;
     private readonly ILogger<DefaultCamundaWorker> _logger;
 
     public DefaultCamundaWorker(
@@ -24,7 +23,7 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
         IFetchAndLockRequestProvider fetchAndLockRequestProvider,
         IOptions<WorkerEvents> workerEvents,
         IServiceProvider serviceProvider,
-        WorkerHandlerDescriptor workerHandlerDescriptor,
+        IExternalTaskProcessingService processingService,
         ILogger<DefaultCamundaWorker>? logger = null
     )
     {
@@ -32,7 +31,7 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
         _fetchAndLockRequestProvider = Guard.NotNull(fetchAndLockRequestProvider, nameof(fetchAndLockRequestProvider));
         _workerEvents = Guard.NotNull(workerEvents, nameof(workerEvents)).Value;
         _serviceProvider = Guard.NotNull(serviceProvider, nameof(serviceProvider));
-        _workerHandlerDescriptor = Guard.NotNull(workerHandlerDescriptor, nameof(workerHandlerDescriptor));
+        _processingService = Guard.NotNull(processingService, nameof(processingService));
         _logger = logger ?? NullLogger<DefaultCamundaWorker>.Instance;
     }
 
@@ -83,17 +82,9 @@ public sealed class DefaultCamundaWorker : ICamundaWorker
 
     private async Task ProcessExternalTaskAsync(ExternalTask externalTask, CancellationToken cancellationToken)
     {
-        using var scope = _serviceProvider.CreateScope();
-        var context = new ExternalTaskContext(
-            externalTask,
-            _externalTaskClient,
-            scope.ServiceProvider,
-            cancellationToken
-        );
-
         try
         {
-            await _workerHandlerDescriptor.ExternalTaskDelegate(context);
+            await _processingService.ProcessAsync(externalTask, cancellationToken);
         }
         catch (Exception e)
         {
