@@ -84,7 +84,7 @@ internal sealed class DefaultCamundaWorker : ICamundaWorker
     {
         try
         {
-            await _processingService.ProcessAsync(externalTask, cancellationToken);
+            await _processingService.ProcessAsync(externalTask, _externalTaskClient, cancellationToken);
         }
         catch (Exception e)
         {

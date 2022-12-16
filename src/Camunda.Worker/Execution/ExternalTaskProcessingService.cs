@@ -8,27 +8,28 @@ namespace Camunda.Worker.Execution;
 internal sealed class ExternalTaskProcessingService : IExternalTaskProcessingService
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IExternalTaskClient _externalTaskClient;
     private readonly WorkerHandlerDescriptor _workerHandlerDescriptor;
 
     public ExternalTaskProcessingService(
         IServiceScopeFactory scopeFactory,
-        IExternalTaskClient externalTaskClient,
         WorkerHandlerDescriptor workerHandlerDescriptor
     )
     {
         _scopeFactory = scopeFactory;
-        _externalTaskClient = externalTaskClient;
         _workerHandlerDescriptor = workerHandlerDescriptor;
     }
 
-    public async Task ProcessAsync(ExternalTask externalTask, CancellationToken cancellationToken)
+    public async Task ProcessAsync(
+        ExternalTask externalTask,
+        IExternalTaskClient externalTaskClient,
+        CancellationToken cancellationToken
+    )
     {
         await using var scope = _scopeFactory.CreateAsyncScope();
 
         var context = new ExternalTaskContext(
             externalTask,
-            _externalTaskClient,
+            externalTaskClient,
             scope.ServiceProvider,
             cancellationToken
         );

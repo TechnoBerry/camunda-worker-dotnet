@@ -78,8 +78,8 @@ public class DefaultCamundaWorkerTest : IDisposable
         var processedTasks = new ConcurrentBag<ExternalTask>();
 
         _processingServiceMock
-            .Setup(service => service.ProcessAsync(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()))
-            .Callback((ExternalTask externalTask, CancellationToken _) =>
+            .Setup(service => service.ProcessAsync(It.IsAny<ExternalTask>(), _clientMock.Object, It.IsAny<CancellationToken>()))
+            .Callback((ExternalTask externalTask, IExternalTaskClient _, CancellationToken _) =>
             {
                 processedTasks.Add(externalTask);
             })
@@ -90,7 +90,7 @@ public class DefaultCamundaWorkerTest : IDisposable
 
         // Assert
         _processingServiceMock.Verify(
-            service => service.ProcessAsync(It.IsAny<ExternalTask>(), It.IsAny<CancellationToken>()),
+            service => service.ProcessAsync(It.IsAny<ExternalTask>(), _clientMock.Object, It.IsAny<CancellationToken>()),
             Times.Exactly(numberOfExternalTasks)
         );
         Assert.Equal(
@@ -169,6 +169,10 @@ public class DefaultCamundaWorkerTest : IDisposable
 
     public abstract class FakeExternalTaskProcessingService : IExternalTaskProcessingService
     {
-        public abstract Task ProcessAsync(ExternalTask externalTask, CancellationToken cancellationToken);
+        public abstract Task ProcessAsync(
+            ExternalTask externalTask,
+            IExternalTaskClient externalTaskClient,
+            CancellationToken cancellationToken
+        );
     }
 }
