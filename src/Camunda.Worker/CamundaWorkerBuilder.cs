@@ -70,12 +70,12 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
     public ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction)
     {
         Guard.NotNull(configureAction, nameof(configureAction));
-        Services.AddSingleton(provider =>
+        Services.AddSingleton<IExternalTaskProcessingService>(provider =>
         {
             var externalTaskDelegate = new PipelineBuilder(provider, WorkerId)
                 .Also(configureAction)
                 .Build(ExternalTaskRouter.RouteAsync);
-            return new WorkerHandlerDescriptor(externalTaskDelegate);
+            return new ExternalTaskProcessingService(provider, externalTaskDelegate);
         });
         return this;
     }

@@ -23,7 +23,7 @@ public class ServiceCollectionExtensionsTest
 
         Assert.Contains(services, IsRegistered(typeof(IEndpointResolver), ServiceLifetime.Singleton));
         Assert.Contains(services, IsRegistered(typeof(ICamundaWorker), ServiceLifetime.Transient));
-        Assert.Contains(services, IsRegistered(typeof(WorkerHandlerDescriptor), ServiceLifetime.Singleton));
+        Assert.Contains(services, IsRegistered(typeof(IExternalTaskProcessingService), ServiceLifetime.Singleton));
         Assert.Contains(services, IsRegistered(typeof(IFetchAndLockRequestProvider), ServiceLifetime.Singleton));
     }
 

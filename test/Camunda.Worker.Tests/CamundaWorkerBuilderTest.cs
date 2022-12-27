@@ -57,7 +57,7 @@ public class CamundaWorkerBuilderTest
         _builder.ConfigurePipeline(pipeline => { });
 
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                        d.ServiceType == typeof(WorkerHandlerDescriptor));
+                                        d.ServiceType == typeof(IExternalTaskProcessingService));
     }
 
     [Fact]
