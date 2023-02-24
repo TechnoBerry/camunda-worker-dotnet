@@ -19,6 +19,10 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+      - name: Setup .NET 7.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 7.0.x
       - name: Unit tests
         run: dotnet test ./test/Camunda.Worker.Tests/Camunda.Worker.Tests.csproj --collect:"XPlat Code Coverage" --settings ./coverlet.runsettings -r ./coverage
       - name: Upload coverage to Codecov
