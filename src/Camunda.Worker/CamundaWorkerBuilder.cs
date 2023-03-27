@@ -29,7 +29,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    public ICamundaWorkerBuilder AddEndpointResolver(Func<WorkerIdString, IServiceProvider, IEndpointResolver> factory)
+    public ICamundaWorkerBuilder AddEndpointResolver(WorkerServiceFactory<IEndpointResolver> factory)
     {
         Services.AddSingleton(provider => factory(WorkerId, provider));
 
@@ -48,7 +48,7 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
     }
 
     public ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
-        Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
+        WorkerServiceFactory<IFetchAndLockRequestProvider> factory
     )
     {
         Services.AddSingleton(provider => factory(WorkerId, provider));

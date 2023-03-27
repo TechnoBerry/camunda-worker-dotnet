@@ -12,13 +12,9 @@ public interface ICamundaWorkerBuilder
 
     WorkerIdString WorkerId { get; }
 
-    ICamundaWorkerBuilder AddEndpointResolver(
-        Func<WorkerIdString, IServiceProvider, IEndpointResolver> factory
-    );
+    ICamundaWorkerBuilder AddEndpointResolver(WorkerServiceFactory<IEndpointResolver> factory);
 
-    ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
-        Func<WorkerIdString, IServiceProvider, IFetchAndLockRequestProvider> factory
-    );
+    ICamundaWorkerBuilder AddFetchAndLockRequestProvider(WorkerServiceFactory<IFetchAndLockRequestProvider> factory);
 
     ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, EndpointMetadata endpointMetadata);
 
