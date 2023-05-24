@@ -1,8 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
+using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -24,30 +25,20 @@ public class CamundaWorkerBuilderTest
     {
         Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
 
-        _builder.AddHandler(FakeHandlerDelegate, new HandlerMetadata(new[] {"testTopic"}));
+        _builder.AddHandler(FakeHandlerDelegate, new EndpointMetadata(new[] {"testTopic"}));
 
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
                                         d.ImplementationInstance != null);
     }
 
     [Fact]
-    public void TestAddFactoryProvider()
+    public void TestAddEndpointResolver()
     {
-        _builder.AddEndpointProvider<EndpointProvider>();
-
-        Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                        d.ServiceType == typeof(IEndpointProvider) &&
-                                        d.ImplementationType == typeof(EndpointProvider));
-    }
-
-    [Fact]
-    public void TestAddTopicsProvider()
-    {
-        _builder.AddTopicsProvider<TopicsProvider>();
+        _builder.AddEndpointResolver((_, _) => new EndpointResolver());
 
         using var provider = _services.BuildServiceProvider();
 
-        Assert.IsType<TopicsProvider>(provider.GetService<ITopicsProvider>());
+        Assert.IsType<EndpointResolver>(provider.GetService<IEndpointResolver>());
     }
 
     [Fact]
@@ -66,7 +57,7 @@ public class CamundaWorkerBuilderTest
         _builder.ConfigurePipeline(pipeline => { });
 
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Singleton &&
-                                        d.ServiceType == typeof(WorkerHandlerDescriptor));
+                                        d.ServiceType == typeof(IExternalTaskProcessingService));
     }
 
     [Fact]
@@ -80,17 +71,10 @@ public class CamundaWorkerBuilderTest
         Assert.Contains(_services, d => d.ServiceType == typeof(IConfigureOptions<WorkerEvents>));
     }
 
-    private class EndpointProvider : IEndpointProvider
+    private class EndpointResolver : IEndpointResolver
     {
-        public ExternalTaskDelegate GetEndpointDelegate(ExternalTask externalTask)
-        {
-            throw new NotImplementedException();
-        }
-    }
 
-    private class TopicsProvider : ITopicsProvider
-    {
-        public IReadOnlyCollection<FetchAndLockRequest.Topic> GetTopics()
+        public Endpoint? Resolve(ExternalTask externalTask)
         {
             throw new NotImplementedException();
         }

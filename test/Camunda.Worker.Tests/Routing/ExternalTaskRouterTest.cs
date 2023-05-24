@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
+using Camunda.Worker.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -10,12 +10,12 @@ namespace Camunda.Worker.Routing;
 public class ExternalTaskRouterTest
 {
     private readonly Mock<IExternalTaskContext> _contextMock = new();
-    private readonly Mock<IEndpointProvider> _endpointProviderMock = new();
+    private readonly Mock<IEndpointResolver> _endpointResolverMock = new();
 
     public ExternalTaskRouterTest()
     {
         var serviceProvider = new ServiceCollection()
-            .AddSingleton(_endpointProviderMock.Object)
+            .AddSingleton(_endpointResolverMock.Object)
             .BuildServiceProvider();
 
         _contextMock.SetupGet(context => context.ServiceProvider).Returns(serviceProvider);
@@ -28,14 +28,18 @@ public class ExternalTaskRouterTest
         // Arrange
         var calls = new List<IExternalTaskContext>();
 
-        Task ExternalTaskDelegate(IExternalTaskContext context)
-        {
-            calls.Add(context);
-            return Task.CompletedTask;
-        }
+        var endpoint = new Endpoint(
+            context =>
+            {
+                calls.Add(context);
+                return Task.CompletedTask;
+            },
+            new EndpointMetadata(new []{ "testTopic" }),
+            "testWorker"
+        );
 
-        _endpointProviderMock.Setup(factory => factory.GetEndpointDelegate(It.IsAny<ExternalTask>()))
-            .Returns(ExternalTaskDelegate);
+        _endpointResolverMock.Setup(factory => factory.Resolve(It.IsAny<ExternalTask>()))
+            .Returns(endpoint);
 
         // Act
         await ExternalTaskRouter.RouteAsync(_contextMock.Object);

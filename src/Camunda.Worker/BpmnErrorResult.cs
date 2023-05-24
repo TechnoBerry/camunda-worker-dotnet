@@ -2,14 +2,16 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Camunda.Worker.Client;
+using Camunda.Worker.Variables;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Camunda.Worker;
 
 public sealed class BpmnErrorResult : IExecutionResult
 {
-    public BpmnErrorResult(string errorCode, string errorMessage, IDictionary<string, Variable>? variables = null)
+    public BpmnErrorResult(string errorCode, string errorMessage, Dictionary<string, VariableBase>? variables = null)
     {
         ErrorCode = Guard.NotEmptyAndNotNull(errorCode, nameof(errorCode));
         ErrorMessage = Guard.NotEmptyAndNotNull(errorMessage, nameof(errorMessage));
@@ -18,7 +20,7 @@ public sealed class BpmnErrorResult : IExecutionResult
 
     public string ErrorCode { get; }
     public string ErrorMessage { get; }
-    public IDictionary<string, Variable>? Variables { get; }
+    public Dictionary<string, VariableBase>? Variables { get; }
 
     public async Task ExecuteResultAsync(IExternalTaskContext context)
     {
@@ -38,9 +40,7 @@ public sealed class BpmnErrorResult : IExecutionResult
         catch (ClientException e) when (e.StatusCode == HttpStatusCode.InternalServerError)
         {
             var logger = context.ServiceProvider.GetService<ILogger<BpmnErrorResult>>();
-            logger?.LogWarning(e, "Failed completion of task {TaskId}. Reason: {Reason}",
-                externalTask.Id, e.Message
-            );
+            logger?.LogResult_FailedCompletion(externalTask.Id, e.Message, e);
             await client.ReportFailureAsync(externalTask.Id, new ReportFailureRequest(externalTask.WorkerId)
             {
                 ErrorMessage = e.ErrorType,

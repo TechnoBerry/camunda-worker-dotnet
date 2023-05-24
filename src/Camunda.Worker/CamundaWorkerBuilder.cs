@@ -1,13 +1,15 @@
 using System;
+using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
 using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker;
 
 public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 {
-    public CamundaWorkerBuilder(IServiceCollection services, string workerId)
+    public CamundaWorkerBuilder(IServiceCollection services, WorkerIdString workerId)
     {
         Services = services;
         WorkerId = workerId;
@@ -15,23 +17,38 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
 
     public IServiceCollection Services { get; }
 
-    public string WorkerId { get; }
+    public WorkerIdString WorkerId { get; }
 
-    public ICamundaWorkerBuilder AddEndpointProvider<TProvider>()
-        where TProvider : class, IEndpointProvider
+    internal CamundaWorkerBuilder AddDefaultEndpointResolver()
     {
-        Services.AddSingleton<IEndpointProvider, TProvider>();
+        AddEndpointResolver((workerId, provider) => new TopicBasedEndpointResolver(
+            workerId,
+            provider.GetRequiredService<IEndpointsCollection>()
+        ));
+
         return this;
     }
 
-    public ICamundaWorkerBuilder AddTopicsProvider<TProvider>() where TProvider : class, ITopicsProvider
+    public ICamundaWorkerBuilder AddEndpointResolver(WorkerServiceFactory<IEndpointResolver> factory)
     {
-        Services.AddTransient<ITopicsProvider, TProvider>();
+        Services.AddSingleton(provider => factory(WorkerId, provider));
+
         return this;
     }
 
-    internal CamundaWorkerBuilder AddFetchAndLockRequestProvider(
-        Func<string, IServiceProvider, IFetchAndLockRequestProvider> factory
+    internal CamundaWorkerBuilder AddDefaultFetchAndLockRequestProvider()
+    {
+        AddFetchAndLockRequestProvider((workerId, provider) => new FetchAndLockRequestProvider(
+            workerId,
+            provider.GetRequiredService<IOptionsMonitor<FetchAndLockOptions>>(),
+            provider.GetRequiredService<IEndpointsCollection>()
+        ));
+
+        return this;
+    }
+
+    public ICamundaWorkerBuilder AddFetchAndLockRequestProvider(
+        WorkerServiceFactory<IFetchAndLockRequestProvider> factory
     )
     {
         Services.AddSingleton(provider => factory(WorkerId, provider));
@@ -39,26 +56,26 @@ public class CamundaWorkerBuilder : ICamundaWorkerBuilder
         return this;
     }
 
-    public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, HandlerMetadata handlerMetadata)
+    public ICamundaWorkerBuilder AddHandler(ExternalTaskDelegate handler, EndpointMetadata endpointMetadata)
     {
         Guard.NotNull(handler, nameof(handler));
-        Guard.NotNull(handlerMetadata, nameof(handlerMetadata));
+        Guard.NotNull(endpointMetadata, nameof(endpointMetadata));
 
-        var descriptor = new HandlerDescriptor(handler, handlerMetadata);
+        var endpoint = new Endpoint(handler, endpointMetadata, WorkerId);
 
-        Services.AddSingleton(descriptor);
+        Services.AddSingleton(endpoint);
         return this;
     }
 
     public ICamundaWorkerBuilder ConfigurePipeline(Action<IPipelineBuilder> configureAction)
     {
         Guard.NotNull(configureAction, nameof(configureAction));
-        Services.AddSingleton(provider =>
+        Services.AddSingleton<IExternalTaskProcessingService>(provider =>
         {
-            var externalTaskDelegate = new PipelineBuilder(WorkerId, provider)
+            var externalTaskDelegate = new PipelineBuilder(provider, WorkerId)
                 .Also(configureAction)
                 .Build(ExternalTaskRouter.RouteAsync);
-            return new WorkerHandlerDescriptor(externalTaskDelegate);
+            return new ExternalTaskProcessingService(provider, externalTaskDelegate);
         });
         return this;
     }

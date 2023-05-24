@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Camunda.Worker.Execution;
+using Camunda.Worker.Endpoints;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
@@ -24,11 +23,11 @@ public class CamundaWorkerBuilderExtensionsTest
     public void TestAddHandlerWithAttributes()
     {
         // Arrange
-        var savedMetadata = new List<HandlerMetadata>();
+        var savedMetadata = new List<EndpointMetadata>();
 
         _builderMock
-            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
-            .Callback((ExternalTaskDelegate _, HandlerMetadata metadata) => savedMetadata.Add(metadata))
+            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()))
+            .Callback((ExternalTaskDelegate _, EndpointMetadata metadata) => savedMetadata.Add(metadata))
             .Returns(_builderMock.Object);
 
         // Act
@@ -36,7 +35,7 @@ public class CamundaWorkerBuilderExtensionsTest
 
         // Assert
         _builderMock.Verify(
-            builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()),
+            builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()),
             Times.Once());
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
                                         d.ServiceType == typeof(HandlerWithTopics));
@@ -51,11 +50,11 @@ public class CamundaWorkerBuilderExtensionsTest
     public void TestAddHandlerWithAttributesAndMetadataCustomization()
     {
         // Arrange
-        var savedMetadata = new List<HandlerMetadata>();
+        var savedMetadata = new List<EndpointMetadata>();
 
         _builderMock
-            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
-            .Callback((ExternalTaskDelegate _, HandlerMetadata metadata) => savedMetadata.Add(metadata))
+            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()))
+            .Callback((ExternalTaskDelegate _, EndpointMetadata metadata) => savedMetadata.Add(metadata))
             .Returns(_builderMock.Object);
 
         // Act
@@ -66,7 +65,7 @@ public class CamundaWorkerBuilderExtensionsTest
 
         // Assert
         _builderMock.Verify(
-            builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()),
+            builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()),
             Times.Once());
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
                                         d.ServiceType == typeof(HandlerWithTopics));
@@ -83,22 +82,22 @@ public class CamundaWorkerBuilderExtensionsTest
     {
         // Arrange
         _builderMock
-            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
+            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()))
             .Returns(_builderMock.Object);
 
         // Act & Assert
-        Assert.Throws<Exception>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
+        Assert.Throws<ArgumentException>(() => _builderMock.Object.AddHandler<HandlerWithoutTopics>());
     }
 
     [Fact]
     public void TestAddHandlerWithAllVariables()
     {
         // Arrange
-        var savedMetadata = new List<HandlerMetadata>();
+        var savedMetadata = new List<EndpointMetadata>();
 
         _builderMock
-            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()))
-            .Callback((ExternalTaskDelegate _, HandlerMetadata metadata) => savedMetadata.Add(metadata))
+            .Setup(builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()))
+            .Callback((ExternalTaskDelegate _, EndpointMetadata metadata) => savedMetadata.Add(metadata))
             .Returns(_builderMock.Object);
 
         // Act
@@ -106,7 +105,7 @@ public class CamundaWorkerBuilderExtensionsTest
 
         // Assert
         _builderMock.Verify(
-            builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<HandlerMetadata>()),
+            builder => builder.AddHandler(It.IsAny<ExternalTaskDelegate>(), It.IsAny<EndpointMetadata>()),
             Times.Once());
         Assert.Contains(_services, d => d.Lifetime == ServiceLifetime.Transient &&
                                         d.ServiceType == typeof(HandlerWithAllVariables));

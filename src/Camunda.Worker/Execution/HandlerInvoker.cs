@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,7 +22,7 @@ public class HandlerInvoker
 
     public async Task InvokeAsync()
     {
-        LogHelper.LogStartedProcessing(_logger, _context.Task.Id);
+        _logger.LogInvoker_StartedProcessing(_context.Task.Id);
         IExecutionResult executionResult;
         try
         {
@@ -31,60 +30,11 @@ public class HandlerInvoker
         }
         catch (Exception e) when (!_context.ProcessingAborted.IsCancellationRequested)
         {
-            LogHelper.LogFailedProcessing(_logger, _context.Task.Id, e);
+            _logger.LogInvoker_FailedProcessing(_context.Task.Id, e);
             executionResult = new FailureResult(e);
         }
 
         await executionResult.ExecuteResultAsync(_context);
-        LogHelper.LogFinishedProcessing(_logger, _context.Task.Id);
-    }
-
-    [ExcludeFromCodeCoverage]
-    private static class LogHelper
-    {
-        private static readonly Action<ILogger, string, Exception?> StartedProcessing =
-            LoggerMessage.Define<string>(
-                LogLevel.Debug,
-                new EventId(0),
-                "Started processing of task {TaskId}"
-            );
-
-        private static readonly Action<ILogger, string, Exception?> FinishedProcessing =
-            LoggerMessage.Define<string>(
-                LogLevel.Debug,
-                new EventId(0),
-                "Finished processing of task {TaskId}"
-            );
-
-        private static readonly Action<ILogger, string, Exception?> FailedProcessing =
-            LoggerMessage.Define<string>(
-                LogLevel.Error,
-                new EventId(0),
-                "Failed processing of task {TaskId}"
-            );
-
-        public static void LogStartedProcessing(ILogger logger, string taskId)
-        {
-            if (logger.IsEnabled(LogLevel.Debug))
-            {
-                StartedProcessing(logger, taskId, null);
-            }
-        }
-
-        public static void LogFinishedProcessing(ILogger logger, string taskId)
-        {
-            if (logger.IsEnabled(LogLevel.Debug))
-            {
-                FinishedProcessing(logger, taskId, null);
-            }
-        }
-
-        public static void LogFailedProcessing(ILogger logger, string taskId, Exception e)
-        {
-            if (logger.IsEnabled(LogLevel.Error))
-            {
-                FailedProcessing(logger, taskId, e);
-            }
-        }
+        _logger.LogInvoker_FinishedProcessing(_context.Task.Id);
     }
 }
