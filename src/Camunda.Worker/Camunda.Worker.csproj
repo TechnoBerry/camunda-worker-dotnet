@@ -4,7 +4,7 @@
     <Authors>Alexey Malinin</Authors>
     <Description>Ultimate solution to connect your ASP.NET Core application to Camunda external tasks</Description>
     <PackageTags>camunda;bpmn;worker</PackageTags>
-    <PackageProjectUrl>https://github.com/AMalininHere/camunda-worker-dotnet</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/TechnoBerry/camunda-worker-dotnet</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
