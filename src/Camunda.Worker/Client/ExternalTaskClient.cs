@@ -34,6 +34,13 @@ public class ExternalTaskClient : IExternalTaskClient
             });
     }
 
+    public ExternalTaskClient(HttpClient httpClient, Action<JsonSerializerOptions> configureJsonOptions)
+        : this(httpClient)
+    {
+        _jsonSerializerOptions = _jsonSerializerOptions
+            .Also(configureJsonOptions);
+    }
+
     [ExcludeFromCodeCoverage]
     private static void ValidateHttpClient(HttpClient httpClient)
     {
