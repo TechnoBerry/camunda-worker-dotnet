@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using Camunda.Worker.Variables;
@@ -14,16 +15,17 @@ namespace Camunda.Worker.Client;
 public class ExternalTaskClientTest : IDisposable
 {
     private readonly MockHttpMessageHandler _handlerMock = new();
-    private readonly ExternalTaskClient _client;
+    private ExternalTaskClient _client;
+    private HttpClient _httpClient;
 
     public ExternalTaskClientTest()
     {
-        _client = new ExternalTaskClient(
-            new HttpClient(_handlerMock)
-            {
-                BaseAddress = new Uri("http://test/api")
-            }
-        );
+        _httpClient = new HttpClient(_handlerMock)
+        {
+            BaseAddress = new Uri("http://test/api")
+        };
+
+        _client = new ExternalTaskClient(_httpClient);
     }
 
     public void Dispose()
@@ -86,6 +88,40 @@ public class ExternalTaskClientTest : IDisposable
             Variables = new Dictionary<string, VariableBase>
             {
                 ["TEST"] = new StringVariable("testString")
+            }
+        };
+
+        await _client.CompleteAsync("testTask", request, CancellationToken.None);
+
+        _handlerMock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task TestCompleteWithCustomJsonOptions()
+    {
+        _client = new ExternalTaskClient(_httpClient, opt =>
+        {
+            opt.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+        });
+
+        var entity = new
+        {
+            Description = "The \"Спутник-1\" satellite"
+        };
+
+        var requestContent = @"{""workerId"":""testWorker"",""variables"":{""TEST"":{""value"":" +
+            @"""{\""Description\"":\""The \\\""Спутник-1\\\"" satellite\""}""," +
+            @"""type"":""Json""}},""localVariables"":null}";
+
+        _handlerMock.Expect(HttpMethod.Post, "http://test/api/external-task/testTask/complete")
+            .WithContent(requestContent)
+            .Respond(HttpStatusCode.NoContent);
+
+        var request = new CompleteRequest("testWorker")
+        {
+            Variables = new Dictionary<string, VariableBase>
+            {
+                ["TEST"] = JsonVariable.Create(entity)
             }
         };
 
