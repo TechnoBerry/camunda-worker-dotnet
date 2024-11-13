@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Camunda.Worker.Execution;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Camunda.Worker;
 
@@ -29,10 +25,13 @@ public class PipelineBuilder : IPipelineBuilder
 
     public ExternalTaskDelegate Build(ExternalTaskDelegate lastDelegate)
     {
-        Guard.NotNull(lastDelegate, nameof(lastDelegate));
+        var result = lastDelegate;
 
-        return _middlewareList.AsEnumerable()
-            .Reverse()
-            .Aggregate(lastDelegate, (current, middleware) => middleware(current));
+        for (var i = _middlewareList.Count - 1; i >= 0 ; i--)
+        {
+            result = _middlewareList[i](result);
+        }
+
+        return result;
     }
 }
