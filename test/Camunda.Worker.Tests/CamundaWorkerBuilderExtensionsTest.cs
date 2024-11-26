@@ -41,7 +41,7 @@ public class CamundaWorkerBuilderExtensionsTest
                                         d.ServiceType == typeof(HandlerWithTopics));
 
         var metadata = Assert.Single(savedMetadata);
-        Assert.NotNull(metadata);
+        Assert.NotNull(metadata.Variables);
         var variableName = Assert.Single(metadata.Variables);
         Assert.Equal("testVariable", variableName);
     }
@@ -71,7 +71,7 @@ public class CamundaWorkerBuilderExtensionsTest
                                         d.ServiceType == typeof(HandlerWithTopics));
 
         var metadata = Assert.Single(savedMetadata);
-        Assert.NotNull(metadata);
+        Assert.NotNull(metadata.Variables);
         var variableName = Assert.Single(metadata.Variables);
         Assert.Equal("testVariable", variableName);
         Assert.Equal("myTenant", metadata.TenantIds![0]);
