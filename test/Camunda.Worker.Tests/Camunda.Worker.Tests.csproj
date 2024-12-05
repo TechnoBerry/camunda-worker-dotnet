@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Camunda.Worker</RootNamespace>
     <IsPackable>false</IsPackable>
-    <LangVersion>10</LangVersion>
+    <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
     <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
   </PropertyGroup>

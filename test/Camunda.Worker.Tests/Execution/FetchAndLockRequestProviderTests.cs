@@ -12,6 +12,8 @@ namespace Camunda.Worker.Execution;
 
 public class FetchAndLockRequestProviderTests
 {
+    private readonly Mock<IEndpointsCollection> _endpointsCollectionMock = new();
+
     [Fact]
     public void GetRequest_ShouldReturnsRequest()
     {
@@ -24,14 +26,13 @@ public class FetchAndLockRequestProviderTests
             .Generate();
 
         var endpoints = GetEndpoints(workerId);
-        var endpointsCollectionMock = new Mock<IEndpointsCollection>();
-        endpointsCollectionMock.Setup(e => e.GetEndpoints(workerId))
+        _endpointsCollectionMock.Setup(e => e.GetEndpoints(workerId))
             .Returns(endpoints);
 
         var sut = new FetchAndLockRequestProvider(
             workerId,
             CreateOptions(workerId.Value, fetchAndLockOptions),
-            endpointsCollectionMock.Object
+            _endpointsCollectionMock.Object
         );
 
         // Act
@@ -66,15 +67,16 @@ public class FetchAndLockRequestProviderTests
 
     private static Endpoint[] GetEndpoints(WorkerIdString workerId)
     {
-        Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
         return new[]
         {
-            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(new[] {"topic1"}), workerId),
-            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(new[] {"test2"}, 10_000)
+            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(["topic1"]), workerId),
+            new Endpoint(FakeHandlerDelegate, new EndpointMetadata(["test2"], 10_000)
             {
-                Variables = new[] {"X"},
+                Variables = ["X"],
                 LocalVariables = true
             }, workerId)
         };
+
+        static Task FakeHandlerDelegate(IExternalTaskContext context) => Task.CompletedTask;
     }
 }

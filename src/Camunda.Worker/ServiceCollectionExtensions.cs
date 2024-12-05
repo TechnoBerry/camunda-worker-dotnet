@@ -1,7 +1,11 @@
+using Camunda.Worker.Client;
 using Camunda.Worker.Endpoints;
 using Camunda.Worker.Execution;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Camunda.Worker;
 
@@ -16,10 +20,19 @@ public static class CamundaWorkerServiceCollectionExtensions
         Guard.GreaterThanOrEqual(numberOfWorkers, Constants.MinimumParallelExecutors, nameof(numberOfWorkers));
 
         services.AddOptions<FetchAndLockOptions>(workerId.Value);
-        services.AddOptions<WorkerEvents>();
+        services.AddOptions<WorkerEvents>(workerId.Value);
+
         services.TryAddSingleton<IEndpointsCollection, EndpointsCollection>();
-        services.TryAddTransient<ICamundaWorker, DefaultCamundaWorker>();
-        services.AddHostedService(provider => new WorkerHostedService(provider, numberOfWorkers));
+        services.TryAddKeyedTransient<ICamundaWorker>(workerId.Value, (provider, key) => new DefaultCamundaWorker(
+            workerId,
+            provider.GetRequiredService<IExternalTaskClient>(),
+            provider.GetRequiredKeyedService<IFetchAndLockRequestProvider>(workerId.Value),
+            provider.GetRequiredService<IOptionsMonitor<WorkerEvents>>(),
+            provider,
+            provider.GetRequiredKeyedService<IExternalTaskProcessingService>(workerId.Value),
+            provider.GetService<ILogger<DefaultCamundaWorker>>()
+        ));
+        services.AddTransient<IHostedService>(provider => new WorkerHostedService(provider, workerId, numberOfWorkers));
 
         return new CamundaWorkerBuilder(services, workerId)
             .AddDefaultFetchAndLockRequestProvider()
