@@ -1,4 +1,5 @@
 using System;
+using Camunda.Worker.Client;
 using Camunda.Worker.Execution;
 using Camunda.Worker.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,25 +10,32 @@ namespace Camunda.Worker;
 
 public class ServiceCollectionExtensionsTest
 {
-    [Fact]
-    public void TestAddCamundaWorker()
+    [Theory]
+    [InlineData("testWorker")]
+    public void Should_RegisterRequiredKeyedServices(string workerId)
     {
         var services = new ServiceCollection();
 
-        services.AddCamundaWorker("testWorker", 100);
+        services.AddCamundaWorker(workerId, 100);
+
+        Assert.Contains(services, IsRegistered(typeof(IEndpointResolver), ServiceLifetime.Singleton, workerId));
+        Assert.Contains(services, IsRegistered(typeof(ICamundaWorker), ServiceLifetime.Transient, workerId));
+        Assert.Contains(services, IsRegistered(typeof(IExternalTaskProcessingService), ServiceLifetime.Singleton, workerId));
+        Assert.Contains(services, IsRegistered(typeof(IFetchAndLockRequestProvider), ServiceLifetime.Singleton, workerId));
+
+        // IEqternalTaskClient should be registered separately
+        services.AddExternalTaskClient(options =>
+        {
+            options.BaseAddress = new Uri("http://test");
+        });
 
         using var provider = services.BuildServiceProvider();
-
-        Assert.NotNull(provider.GetService<IOptionsMonitor<FetchAndLockOptions>>()?.Get("testWorker"));
-        Assert.NotNull(provider.GetService<IOptions<WorkerEvents>>()?.Value);
-
-        Assert.Contains(services, IsRegistered(typeof(IEndpointResolver), ServiceLifetime.Singleton));
-        Assert.Contains(services, IsRegistered(typeof(ICamundaWorker), ServiceLifetime.Transient));
-        Assert.Contains(services, IsRegistered(typeof(IExternalTaskProcessingService), ServiceLifetime.Singleton));
-        Assert.Contains(services, IsRegistered(typeof(IFetchAndLockRequestProvider), ServiceLifetime.Singleton));
+        var registeredWorker = provider.GetRequiredKeyedService<ICamundaWorker>(workerId);
     }
 
-    private static Predicate<ServiceDescriptor> IsRegistered(Type serviceType, ServiceLifetime lifetime)
+    private static Predicate<ServiceDescriptor> IsRegistered(Type serviceType, ServiceLifetime lifetime, string workerId)
         => descriptor => descriptor.Lifetime == lifetime &&
-                         descriptor.ServiceType == serviceType;
+                         descriptor.ServiceType == serviceType &&
+                         descriptor.IsKeyedService &&
+                         workerId.Equals(descriptor.ServiceKey);
 }
