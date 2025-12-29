@@ -27,6 +27,8 @@ public class WorkerHostedServiceTest
         using (var workerHostedService = new WorkerHostedService(serivceProvider, workerId, numberOfWorkers))
         {
             await workerHostedService.StartAsync(CancellationToken.None);
+            Assert.NotNull(workerHostedService.ExecuteTask);
+            await workerHostedService.ExecuteTask;
         }
 
         _workerMock.Verify(w => w.RunAsync(It.IsAny<CancellationToken>()), Times.Exactly(numberOfWorkers));
