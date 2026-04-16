@@ -32,7 +32,7 @@ public static class CamundaWorkerServiceCollectionExtensions
             provider.GetRequiredKeyedService<IExternalTaskProcessingService>(workerId.Value),
             provider.GetService<ILogger<DefaultCamundaWorker>>()
         ));
-        services.AddTransient<IHostedService>(provider => new WorkerHostedService(provider, workerId, numberOfWorkers));
+        services.AddHostedService(provider => new WorkerHostedService(provider, workerId, numberOfWorkers));
 
         return new CamundaWorkerBuilder(services, workerId)
             .AddDefaultFetchAndLockRequestProvider()
